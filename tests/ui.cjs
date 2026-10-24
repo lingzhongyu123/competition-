@@ -1,0 +1,89 @@
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+(async () => {
+  const root = path.resolve(__dirname, '..');
+  const browser = await chromium.launch({ headless: true, executablePath: process.env.BROWSER_PATH || '/usr/bin/chromium' });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1600, height: 1100 } });
+    const errors=[]; page.on('pageerror', error => errors.push(error.message));
+    const response = await page.goto('http://127.0.0.1:4173/');
+    assert.equal(response.status(), 200);
+    await page.getByRole('heading', { name: '记忆总览', exact: true }).waitFor();
+    assert.equal(await page.locator('tbody tr').count(), 8);
+    await page.getByRole('button', { name: 'DAY 01 记忆形成', exact: true }).click();
+    assert.equal(await page.locator('tbody tr').count(), 4);
+    assert.equal(await page.locator('main').getByText('成绩从高到低', { exact:true }).count(),0);
+    await page.getByRole('button', { name: 'DAY 14 信息更新', exact: true }).click();
+    await page.getByRole('searchbox', { name:'搜索记忆' }).fill('日期');
+    await page.getByRole('button', { name: '筛选', exact: true }).click();
+    assert.equal(await page.locator('tbody tr').count(), 2); // preference + failure case
+    await page.getByLabel('记忆类型', { exact:true }).selectOption('preference');
+    assert.equal(await page.locator('tbody tr').count(),1);
+    await page.getByRole('button', { name:'统一日期格式', exact:true }).click();
+    assert.match(await page.locator('#inspector').innerText(),/YYYY-MM-DD/);
+    assert.match(await page.locator('#inspector').innerText(),/ev-d1/);
+    await page.getByRole('button',{name:'关系图谱',exact:true}).click();
+    assert.equal(await page.locator('.graph-node').count(),10); // two evidence, five factual memories, three historical traces
+    await page.getByRole('button',{name:'经验候选',exact:true}).click();
+    await page.locator('.graph-node[data-memory="case-b"]').click();
+    assert.match(await page.locator('#inspector').innerText(), /ev-case-b/);
+    await page.locator('.graph-node[data-memory="strategy-table"]').click();
+    assert.match(await page.locator('#inspector').innerText(),/策略来源案例/);
+    await page.getByRole('button',{name:'检索与使用',exact:true}).click();
+    await page.getByLabel('选择检索轨迹').selectOption('trace-d10');
+    assert.match(await page.locator('.trace-steps').innerText(),/未记录执行/);
+    await page.getByRole('button',{name:'更新与管理',exact:true}).click();
+    await page.locator('.management-row').filter({has:page.getByRole('button',{name:'统一日期格式',exact:true})}).getByRole('button',{name:'模拟撤回',exact:true}).click();
+    await page.getByRole('button',{name:'取消',exact:true}).click();
+    assert.equal(await page.locator('.audit').count(),0);
+    await page.locator('.management-row').filter({has:page.getByRole('button',{name:'统一日期格式',exact:true})}).getByRole('button',{name:'模拟撤回',exact:true}).click();
+    await page.getByRole('button',{name:'确认模拟撤回',exact:true}).click();
+    assert.match(await page.locator('.audit').innerText(),/主存储 \/ 索引 \/ 缓存：未执行/);
+    await page.getByRole('button',{name:'DAY 03 偏好复用',exact:true}).click();
+    const dateRow=page.locator('.management-row').filter({has:page.getByRole('button',{name:'统一日期格式',exact:true})});
+    assert.match(await dateRow.innerText(),/有效/);
+    assert.equal(await dateRow.getByRole('button',{name:'模拟撤回',exact:true}).isDisabled(),true);
+    await page.getByRole('button',{name:'DAY 14 信息更新',exact:true}).click();
+    const downloadPromise=page.waitForEvent('download');
+    await page.getByRole('button',{name:'导出当前证据包',exact:true}).click();
+    const download=await downloadPromise;
+    const bundle=JSON.parse(await fs.readFile(await download.path(),'utf8'));
+    assert.equal(bundle.snapshot.provenance,'mock');
+    assert.equal(bundle.snapshot.withdrawals.length,1);
+    await page.getByRole('button',{name:'重置演示',exact:true}).click();
+    await page.getByRole('button',{name:'DAY 14 信息更新',exact:true}).click();
+    assert.equal(await page.locator('tbody').getByText('已模拟撤回',{exact:true}).count(),0);
+    await page.getByRole('button',{name:'切换为中性主题',exact:true}).click();
+    assert.equal(await page.locator('body').getAttribute('data-theme'),'neutral');
+    await page.getByRole('button',{name:'切换为麒麟概念主题',exact:true}).click();
+    await fs.mkdir(path.join(root,'artifacts'),{recursive:true});
+    await page.waitForFunction(()=>!document.querySelector('#toast').classList.contains('show'));
+    await page.getByRole('button',{name:'成绩从高到低',exact:true}).click();
+    await page.screenshot({path:path.join(root,'artifacts/console-overview.png'),fullPage:true});
+    await page.getByRole('button',{name:'任务经验',exact:true}).click();
+    await page.screenshot({path:path.join(root,'artifacts/console-experience.png'),fullPage:true});
+    await page.getByRole('button',{name:'关系图谱',exact:true}).click();
+    await page.screenshot({path:path.join(root,'artifacts/console-graph.png'),fullPage:true});
+    await page.getByRole('button',{name:'数据与评测',exact:true}).click();
+    assert.match(await page.locator('main').innerText(),/待导入原始样本/);
+    await page.reload();
+    await page.getByRole('heading',{name:'数据与评测',exact:true}).waitFor();
+    await page.setViewportSize({width:390,height:844});
+    for(const title of ['记忆总览','关系图谱','演化时间线','检索与使用','任务经验','更新与管理','数据与评测']){
+      await page.getByRole('button',{name:title,exact:true}).click();
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`mobile overflow: ${title}`);
+    }
+    await page.getByRole('button',{name:'记忆总览',exact:true}).click();
+    await page.screenshot({path:path.join(root,'artifacts/console-mobile.png'),fullPage:true});
+    // Validate the portable artifact independently from source-module loading.
+    await page.setViewportSize({width:1600,height:1100});
+    await page.goto('about:blank');
+    await page.setContent(await fs.readFile(path.join(root,'dist/memory-console.html'),'utf8'));
+    await page.getByRole('heading',{name:'记忆总览',exact:true}).waitFor();
+    assert.equal(await page.locator('tbody tr').count(),8);
+    assert.deepEqual(errors,[]);
+    console.log('PASS: source HTTP startup, 5-day snapshots, search/filter, provenance, graph, trace, cancel/withdraw, history, mock export, reset, theme, hash reload, 7 mobile pages, standalone artifact.');
+  } finally { await browser.close(); }
+})().catch(error=>{console.error(error);process.exit(1)});
