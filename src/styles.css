@@ -10,3 +10,45 @@
 .metadata dt,.inspector-title p,.evidence small,.panel-footer{color:#788ba4}
 .case-card ol,.lesson,.public-task p,.trace-steps p,.trace-steps li,.dataset p{color:#72869f}
 .inspector-foot,.demo-footer{color:#8494ac}
+
+/* Kylin desktop inspired refinement: calmer system blue, compact surfaces, clearer navigation. */
+:root{--accent:#0878c9;--accent-soft:#e9f4fc;--bg:#eef2f6;--line:#dce4ec;--muted:#718094;--sidebar:#102b4a;--shadow:0 2px 8px #142d4610}
+body{background:var(--bg);color:#24384c}
+.sidebar{width:226px;background:linear-gradient(180deg,#14385d 0%,#102b4a 72%,#0d2540 100%);padding:23px 14px 17px}
+.shell{margin-left:226px}
+.brand-symbol{background:linear-gradient(145deg,#25a0e8,#0870bd);border:1px solid #8bcfff42;border-radius:8px;width:37px;height:37px;font-size:29px;box-shadow:0 2px 9px #04182c44}
+.brand strong{font-weight:650;letter-spacing:.2px}
+.workspace-switch{border-radius:6px;background:#ffffff0a;border-color:#ffffff16;margin-top:27px;margin-bottom:23px}
+.nav-heading{letter-spacing:1px;font-size:10px}
+.nav-item{border-radius:5px;padding:10px 12px;gap:11px}
+.nav-item.active{background:#0c78bd;box-shadow:inset 3px 0 #60c5f2,0 2px 7px #06182c35}
+.nav-item.active:after{content:"";position:absolute;right:10px;width:5px;height:5px;border-radius:50%;background:#8bd8fb}
+.topbar{height:62px;background:#fff;border-bottom-color:#d9e2eb;padding:0 27px}
+.breadcrumb{font-size:12px;color:#475b70}.breadcrumb span{margin:0 9px;color:#aab8c6}
+.content-shell{padding:27px;gap:20px}
+.panel,.inspector{border-radius:7px;box-shadow:0 2px 8px #1b38540b}
+.panel-heading{padding:18px 20px}.panel-heading h2{color:#2b4258}
+.story-card{border-radius:7px;border-color:#d2e1ed;background:linear-gradient(112deg,#f9fcfe,#edf6fb 67%,#f2f7fb);padding-top:21px}
+.story-card:after{border-color:#1686c31a}
+.story-copy .eyebrow{color:#54809d}.story-copy .eyebrow span{background:#e5f0f7;color:#71899c}
+.story-copy h2{color:#234b6c}.story-copy p{color:#647f95}
+.time-controls{border-top-color:#d7e3ec}.day.active:before{background:#0784cc;height:3px}.day.active{color:#0878c9}
+.metric,.graph-node,.case-card,.public-task,.dataset,.update-comparison article{border-radius:6px;box-shadow:none}
+.metric{border-color:#e0e7ed}.metric-icon{border-radius:6px}.blue-bg{background:#e7f3fb;color:#167bb7}.teal-bg{background:#e9f5f2;color:#428f83}
+.primary{background:#0878c9;border-radius:5px}.secondary,input,select,.search-field{border-radius:5px}
+.secondary:hover:not(:disabled){background:#f1f8fc;border-color:#a8cadf;color:#0878c9}
+.tag{border-radius:4px}.tag.blue{background:#e9f4fb;color:#247aa9;border-color:#d6eaf5}
+.segmented{border-radius:5px;background:#eff3f6}.segmented button{border-radius:4px}
+.segmented button.active{color:#0878c9}
+thead{background:#f3f6f8}th{border-color:#e5ebf0}td{border-bottom-color:#edf1f4}tr.selected-row{background:#eff7fb}tbody tr:hover{background:#f4f9fc}
+.inspector{border-top:3px solid #1989c4}.inspector-title h2{color:#28455e}
+.evidence{border-radius:5px}.evidence summary{color:#58768d}
+.graph-scroll{background-color:#fbfcfd;background-image:radial-gradient(#cbd8e2 .7px,transparent .7px)}.graph-node{border-color:#d3dfe8}.graph-node.memory-node{background:#eef6fb;border-color:#c6dce9}
+.trace-query{background:#f1f7fb;border-color:#dfebf2;border-radius:6px}
+.timeline-marker{border-radius:7px;background:#e9f3f8;color:#3a83a7}
+.case-card{border-color:#e1e8ed}.lesson{background:#f2f7fa;border-radius:4px}
+.strategy-card{border-radius:6px;background:linear-gradient(115deg,#f6f8fb,#f3f7fa);border-color:#dde5ec}.strategy-icon{color:#6b8ca5}
+.new-rule{background:#eef6fb}.new-rule h3{color:#28759e}.unchanged{border-radius:5px}
+.management-row{border-bottom-color:#e8edf1}.audit{background:#f4f8fb}
+@media(max-width:1380px){.sidebar{width:202px}.shell{margin-left:202px}}
+@media(max-width:850px){.sidebar{width:66px}.shell{margin-left:66px}}
