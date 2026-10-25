@@ -9,7 +9,7 @@ export const publicTasks = [
     "executionStatus": "未执行",
     "use": "把“单元格类型与业务单位”作为经验中的前置检查条件。",
     "infeasible": false,
-    "url": "https://github.com/xlang-ai/OSWorld/blob/main/evaluation_examples/examples/libreoffice_calc/357ef137-7eeb-4c80-a3bb-0951f26a8aff.json"
+    "url": "https://github.com/xlang-ai/OSWorld/blob/044bc33901cb893808e3f91ebc9a17ed8e54b44c/evaluation_examples/examples/libreoffice_calc/357ef137-7eeb-4c80-a3bb-0951f26a8aff.json"
   },
   {
     "id": "42e0a640-4f19-4b28-973d-729602b5a4a7",
@@ -33,7 +33,7 @@ export const publicTasks = [
     "executionStatus": "未执行",
     "use": "展示字段匹配、计算与聚合的多步经验结构。",
     "infeasible": false,
-    "url": "https://github.com/xlang-ai/OSWorld/blob/main/evaluation_examples/examples/libreoffice_calc/51719eea-10bc-4246-a428-ac7c433dd4b3.json"
+    "url": "https://github.com/xlang-ai/OSWorld/blob/044bc33901cb893808e3f91ebc9a17ed8e54b44c/evaluation_examples/examples/libreoffice_calc/51719eea-10bc-4246-a428-ac7c433dd4b3.json"
   },
   {
     "id": "1954cced-e748-45c4-9c26-9855b97fbc5e",
@@ -45,7 +45,7 @@ export const publicTasks = [
     "executionStatus": "未执行",
     "use": "作为留出迁移候选，检查聚合方式从求和变为计数。",
     "infeasible": false,
-    "url": "https://github.com/xlang-ai/OSWorld/blob/main/evaluation_examples/examples/libreoffice_calc/1954cced-e748-45c4-9c26-9855b97fbc5e.json"
+    "url": "https://github.com/xlang-ai/OSWorld/blob/044bc33901cb893808e3f91ebc9a17ed8e54b44c/evaluation_examples/examples/libreoffice_calc/1954cced-e748-45c4-9c26-9855b97fbc5e.json"
   },
   {
     "id": "2bd59342-0664-4ccb-ba87-79379096cc08",

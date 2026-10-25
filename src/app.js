@@ -3,14 +3,16 @@ import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
 import { publicTasks } from './public-tasks.js';
 import { renderSourceBrowser, bindSourceBrowser, getSourceView } from './source-browser.js';
+import { renderOsworldStory } from './osworld-story.js';
 
 const provider = createMockProvider();
 const pages = [
   ['sources', '真实样本', 'book'],
+  ['osworld', '任务故事草图', 'layers'],
   ['memories', '记忆总览', 'grid'], ['graph', '关系图谱', 'graph'], ['timeline', '演化时间线', 'clock'],
   ['traces', '检索与使用', 'search'], ['experience', '任务经验', 'layers'], ['manage', '更新与管理', 'shield'], ['evaluation', '数据与评测', 'chart']
 ];
-const state = { page: 'memories', day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '' };
+const state = { page: 'memories', day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation' };
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const paths = {
@@ -34,13 +36,14 @@ function memoryButton(memory, label) { return `<button class="text-button" data-
 function navigate(page, day = state.day) {
   state.page = page; state.day = day; state.query = ''; state.kind = 'all'; state.status = 'all';
   if (page === 'traces') state.trace = null;
-  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
+  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? `#osworld?story=${state.story}` : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
 }
 function readRoute() {
   const [page, query] = location.hash.slice(1).split('?');
   if (pages.some(([id]) => id === page)) state.page = page;
   const params = new URLSearchParams(query);
   if (state.page === 'sources') { const view = getSourceView(params.get('sample') || state.sample, params.get('phase') ?? 1); state.sample = view.sample.id; state.phase = view.phase; }
+  if (state.page === 'osworld') state.story = params.get('story') === 'reuse' ? 'reuse' : 'formation';
   const day = Number(params.get('day'));
   if (days.includes(day)) state.day = day;
 }
@@ -84,7 +87,7 @@ function renderTrace(snapshot) {
 }
 function renderExperience(snapshot) {
   const cases=snapshot.memories.filter(memory=>memory.kind==='case');const strategy=snapshot.memories.find(memory=>memory.kind==='strategy');
-  return `<section class="panel"><div class="panel-heading"><div><h2>案例 → 策略 → 有条件复用</h2><p>案例与策略为规划能力的合成演示；不代表已验证的经验系统。</p></div>${tag('规划 / MOCK','purple')}</div>${cases.length?`<div class="case-grid">${cases.map(memory=>`<article class="case-card"><div class="case-top">${tag(memory.outcome,memory.id==='case-b'?'amber':'green')}<small>Day ${memory.day}</small></div><h3>${memoryButton(memory)}</h3><ol>${memory.steps.map(step=>`<li>${esc(step)}</li>`).join('')}</ol><div class="lesson">${esc(memory.lesson)}</div></article>`).join('')}</div>${strategy?`<div class="strategy-card"><div class="strategy-icon">${icon('layers',26)}</div><div><div class="eyebrow">STRATEGY CANDIDATE</div><h3>${memoryButton(strategy)}</h3><p>${esc(strategy.summary)}</p><div class="condition-grid"><div><strong>适用条件</strong><ul>${strategy.conditions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div><div><strong>不应直接套用</strong><ul>${strategy.exclusions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div></div><button class="secondary" data-trace="trace-d10">查看新任务中的注入 ${icon('arrow')}</button><small class="block">只有注入记录；执行与收益尚未记录。</small></div></div>`:empty('策略尚未形成','切换到 Day 10 查看策略候选与适用条件。')}`:empty('尚无任务案例','切换到 Day 07 查看合成的成功与失败案例。')}</section><section class="panel"><div class="panel-heading"><div><h2>OSWorld · 下一步的真实任务候选</h2><p>这些是官方任务定义，与上面的合成案例分开。</p></div>${tag('真实定义 · 未执行')}</div><div class="public-task-grid">${publicTasks.slice(0,4).map(task=>`<article class="public-task"><small>LibreOffice Calc</small><h3>${esc(task.title)}</h3><p>${esc(task.use)}</p><a href="${esc(task.url)}" target="_blank" rel="noreferrer">官方任务 ${icon('link',14)}</a><code>${esc(task.id)}</code></article>`).join('')}</div></section>`;
+  return `<div class="source-entry"><span>已将三条 OSWorld 官方任务编排成“经验形成 → 有条件复用”展示草图。</span><button class="text-button" data-nav="osworld">查看任务故事草图 →</button></div><section class="panel"><div class="panel-heading"><div><h2>案例 → 策略 → 有条件复用</h2><p>案例与策略为规划能力的合成演示；不代表已验证的经验系统。</p></div>${tag('规划 / MOCK','purple')}</div>${cases.length?`<div class="case-grid">${cases.map(memory=>`<article class="case-card"><div class="case-top">${tag(memory.outcome,memory.id==='case-b'?'amber':'green')}<small>Day ${memory.day}</small></div><h3>${memoryButton(memory)}</h3><ol>${memory.steps.map(step=>`<li>${esc(step)}</li>`).join('')}</ol><div class="lesson">${esc(memory.lesson)}</div></article>`).join('')}</div>${strategy?`<div class="strategy-card"><div class="strategy-icon">${icon('layers',26)}</div><div><div class="eyebrow">STRATEGY CANDIDATE</div><h3>${memoryButton(strategy)}</h3><p>${esc(strategy.summary)}</p><div class="condition-grid"><div><strong>适用条件</strong><ul>${strategy.conditions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div><div><strong>不应直接套用</strong><ul>${strategy.exclusions.map(item=>`<li>${esc(item)}</li>`).join('')}</ul></div></div><button class="secondary" data-trace="trace-d10">查看新任务中的注入 ${icon('arrow')}</button><small class="block">只有注入记录；执行与收益尚未记录。</small></div></div>`:empty('策略尚未形成','切换到 Day 10 查看策略候选与适用条件。')}`:empty('尚无任务案例','切换到 Day 07 查看合成的成功与失败案例。')}</section><section class="panel"><div class="panel-heading"><div><h2>OSWorld · 下一步的真实任务候选</h2><p>这些是官方任务定义，与上面的合成案例分开。</p></div>${tag('真实定义 · 未执行')}</div><div class="public-task-grid">${publicTasks.slice(0,4).map(task=>`<article class="public-task"><small>LibreOffice Calc</small><h3>${esc(task.title)}</h3><p>${esc(task.use)}</p><a href="${esc(task.url)}" target="_blank" rel="noreferrer">官方任务 ${icon('link',14)}</a><code>${esc(task.id)}</code></article>`).join('')}</div></section>`;
 }
 function renderManage(snapshot) {
   const current=state.day===14;
@@ -118,20 +121,23 @@ function bind(snapshot) {
   for(const select of ['#kind','#status-filter'])if($(select))$(select).onchange=()=>$('#filters').requestSubmit();
   if($('#trace-select'))$('#trace-select').onchange=event=>{state.trace=event.target.value;render()};
   if ($('[data-export]')) $('[data-export]').onclick=()=>{const blob=new Blob([JSON.stringify(provider.exportSnapshot(state.day),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`memory-console-MOCK-day-${state.day}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('已导出当前模拟快照，文件内包含 MOCK 来源声明。')};
-  $('#header-search').onsubmit=event=>{event.preventDefault();const query=$('#global-query').value;if(state.page==='sources'){state.sourceQuery=query;render()}else{navigate('memories');state.query=query;render()}$('#global-query').focus()};
+  if ($('#header-search')) $('#header-search').onsubmit=event=>{event.preventDefault();const query=$('#global-query').value;if(state.page==='sources'){state.sourceQuery=query;render()}else{navigate('memories');state.query=query;render()}$('#global-query').focus()};
   bindSourceBrowser($('#app'), change => { Object.assign(state, change); safeReplaceState(null, '', `#sources?sample=${state.sample}&phase=${state.phase}`); render(); });
+  document.querySelectorAll('[data-story]').forEach(button => button.onclick = () => { state.story = button.dataset.story; safeReplaceState(null, '', `#osworld?story=${state.story}`); render(); });
   $('button[data-theme]').onclick=()=>{state.theme=state.theme==='kylin'?'neutral':'kylin';render()};
   $('[data-reset]').onclick=()=>{provider.reset();state.selected='mem-sort-v1';state.trace=null;navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
   if ($('[data-tour]')) $('[data-tour]').onclick=()=>{state.selected='mem-sort-v1';navigate('timeline',1);notify('按 Day 01 → 03 → 07 → 10 → 14 回放；从事件打开记忆与轨迹。')};
 }
 function render() {
   const sourceMode=state.page==='sources';
+  const storyMode=state.page==='osworld';
+  const publicMode=sourceMode||storyMode;
   const snapshot=provider.getSnapshot(state.day);
-  document.body.dataset.mode=sourceMode?'sources':'mock';
+  document.body.dataset.mode=sourceMode?'sources':storyMode?'osworld':'mock';
   if(!snapshot.memories.some(memory=>memory.id===state.selected))state.selected=snapshot.memories[0]?.id;
   document.body.dataset.theme=state.theme;
   const renderers={memories:renderList,graph:renderGraph,timeline:renderTimeline,traces:renderTrace,experience:renderExperience,manage:renderManage,evaluation:renderEvaluation};
-  $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${sourceMode?'公开样本工作区':'演示工作区'}</strong><small>${sourceMode?'LongMemEval · 人工整理':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div><form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form><div class="topbar-actions">${sourceMode?tag('公开样本','blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${sourceMode?'source-layout':''}"><main id="main" tabindex="-1">${sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${sourceMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
+  $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${publicMode?'公开资料工作区':'演示工作区'}</strong><small>${sourceMode?'LongMemEval · 人工整理':storyMode?'OSWorld · 展示草图':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div>${storyMode?'':`<form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form>`}<div class="topbar-actions">${sourceMode?tag('公开样本','blue'):storyMode?tag('官方定义 · 草图','blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${publicMode?'source-layout':''}"><main id="main" tabindex="-1">${sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):storyMode?renderOsworldStory(state.story):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${publicMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
   bind(snapshot);
 }
 readRoute();window.addEventListener('hashchange',()=>{readRoute();render()});render();
