@@ -4,7 +4,7 @@ const root = new URL('../', import.meta.url);
 const read = name => readFile(new URL(name, root), 'utf8');
 await mkdir(new URL('dist/', root), { recursive: true });
 // Local modules have no external dependencies. Produce a portable single-file artifact.
-const modules = await Promise.all(['data.js','model.js','public-tasks.js','source-browser.js','osworld-story.js','app.js'].map(name=>read('src/'+name)));
+const modules = await Promise.all(['data.js','model.js','public-tasks.js','source-browser.js','mock-story.js','osworld-story.js','app.js'].map(name=>read('src/'+name)));
 const sourceJson = JSON.stringify(JSON.parse(await read('data/longmemeval/展示样本-原始会话.json'))).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 const js = `const sourceDataset = ${sourceJson};\n` + modules.map(source=>source.replace(/^import [^\r\n]*;\r?\n/gm,'').replace(/^export /gm,'')).join('\n');
 if (/<\/script/i.test(js)) throw new Error('Script contains an unsafe HTML closing tag');

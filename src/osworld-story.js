@@ -1,4 +1,5 @@
 import { publicTasks } from './public-tasks.js';
+import { renderMockStory } from './mock-story.js';
 
 const escapeStory = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 const tasks = Object.fromEntries(publicTasks.map(task => [task.id, task]));
@@ -27,11 +28,12 @@ function reuse() {
   <div class="story-note">这组配对用于讨论迁移边界。尚无 Memory ON/OFF 对照，也不计算改进比例。</div>`;
 }
 
-export function renderOsworldStory(mode = 'formation') {
+export function renderOsworldStory(mode = 'formation', options = {}) {
   const selected = mode === 'reuse' ? 'reuse' : 'formation';
-  return `<div class="story-workspace"><div class="story-heading"><div><div class="eyebrow">OSWORLD / 展示草图</div><h1>任务经验与复用</h1><p>真实公开任务定义 + 明确标注的设计假设。执行和评测记录等待接入。</p></div><span class="story-badge real">3 条官方任务</span></div>
+  return `<div class="story-workspace"><div class="story-heading"><div><div class="eyebrow">OSWORLD / 展示草图</div><h1>任务经验与复用</h1><p>${options.demo ? "受公开任务类型启发的自建演示。所有运行与结果均为人工预设。" : "真实公开任务定义 + 明确标注的设计假设。执行和评测记录等待接入。"}</p></div><span class="story-badge ${options.demo ? "caution" : "real"}">${options.demo ? "MOCK · 自建示例" : "3 条官方任务"}</span></div>
   <div class="story-tabs" role="group" aria-label="选择展示故事"><button data-story="formation" aria-pressed="${selected === 'formation'}">01 任务经验如何形成</button><button data-story="reuse" aria-pressed="${selected === 'reuse'}">02 经验怎样复用</button></div>
-  ${selected === 'formation' ? formation() : reuse()}
+  <div class="story-view-switch" role="group" aria-label="资料与演示模式"><button data-story-view="sources" aria-pressed="${!options.demo}">资料现状</button><button data-story-view="mock" aria-pressed="${!!options.demo}">MOCK 逐步演示</button><span>模拟记录仅用于说明页面和证据关系</span></div>
+  ${options.demo ? renderMockStory(selected, options.step, options.scenario) : selected === 'formation' ? formation() : reuse()}
   <details class="story-data"><summary>与张旭讨论：需要提供哪些记录？</summary><div><strong>任务与执行</strong><p>task_id、环境版本、run_id、每步时间/动作/状态、产物、实际检查结果。</p><strong>经验形成</strong><p>case_id、来源 run_id、结论、失败原因、适用条件与版本；没有真实运行时只保留人工候选。</p><strong>复用验证</strong><p>候选及排序、选中理由、实际注入片段、目标 run_id、动作引用与结果；不能从最后的成功反推使用了哪条经验。</p></div></details>
   <footer class="story-footer">资料边界：OSWorld 任务要求已核实；迁移配对和经验假设由本方案提出；Memory/DSH 尚未接入，Agent 未运行。</footer></div>`;
 }
