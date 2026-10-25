@@ -1,0 +1,29 @@
+/* Presentation navigation only; never styles the host or existing workspaces. */
+.guide-workspace{max-width:1120px;color:#303b49;line-height:1.7;font-size:14px}
+.guide-heading{padding:4px 0 23px;border-bottom:1px solid var(--line)}
+.guide-heading .eyebrow{font-size:10px;letter-spacing:1px;color:#6c7e96}
+.guide-heading h1{font-size:27px;letter-spacing:0;margin:10px 0 7px}
+.guide-heading>p{color:#647287}.guide-boundary{font-size:12px;color:#7b663e;margin-top:15px}
+.guide-lanes{display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:23px 0}
+.guide-lanes>div{border-left:3px solid #9ab9e2;padding-left:15px}
+.guide-lanes>div:last-child{border-color:#9ebeb9}.guide-lanes strong{font-size:15px}
+.guide-lanes small{font-size:11px;font-weight:400;color:#778391;margin-left:8px}
+.guide-lanes p{font-size:12px;color:#6c7786;margin-top:5px}
+.guide-section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:5px 0 12px}
+.guide-section-heading h2,.guide-evidence h2,.guide-handoff h2{font-size:16px}
+.guide-section-heading>span{font-size:11px;color:#778391}
+.guide-stories{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.guide-story{display:flex;flex-direction:column;align-items:flex-start;padding:20px;border:1px solid #e1e6ee;border-radius:6px;background:#fff;min-width:0}
+.guide-story-top{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;margin-bottom:10px}
+.guide-number{font-size:18px;color:#638aba;font-variant-numeric:tabular-nums}.guide-status{font-size:10px;color:#5c6c82;background:#f1f4f8;padding:3px 7px;border-radius:3px}
+.guide-story h2{font-size:19px}.guide-story h3{font-size:13px;color:#506581;font-weight:500;margin:4px 0 12px}
+.guide-story>p{font-size:12px;color:#5a6575}.guide-look{width:100%;margin:14px 0 10px;padding:10px 12px;background:#f6f8fb;border-left:2px solid #b4c9e8;font-size:12px}
+.guide-look strong{font-weight:500;color:#405a7b}.guide-look p{color:#637186;margin-top:3px}
+.guide-story .guide-missing{color:#897144;font-size:11px;margin-bottom:15px}.guide-story button{margin-top:auto;text-align:left;white-space:normal}
+.guide-evidence{margin-top:26px;padding:20px 0;border-top:1px solid var(--line)}
+.guide-evidence>p{font-size:12px;color:#748092;margin:5px 0 12px}
+.guide-evidence dl{margin:0}.guide-evidence dl>div{display:grid;grid-template-columns:200px 1fr;gap:20px;padding:10px 0;border-bottom:1px solid #edf0f4;font-size:12px}
+.guide-evidence dt{font-weight:500;color:#435d7f}.guide-evidence dd{margin:0;color:#667385}
+.guide-handoff{display:flex;gap:24px;align-items:center;padding:18px;background:#f4f7fb;border-radius:5px;margin:0 0 12px}
+.guide-handoff p{font-size:12px;color:#637186;margin:6px 0}.guide-handoff small{font-size:11px;color:#788493}.guide-handoff button{flex-shrink:0}
+@media(max-width:700px){.guide-heading h1{font-size:23px}.guide-lanes,.guide-stories{grid-template-columns:1fr;gap:14px}.guide-section-heading,.guide-handoff{align-items:flex-start;flex-direction:column}.guide-story{padding:16px}.guide-evidence dl>div{grid-template-columns:1fr;gap:3px}.guide-heading,.guide-workspace{overflow-wrap:anywhere}}

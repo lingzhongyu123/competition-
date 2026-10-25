@@ -3,6 +3,7 @@ import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
 import { publicTasks } from './public-tasks.js';
 import { renderSourceBrowser, bindSourceBrowser, getSourceView } from './source-browser.js';
+import { renderDemoGuide, getGuideTarget } from './demo-guide.js';
 import { renderOsworldStory } from './osworld-story.js';
 import { createSnapshotSession } from './snapshot-import.js';
 import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
@@ -10,13 +11,14 @@ import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
 const provider = createMockProvider();
 const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });
 const pages = [
+  ['guide', '展示导览', 'book'],
   ['sources', '真实样本', 'book'],
   ['import', '经验快照', 'download'],
   ['osworld', '任务故事草图', 'layers'],
   ['memories', '记忆总览', 'grid'], ['graph', '关系图谱', 'graph'], ['timeline', '演化时间线', 'clock'],
   ['traces', '检索与使用', 'search'], ['experience', '任务经验', 'layers'], ['manage', '更新与管理', 'shield'], ['evaluation', '数据与评测', 'chart']
 ];
-const state = { page: 'memories', day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' };
+const state = { page: 'guide', day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' };
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const paths = {
@@ -40,7 +42,7 @@ function memoryButton(memory, label) { return `<button class="text-button" data-
 function navigate(page, day = state.day) {
   state.page = page; state.day = day; state.query = ''; state.kind = 'all'; state.status = 'all';
   if (page === 'traces') state.trace = null;
-  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'import' ? '#import' : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
+  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'import' || page === 'guide' ? `#${page}` : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
 }
 function storyRoute() { return `#osworld?story=${state.story}&view=${state.storyView}&step=${state.storyStep}&scenario=${state.storyScenario}`; }
 function readRoute() {
@@ -115,6 +117,13 @@ function withdrawDialog(id,snapshot) {
   dialog.onclose=()=>{if(dialog.returnValue==='confirm'){try{provider.withdraw(id,state.day);render();notify('已模拟撤回；真实存储与索引未执行任何操作。')}catch(error){notify(error.message)}}};dialog.showModal();
 }
 function bind(snapshot) {
+  document.querySelectorAll('[data-guide]').forEach(button => button.onclick = () => {
+    const target = getGuideTarget(button.dataset.guide);
+    if (!target) return;
+    Object.assign(state, target);
+    navigate(target.page);
+    $('#main').focus({ preventScroll: true });
+  });
   bindSnapshotImport($('#app'), snapshotSession, render);
   document.querySelectorAll('[data-nav]').forEach(button=>button.onclick=()=>navigate(button.dataset.nav));
   document.querySelectorAll('[data-day]').forEach(button=>button.onclick=()=>navigate(state.page,Number(button.dataset.day)));
@@ -139,16 +148,17 @@ function bind(snapshot) {
   if ($('[data-tour]')) $('[data-tour]').onclick=()=>{state.selected='mem-sort-v1';navigate('timeline',1);notify('按 Day 01 → 03 → 07 → 10 → 14 回放；从事件打开记忆与轨迹。')};
 }
 function render() {
+  const guideMode=state.page==='guide';
   const sourceMode=state.page==='sources';
   const storyMode=state.page==='osworld';
   const importMode=state.page==='import';
-  const publicMode=sourceMode||storyMode||importMode;
+  const publicMode=sourceMode||storyMode||importMode||guideMode;
   const snapshot=provider.getSnapshot(state.day);
-  document.body.dataset.mode=importMode?'import':sourceMode?'sources':storyMode?'osworld':'mock';
+  document.body.dataset.mode=guideMode?'guide':importMode?'import':sourceMode?'sources':storyMode?'osworld':'mock';
   if(!snapshot.memories.some(memory=>memory.id===state.selected))state.selected=snapshot.memories[0]?.id;
   document.body.dataset.theme=state.theme;
   const renderers={memories:renderList,graph:renderGraph,timeline:renderTimeline,traces:renderTrace,experience:renderExperience,manage:renderManage,evaluation:renderEvaluation};
-  $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${importMode?'本地只读工作区':publicMode?'公开资料工作区':'演示工作区'}</strong><small>${importMode?'经验快照 · 未连接服务':sourceMode?'LongMemEval · 人工整理':storyMode?'OSWorld · 展示草图':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div>${storyMode||importMode?'':`<form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form>`}<div class="topbar-actions">${importMode?tag(snapshotSession.state.status==='ready'?(snapshotSession.state.mode==='mock'?'MOCK 字段示例':'本地导入 · 未核验'):'本地只读','amber'):sourceMode?tag('公开样本','blue'):storyMode?tag(state.storyView==='mock'?'MOCK 预设演示':'官方定义 · 草图',state.storyView==='mock'?'amber':'blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${publicMode?'source-layout':''}"><main id="main" tabindex="-1">${importMode?renderSnapshotImport(snapshotSession.state):sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):storyMode?renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario}):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${publicMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
+  $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${guideMode?'展示与讨论':importMode?'本地只读工作区':publicMode?'公开资料工作区':'演示工作区'}</strong><small>${guideMode?'四条故事 · 证据边界':importMode?'经验快照 · 未连接服务':sourceMode?'LongMemEval · 人工整理':storyMode?'OSWorld · 展示草图':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div>${storyMode||importMode||guideMode?'':`<form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form>`}<div class="topbar-actions">${guideMode?tag('展示导览 · 未连接服务','blue'):importMode?tag(snapshotSession.state.status==='ready'?(snapshotSession.state.mode==='mock'?'MOCK 字段示例':'本地导入 · 未核验'):'本地只读','amber'):sourceMode?tag('公开样本','blue'):storyMode?tag(state.storyView==='mock'?'MOCK 预设演示':'官方定义 · 草图',state.storyView==='mock'?'amber':'blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${publicMode?'source-layout':''}"><main id="main" tabindex="-1">${guideMode?renderDemoGuide():importMode?renderSnapshotImport(snapshotSession.state):sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):storyMode?renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario}):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${publicMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
   bind(snapshot);
 }
 readRoute();window.addEventListener('hashchange',()=>{readRoute();render()});render();
