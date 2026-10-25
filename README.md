@@ -31,6 +31,8 @@ node tests/ui.cjs
 
 ## 已能演示
 
+- “经验快照”：本地只读导入插件 ExperienceSnapshot v1，查看策略、任务、版本和反馈；文件来源未核验，与内置 MOCK 分开。格式与限制见 [导入说明](docs/经验快照-只读导入格式.md)。
+
 - “真实样本”：事实、偏好、信息更新、时间推理；原文摘录可定位完整会话的具体消息。
 - 信息更新样本支持 5 月 25 日 / 27 日切换；早期视图不显示较新陈述，较新视图保留旧值和原文。
 - “原始会话已取得 / 记忆候选人工整理 / 检索与执行未采集”分别显示，避免把人工说明当成系统结果。
@@ -59,6 +61,7 @@ node tests/ui.cjs
 | `src/osworld-story.js`、`src/osworld.css` | 任务经验与复用的交互草图；公开资料和 MOCK 模式分开 |
 | `data/longmemeval/展示样本-原始会话.json` | 已整理的 4 条公开样本、7 个会话，不含评测答案字段 |
 | `src/mock-story.js` | 自建逐步演示与证据状态；不执行 Agent 或写入经验库 |
+| `src/snapshot-import.js`、`src/snapshot-view.js`、`src/snapshot.css` | 快照结构检查、内存会话与只读浏览；无上传或在线请求 |
 | `src/app.js` | 页面、导航与交互 |
 | `src/styles.css` | 麒麟概念与中性主题、响应式布局 |
 | `scripts/serve.mjs` | 仅提供公开页面/资源的本地静态服务 |
@@ -67,6 +70,7 @@ node tests/ui.cjs
 | `tests/sources.test.mjs` | 真实样本来源锚点、早期视图隔离、边界标识与空搜索 |
 | `tests/osworld-story.test.mjs` | 官方任务、拟议复用差异与未采集状态 |
 | `tests/mock-story.test.mjs` | 注入、采用、核验独立性，拒绝复用与阶段隔离 |
+| `tests/snapshot-import.test.mjs` | 导入错误、来源与状态语义、转义、限制和异步清空 |
 | `tests/ui.cjs` | 浏览器完整演示与移动布局检查 |
 | `docs/演示与交接.md` | 演示步骤、真实接入所需数据、DSH 集成判断 |
 | `docs/OSWorld-任务经验与复用草图.md` | 两条任务故事、页面草图、证据边界与待讨论字段 |

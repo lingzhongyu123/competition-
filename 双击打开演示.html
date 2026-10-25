@@ -125,6 +125,10 @@ body[data-theme=neutral]{--accent:#627389;--sidebar:#edf0f3;--accent-soft:#edf0f
 .story-note{background:#f4f7fb;border-left:3px solid #81a8d2;padding:13px 16px;color:#4f6480;margin-top:18px}.story-data{margin-top:22px;border:1px solid #dfe6ee;border-radius:4px;padding:13px 16px;background:#fff}.story-data summary{cursor:pointer;color:#37699f}.story-data>div{padding:15px 0 0}.story-data strong{color:#385778}.story-data p{margin:4px 0 13px;color:#64758b}.story-footer{font-size:11px;color:#708097;margin:20px 0 0}
 @media(max-width:900px){.story-grid.two,.story-compare{grid-template-columns:1fr}.story-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.story-flow>div:nth-child(2){border-right:0}.story-flow>div:nth-child(-n+2){border-bottom:1px solid #e4e9f0}}
 @media(max-width:550px){.story-heading,.story-scenario{display:block}.story-heading>.story-badge,.story-scenario>.story-badge{margin-top:10px}.story-heading h1{font-size:23px}.story-scenario h2{font-size:19px}.story-tabs button{flex:1;padding:9px 6px;font-size:12px}.story-task,.story-hypothesis,.story-missing,.story-compare section{padding:15px}.story-flow>div{padding:12px}.story-flow small{margin-left:0}}
+
+.snapshot-workspace{max-width:1500px;margin:auto;overflow-wrap:anywhere}.snapshot-workspace p{line-height:1.7}.snap-upload,.snap-detail,.snap-provenance{border:1px solid #dce4ee;background:#fff;border-radius:5px;padding:20px;margin-bottom:18px}.snap-upload label{display:block;font-weight:600;margin:0 0 8px}.snap-upload input{max-width:100%;margin-bottom:10px}.snap-upload p,.snap-muted{color:#68798d;font-size:12px}.snap-actions,.snap-tabs,.snap-paging{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.snapshot-workspace button{cursor:pointer}.snap-actions button,.snap-tabs button,.snap-paging button,#snapshot-search button,#snapshot-paste button{padding:8px 12px;border:1px solid #d4deeb;border-radius:4px;background:#fff;color:#365e87}.snapshot-workspace button:disabled{opacity:.45;cursor:default}.snap-upload details{margin-top:12px}.snapshot-workspace summary{cursor:pointer;color:#365e87}.snapshot-workspace textarea{display:block;width:100%;box-sizing:border-box;resize:vertical;margin:10px 0;border:1px solid #b9c9de;border-radius:4px;padding:10px;font:12px monospace}.snap-provenance{border-left:4px solid #c89536;background:#fffaf0}.snap-provenance p{margin:5px 0 0;font-size:12px}.snap-notice,.snap-error{padding:14px;background:#fff7e9;border:1px solid #eddbb8;margin:12px 0;color:#755a28;border-radius:4px}.snap-error{background:#fff3f1;color:#8f3630;border-color:#efc9c3}.snap-tabs{margin:18px 0}.snap-tabs button[aria-pressed=true]{background:#e9f2ff;border-color:#83afe8;color:#1d63b2}.snap-layout{display:grid;grid-template-columns:minmax(240px,1fr) minmax(0,2fr);gap:18px;align-items:start}.snap-list{display:grid;gap:6px}.snap-list button{text-align:left;background:#fff;padding:14px;border:1px solid #dce4ee;border-radius:4px;min-width:0;overflow-wrap:anywhere}.snap-list button[aria-pressed=true]{border-color:#468cdd;background:#eff6ff}.snap-list strong,.snap-list small{display:block}.snap-list small{font-size:11px;color:#6b7f96;margin-top:7px}.snap-list span{font-size:11px;color:#546b88}.snap-paging{justify-content:space-between;margin:14px 0;font-size:11px}.snap-detail{min-width:0;max-height:none}.snap-detail h3{font-size:19px;margin-bottom:10px}.snap-detail h4{font-size:13px;color:#456b92;margin:22px 0 8px}.snap-detail dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px;margin:16px 0;font-size:12px}.snap-detail dt{color:#6b7f96}.snap-detail dd{margin:0;white-space:pre-wrap}.snap-detail ul,.snap-notice ul{padding-left:20px}.snap-detail li{margin:5px 0}.snap-detail pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f6f8fb;padding:12px;font-size:12px;max-height:300px;overflow:auto}.snap-detail details{border-bottom:1px solid #e4eaf1;padding:12px 0}.snap-detail .text-button{margin:4px 10px 4px 0;max-width:100%;white-space:normal;overflow-wrap:anywhere}.snap-missing{color:#976222;font-size:12px}.snap-quote code{font-size:11px}.snap-empty{text-align:center;padding:35px 18px;color:#6b7f96;border:1px dashed #d7e0eb;background:#fbfcfe}.snap-empty h2{font-size:19px;margin-bottom:10px}#snapshot-search{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}#snapshot-query{min-width:0;border:1px solid #cfdae8;border-radius:4px;padding:8px}#snapshot-paste{margin-top:12px}.snapshot-workspace :focus-visible{outline:2px solid #367bd0;outline-offset:3px}@media(max-width:900px){.snap-layout{grid-template-columns:1fr}.snap-detail dl{grid-template-columns:100px minmax(0,1fr)}}@media(max-width:550px){.snap-upload,.snap-detail,.snap-provenance{padding:14px}.snap-detail dl{grid-template-columns:1fr}.snap-detail dd{margin-bottom:7px}.snap-tabs button{flex:1 1 40%}#snapshot-query{width:100%}.snapshot-workspace h1{font-size:23px}}
+
+.snap-detail{scroll-margin-top:75px}
 </style>
 </head>
 <body>
@@ -441,11 +445,189 @@ function renderOsworldStory(mode = 'formation', options = {}) {
   <footer class="story-footer">资料边界：OSWorld 任务要求已核实；迁移配对和经验假设由本方案提出；Memory/DSH 尚未接入，Agent 未运行。</footer></div>`;
 }
 
+// Read-only display contract, pinned to upstream f840e1c / ExperienceSnapshot v1.
+// This validates display structure, not the upstream engine's evidence or policy gates.
+const snapshotImportLimit = 5 * 1024 * 1024;
+const snapshotEnums = {
+  status: ['candidate','active','quarantined','deprecated','expired','retracted'],
+  outcome: ['success','failure','partial','unknown'],
+  source: ['verified','tool-evidence','user','model','unknown'],
+};
+const snapshotFail = path => { throw new Error(`${path} 的字段类型或取值不符合快照 v1 展示契约。`); };
+const snapText = (v,p) => { if (typeof v !== 'string' || !v.trim()) snapshotFail(p); };
+const snapNumber = (v,p) => { if (!Number.isSafeInteger(v) || v < 0) snapshotFail(p); };
+const snapConfidence = (v,p) => { if (typeof v !== 'number' || !Number.isFinite(v) || v < 0 || v > 1) snapshotFail(p); };
+const snapObject = (v,p) => { if (!v || typeof v !== 'object' || Array.isArray(v)) snapshotFail(p); };
+const snapArray = (v,p) => { if (!Array.isArray(v) || v.length > 500) snapshotFail(p); };
+const snapStrings = (v,p) => { snapArray(v,p); v.forEach((x,i)=>snapText(x,`${p}[${i}]`)); };
+const snapEnum = (v,p,values) => { if (!values.includes(v)) snapshotFail(p); };
+const snapBoolean = (v,p) => { if (typeof v !== 'boolean') snapshotFail(p); };
+const snapOptional = (v,key,p,check) => { if (v[key] !== undefined) check(v[key],`${p}.${key}`); };
+const snapEnvironment = (v,p) => { snapObject(v,p); Object.entries(v).forEach(([k,x])=>{snapText(k,p);snapText(x,p);}); };
+
+function checkSnapshotTree(value, depth=0, budget={nodes:0}) {
+  if (++budget.nodes > 100000 || depth > 24) throw new Error('JSON 层级或字段数量超出本地展示限制。');
+  if (typeof value === 'string' && value.length > 50000) throw new Error('单字段超过 50000 字符，请提供精简快照。');
+  if (value && typeof value === 'object') for (const [key,child] of Object.entries(value)) {
+    if (['__proto__','constructor','prototype'].includes(key)) throw new Error('JSON 包含不支持的属性名称。');
+    checkSnapshotTree(child,depth+1,budget);
+  }
+}
+function checkSnapshotQuote(v,p) { snapObject(v,p); snapText(v.eventId,p+'.eventId'); snapText(v.quote,p+'.quote'); }
+function checkSnapshotAssessment(v,p) {
+  snapObject(v,p); for (const k of ['id','assessor']) snapText(v[k],p+'.'+k);
+  snapConfidence(v.confidence,p+'.confidence'); snapNumber(v.observedAt,p+'.observedAt'); snapBoolean(v.requirementsComplete,p+'.requirementsComplete');
+  snapArray(v.criteria,p+'.criteria');
+  v.criteria.forEach((c,i)=>{const q=`${p}.criteria[${i}]`;snapObject(c,q);snapText(c.requirement,q+'.requirement');snapEnum(c.status,q+'.status',['passed','failed','unknown']);snapArray(c.evidence,q+'.evidence');c.evidence.forEach((x,j)=>checkSnapshotQuote(x,`${q}.evidence[${j}]`));});
+}
+function checkSnapshotEpisode(v,p,scope) {
+  snapObject(v,p); for(const k of ['id','scope','task','summary']) snapText(v[k],p+'.'+k);
+  if(v.scope!==scope) throw new Error(p+' 的 scope 与快照不一致。');
+  for(const k of ['evidence','learnedBy']) snapStrings(v[k],p+'.'+k);
+  for(const k of ['startedAt','completedAt']) snapNumber(v[k],p+'.'+k);
+  if(v.completedAt<v.startedAt) throw new Error(p+' 的结束时间早于开始时间。');
+  snapEnvironment(v.environment,p+'.environment'); snapObject(v.outcome,p+'.outcome');
+  snapEnum(v.outcome.status,p+'.outcome.status',snapshotEnums.outcome);snapEnum(v.outcome.source,p+'.outcome.source',snapshotEnums.source);
+  snapText(v.outcome.reason,p+'.outcome.reason');snapStrings(v.outcome.evidence,p+'.outcome.evidence');snapOptional(v.outcome,'assessment',p+'.outcome',checkSnapshotAssessment);
+  snapArray(v.steps,p+'.steps');v.steps.forEach((s,i)=>{
+    const q=`${p}.steps[${i}]`;snapObject(s,q);snapText(s.action,q+'.action');snapText(s.observation,q+'.observation');snapOptional(s,'tool',q,snapText);
+    if(s.evidence!==undefined){const e=s.evidence;snapObject(e,q+'.evidence');for(const k of ['id','callId'])snapText(e[k],q+'.evidence.'+k);for(const k of ['seq','at'])snapNumber(e[k],q+'.evidence.'+k);snapBoolean(e.complete,q+'.evidence.complete');snapEnum(e.role,q+'.evidence.role',['action','check','readback','unknown']);snapEnum(e.execution,q+'.evidence.execution',['completed','failed','incomplete']);snapOptional(e,'target',q+'.evidence',snapText);}
+  });
+  for(const k of ['sessionId','derivedFrom'])snapOptional(v,k,p,snapText);
+  if(v.capture!==undefined){snapObject(v.capture,p+'.capture');snapBoolean(v.capture.complete,p+'.capture.complete');snapEnum(v.capture.end,p+'.capture.end',['completed','incomplete']);}
+  if(v.recalledSkills!==undefined){snapArray(v.recalledSkills,p+'.recalledSkills');v.recalledSkills.forEach((r,i)=>{const q=`${p}.recalledSkills[${i}]`;snapObject(r,q);snapText(r.id,q+'.id');snapNumber(r.version,q+'.version');if(!r.version)snapshotFail(q+'.version');});}
+  if(v.taskContext!==undefined){const c=v.taskContext,q=p+'.taskContext';snapObject(c,q);snapText(c.id,q+'.id');snapText(c.latestRequest,q+'.latestRequest');snapNumber(c.revision,q+'.revision');snapEnum(c.kind,q+'.kind',['initial','continuation','increment']);snapOptional(c,'previousEpisodeId',q,snapText);snapOptional(c,'priorCaptureIncomplete',q,snapBoolean);snapOptional(c,'currentEvidenceStartSeq',q,snapNumber);}
+}
+function checkSnapshotSkill(v,p,scope) {
+  snapObject(v,p);for(const k of ['id','scope','title','description'])snapText(v[k],p+'.'+k);
+  if(v.scope!==scope)throw new Error(p+' 的 scope 与快照不一致。');
+  snapNumber(v.version,p+'.version');if(!v.version)snapshotFail(p+'.version');snapEnum(v.status,p+'.status',snapshotEnums.status);snapEnum(v.kind,p+'.kind',['procedure','pitfall']);
+  for(const k of ['confidence','proposedConfidence'])snapConfidence(v[k],p+'.'+k);
+  for(const k of ['applicability','preconditions','procedure','cautions','verification','tags','requiredTools','episodeIds','conflictsWith'])snapStrings(v[k],p+'.'+k);
+  for(const k of ['createdAt','updatedAt','expiresAt'])snapNumber(v[k],p+'.'+k);
+  if(v.lastValidatedAt!==null)snapNumber(v.lastValidatedAt,p+'.lastValidatedAt');
+  for(const k of ['supersedes','supersededBy'])snapOptional(v,k,p,snapText);
+  snapEnvironment(v.environment,p+'.environment');
+}
+
+function parseSnapshotImport(text) {
+  if(typeof text!=='string'||new TextEncoder().encode(text).byteLength>snapshotImportLimit)throw new Error('快照超过 5 MiB，请按作用域精简后导入。');
+  let snapshot;try{snapshot=JSON.parse(text.replace(/^\uFEFF/,''));}catch{throw new Error('无法解析 JSON，请检查文件格式。');}
+  checkSnapshotTree(snapshot);snapObject(snapshot,'snapshot');
+  if(snapshot.schemaVersion!==1)throw new Error('仅支持 ExperienceSnapshot schemaVersion: 1。');
+  snapText(snapshot.scope,'scope');
+  for(const k of ['episodes','skills','revisions','feedback']){snapArray(snapshot[k],k);const ids=new Set();snapshot[k].forEach((v,i)=>{snapObject(v,`${k}[${i}]`);snapText(v.id,`${k}[${i}].id`);if(ids.has(v.id))throw new Error(k+' 存在重复 ID。');ids.add(v.id);});}
+  snapshot.episodes.forEach((v,i)=>checkSnapshotEpisode(v,`episodes[${i}]`,snapshot.scope));
+  snapshot.skills.forEach((v,i)=>checkSnapshotSkill(v,`skills[${i}]`,snapshot.scope));
+  snapshot.revisions.forEach((v,i)=>{const p=`revisions[${i}]`;snapText(v.skillId,p+'.skillId');snapText(v.reason,p+'.reason');snapNumber(v.version,p+'.version');snapNumber(v.at,p+'.at');checkSnapshotSkill(v.skill,p+'.skill',snapshot.scope);if(v.skill.id!==v.skillId||v.skill.version!==v.version)throw new Error(p+' 的策略 ID/版本与内嵌策略不一致。');});
+  snapshot.feedback.forEach((v,i)=>{const p=`feedback[${i}]`;for(const k of ['skillId','episodeId','reason'])snapText(v[k],p+'.'+k);snapNumber(v.createdAt,p+'.createdAt');snapEnum(v.verdict,p+'.verdict',['helpful','harmful','irrelevant']);if(v.attribution!==undefined){const a=v.attribution;snapObject(a,p+'.attribution');snapNumber(a.skillVersion,p+'.attribution.skillVersion');if(!a.skillVersion)snapshotFail(p+'.attribution.skillVersion');snapText(a.assessmentId,p+'.attribution.assessmentId');for(const k of ['actionEvidence','verificationEvidence']){snapArray(a[k],p+'.attribution.'+k);a[k].forEach((q,j)=>checkSnapshotQuote(q,`${p}.attribution.${k}[${j}]`));}}});
+  const warnings=new Set();const episodes=new Set(snapshot.episodes.map(x=>x.id)),skills=new Set(snapshot.skills.map(x=>x.id));
+  const missing=(set,id,label)=>{if(id&&!set.has(id))warnings.add(label+'存在未包含在此快照中的引用，详情显示为缺失。');};
+  for(const s of [...snapshot.skills,...snapshot.revisions.map(r=>r.skill)]){s.episodeIds.forEach(id=>missing(episodes,id,'策略来源'));for(const id of [...s.conflictsWith,s.supersedes,s.supersededBy])missing(skills,id,'策略关系');}
+  for(const e of snapshot.episodes){missing(episodes,e.derivedFrom,'任务前驱');missing(episodes,e.taskContext?.previousEpisodeId,'任务前驱');if(e.outcome.source==='tool-evidence'&&!e.outcome.assessment)warnings.add('部分 tool-evidence 结果缺少 assessment，仅展示文件声明，未核验。');if(e.outcome.evidence.some(id=>!e.evidence.includes(id)))warnings.add('部分结果引用未列入任务 evidence，来源不完整。');}
+  for(const f of snapshot.feedback){missing(episodes,f.episodeId,'反馈任务');missing(skills,f.skillId,'反馈策略');}
+  return {snapshot,warnings:[...warnings]};
+}
+
+// Only this explicit button creates synthetic data. Imports never inherit its provenance.
+function createSnapshotMock() {
+  const t=Date.UTC(2026,0,1),scope='MOCK / 演示作用域';
+  const episode={id:'mock-episode-hours',scope,task:'MOCK：按工时计算金额',summary:'人工编写的单位检查示例，未执行工作簿。',steps:[{action:'MOCK：将累计工时换算为小时',observation:'MOCK：08:30 → 8.5 小时，8.5 × 40 = 340。'}],outcome:{status:'unknown',source:'unknown',reason:'没有真实执行或检查，结果保持未知。',evidence:[]},environment:{application:'MOCK Calc'},evidence:['mock-input-hours'],startedAt:t,completedAt:t+1000,learnedBy:[]};
+  const skill={id:'mock-skill-hours',scope,version:1,status:'candidate',title:'MOCK：先核对时间单位',description:'用来说明插件快照字段的自建候选。',kind:'procedure',applicability:['时间值工时 × 时薪'],preconditions:['确认输入确为时间值'],procedure:['确认单位','转换为小时后计算'],cautions:['十进制小时不能重复转换'],verification:['回读金额和无关区域'],tags:['MOCK'],environment:{application:'MOCK Calc'},requiredTools:[],confidence:0.4,proposedConfidence:0.4,episodeIds:[episode.id],conflictsWith:[],createdAt:t,updatedAt:t,lastValidatedAt:null,expiresAt:t+86400000};
+  return {schemaVersion:1,scope,episodes:[episode],skills:[skill],revisions:[{id:'mock-revision-1',skillId:skill.id,version:1,at:t,reason:'MOCK 初始候选',skill:{...skill}}],feedback:[]};
+}
+
+function createSnapshotSession(changed=()=>{}) {
+  let generation=0;
+  const state={data:null,status:'empty',error:'',label:'',mode:'imported',kind:'skills',selected:0,page:0,query:''};
+  const clear=()=>{generation++;Object.assign(state,{data:null,status:'empty',error:'',label:'',mode:'imported',kind:'skills',selected:0,page:0,query:''});changed();};
+  const begin=()=>{clear();state.status='loading';changed();return generation;};
+  const finish=(text,label,mode,token)=>{if(token!==generation)return;try{state.data=parseSnapshotImport(text);Object.assign(state,{status:'ready',label,mode});}catch(error){state.status='error';state.error=error.message;}changed();};
+  return {state,clear,
+    importText(text,label='粘贴的 JSON',mode='imported'){const token=begin();finish(text,label,mode,token);},
+    async importFile(file){const token=begin();if(file.size>snapshotImportLimit){state.status='error';state.error='快照超过 5 MiB，请按作用域精简后导入。';changed();return;}try{const text=await file.text();finish(text,file.name,'imported',token);}catch{if(token===generation){state.status='error';state.error='文件读取失败，请重新选择。';changed();}}},
+  };
+}
+
+
+const snapEscape = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const snapKinds={skills:'经验策略',episodes:'来源任务',revisions:'版本记录',feedback:'反馈记录'};
+const snapTime=value=>value===null?'未记录':Number.isFinite(new Date(value).getTime())?new Date(value).toISOString():`时间超出可显示范围（${value}）`;
+const snapList=items=>items.length?`<ul>${items.map(v=>`<li>${snapEscape(v)}</li>`).join('')}</ul>`:'<p class="snap-muted">未记录</p>';
+const snapField=(name,value)=>`<dt>${snapEscape(name)}</dt><dd>${snapEscape(value??'未记录')}</dd>`;
+function snapshotLink(snapshot,kind,id) {
+  const index=snapshot[kind].findIndex(x=>x.id===id);
+  return index<0?`<span class="snap-missing">${snapEscape(id)} · 来源缺失</span>`:`<button class="text-button" data-snapshot-kind="${kind}" data-snapshot-index="${index}">${snapEscape(id)}</button>`;
+}
+function snapshotQuotes(quotes) { return quotes.length?quotes.map(q=>`<div class="snap-quote"><code>${snapEscape(q.eventId)}</code><pre>${snapEscape(q.quote)}</pre></div>`).join(''):'<p class="snap-muted">未记录引用原文</p>'; }
+function snapshotSkill(snapshot,s) {
+  return `<h3>${snapEscape(s.title)}</h3><p>${snapEscape(s.description)}</p><dl>${snapField('ID / 版本',s.id+' / v'+s.version)}${snapField('文件中的状态',s.status)}${snapField('类型',s.kind)}${snapField('置信度 / 提议值',s.confidence+' / '+s.proposedConfidence+'（非成功率）')}${snapField('创建 / 更新',snapTime(s.createdAt)+' / '+snapTime(s.updatedAt))}${snapField('最近验证 / 到期',snapTime(s.lastValidatedAt)+' / '+snapTime(s.expiresAt))}</dl><p class="snap-muted">状态按文件原值展示，不重新判定是否过期或满足宿主策略。</p>
+  ${[['适用情境',s.applicability],['前置条件',s.preconditions],['流程',s.procedure],['注意事项',s.cautions],['验证方法',s.verification],['所需工具',s.requiredTools]].map(([k,v])=>`<h4>${k}</h4>${snapList(v)}`).join('')}
+  <h4>来源任务</h4>${s.episodeIds.length?s.episodeIds.map(id=>snapshotLink(snapshot,'episodes',id)).join(' '):'<p>未记录</p>'}
+  <h4>策略关系</h4><p>替代：${s.supersedes?snapshotLink(snapshot,'skills',s.supersedes):'未记录'}；被替代：${s.supersededBy?snapshotLink(snapshot,'skills',s.supersededBy):'未记录'}</p>${s.conflictsWith.map(id=>snapshotLink(snapshot,'skills',id)).join(' ')}
+  <h4>环境 / 标签</h4><pre>${snapEscape(JSON.stringify({environment:s.environment,tags:s.tags},null,2))}</pre>
+  <h4>该策略的版本记录</h4>${snapshot.revisions.map((r,i)=>r.skillId===s.id?`<button class="text-button" data-snapshot-kind="revisions" data-snapshot-index="${i}">v${r.version} · ${snapEscape(r.reason)}</button>`:'').join('')||'<p>未记录</p>'}`;
+}
+function snapshotEpisode(snapshot,e) {
+  return `<h3>${snapEscape(e.task)}</h3><p>${snapEscape(e.summary)}</p><dl>${snapField('任务 ID',e.id)}${snapField('会话',e.sessionId)}${snapField('开始 / 完成',snapTime(e.startedAt)+' / '+snapTime(e.completedAt))}${snapField('文件声明的结果',e.outcome.status)}${snapField('结果来源',e.outcome.source)}${snapField('声明理由',e.outcome.reason)}${snapField('采集完整性',e.capture?`${e.capture.complete} / ${e.capture.end}`:'未记录')}</dl>
+  <p class="snap-notice">这里展示文件声明，Console 未核验执行环境、证据原件或评估规则。</p>
+  <h4>前驱与任务修订</h4><p>${e.derivedFrom?snapshotLink(snapshot,'episodes',e.derivedFrom):'derivedFrom 未记录'}</p>${e.taskContext?`<p>修订 ${e.taskContext.revision} · ${snapEscape(e.taskContext.kind)}</p><p>${snapEscape(e.taskContext.latestRequest)}</p><p>${e.taskContext.previousEpisodeId?snapshotLink(snapshot,'episodes',e.taskContext.previousEpisodeId):'无前驱任务'}</p>`:'<p>未记录 taskContext</p>'}
+  <h4>文件中的动作与观察</h4>${e.steps.map((s,i)=>`<details><summary>步骤 ${i+1} · ${snapEscape(s.action)}</summary><p>工具：${snapEscape(s.tool||'未记录')}</p><pre>${snapEscape(s.observation)}</pre>${s.evidence?`<pre>${snapEscape(JSON.stringify(s.evidence,null,2))}</pre>`:'<p>未记录执行元数据</p>'}</details>`).join('')||'<p>未记录动作</p>'}
+  <h4>结果引用 ID</h4>${snapList(e.outcome.evidence)}<p class="snap-muted">ID 是引用，不代表已取得证据原件。</p>
+  ${e.outcome.assessment?`<h4>文件中的结果评估</h4><dl>${snapField('评估者',e.outcome.assessment.assessor)}${snapField('评估 ID',e.outcome.assessment.id)}${snapField('观察时间',snapTime(e.outcome.assessment.observedAt))}${snapField('完整覆盖声明',e.outcome.assessment.requirementsComplete)}</dl>${e.outcome.assessment.criteria.map(c=>`<details><summary>${snapEscape(c.status)} · ${snapEscape(c.requirement)}</summary>${snapshotQuotes(c.evidence)}</details>`).join('')}`:'<p>未记录 assessment</p>'}
+  <h4>召回记录（不等于注入或采用）</h4>${e.recalledSkills?.length?e.recalledSkills.map(r=>`<p>${snapshotLink(snapshot,'skills',r.id)} · 当时版本 v${r.version}（链接查看当前条目）</p>`).join(''):'<p>未记录</p>'}
+  <h4>来源 ID / 环境 / 提炼器</h4><pre>${snapEscape(JSON.stringify({evidence:e.evidence,environment:e.environment,learnedBy:e.learnedBy},null,2))}</pre>`;
+}
+function snapshotDetail(snapshot,kind,item) {
+  if(kind==='skills')return snapshotSkill(snapshot,item);
+  if(kind==='episodes')return snapshotEpisode(snapshot,item);
+  if(kind==='revisions')return `<h3>版本 v${item.version} · ${snapEscape(item.reason)}</h3><p>${snapEscape(snapTime(item.at))}</p><p>当前策略：${snapshotLink(snapshot,'skills',item.skillId)}</p><hr>${snapshotSkill(snapshot,item.skill)}`;
+  return `<h3>文件中的反馈：${snapEscape(item.verdict)}</h3><p>${snapEscape(item.reason)}</p><p>策略：${snapshotLink(snapshot,'skills',item.skillId)}</p><p>任务：${snapshotLink(snapshot,'episodes',item.episodeId)}</p><p>${snapEscape(snapTime(item.createdAt))}</p>${item.attribution?`<dl>${snapField('引用策略版本',item.attribution.skillVersion)}${snapField('评估 ID',item.attribution.assessmentId)}</dl><h4>动作引用</h4>${snapshotQuotes(item.attribution.actionEvidence)}<h4>验证引用</h4>${snapshotQuotes(item.attribution.verificationEvidence)}`:'<p>未记录 attribution；不能从反馈标签推断实际采用。</p>'}<p class="snap-muted">归因与反馈是文件中的记录，Console 未独立确认。</p>`;
+}
+function snapshotRows(state) {
+  const rows=state.data.snapshot[state.kind].map((item,index)=>({item,index}));
+  const q=state.query.trim().toLocaleLowerCase();
+  return q?rows.filter(({item})=>[item.id,item.title,item.task,item.reason,item.skillId].some(x=>x?.toLocaleLowerCase().includes(q))):rows;
+}
+function renderSnapshotImport(state) {
+  const ready=state.status==='ready',data=state.data?.snapshot;
+  let content='';
+  if(ready){
+    const rows=snapshotRows(state),pages=Math.max(1,Math.ceil(rows.length/25));const page=Math.min(state.page,pages-1);
+    const selected=rows.find(r=>r.index===state.selected)?.item;
+    content=`<section class="snap-provenance"><strong>${state.mode==='mock'?'MOCK · 自建字段示例':'本地导入 · 来源未核验'}</strong><p>${snapEscape(state.label)} · schemaVersion 1 · ${snapEscape(data.scope)}</p><p>仅校验展示所需字段结构；不等于上游完整校验、来源认证或运行验证。</p></section>
+    ${state.data.warnings.length?`<aside class="snap-notice"><strong>引用或证据不完整</strong>${snapList(state.data.warnings)}</aside>`:''}
+    <div class="snap-tabs" role="group" aria-label="快照记录类型">${Object.entries(snapKinds).map(([k,label])=>`<button data-snapshot-tab="${k}" aria-pressed="${state.kind===k}">${label} ${data[k].length}</button>`).join('')}</div>
+    <form id="snapshot-search"><label for="snapshot-query">搜索当前类型</label><input id="snapshot-query" type="search" value="${snapEscape(state.query)}" placeholder="标题、任务或 ID"><button>搜索</button></form>
+    <div class="snap-layout"><section aria-label="快照记录列表"><div class="snap-list">${rows.slice(page*25,(page+1)*25).map(({item,index})=>`<button data-snapshot-kind="${state.kind}" data-snapshot-index="${index}" aria-pressed="${selected===item}"><strong>${snapEscape(item.title||item.task||item.reason||item.id)}</strong><small>${snapEscape(item.id)}</small><span>${snapEscape(item.status||item.outcome?.status||item.verdict||'v'+item.version)}</span></button>`).join('')||`<p class="snap-empty">${state.query?'没有匹配记录。':'此快照没有这类记录。'}</p>`}</div><div class="snap-paging"><button data-snapshot-page="${page-1}" ${page===0?'disabled':''}>上一页</button><span>${page+1} / ${pages} · ${rows.length} 条</span><button data-snapshot-page="${page+1}" ${page===pages-1?'disabled':''}>下一页</button></div></section>
+    <article class="snap-detail" id="snapshot-detail" tabindex="-1" aria-label="快照记录详情">${selected?snapshotDetail(data,state.kind,selected):'<p>请选择左侧记录查看详情。</p>'}</article></div>`;
+  }
+  return `<div class="snapshot-workspace"><div class="story-heading"><div><div class="eyebrow">MEMORY / 本地只读</div><h1>经验快照</h1><p>查看插件导出的任务、策略与来源，保留它们各自的证据状态。</p></div><span class="story-badge caution">${ready?(state.mode==='mock'?'MOCK 示例':'导入 · 未核验'):'等待导入'}</span></div>
+  <section class="snap-upload"><label for="snapshot-file">选择 ExperienceSnapshot JSON（最多 5 MiB）</label><input id="snapshot-file" type="file" accept=".json,application/json"><div class="snap-actions"><button data-snapshot-example>查看 MOCK 字段示例</button><button data-snapshot-clear>清空本页数据</button></div><p>文件只在当前页面内存中读取，不上传、不保存到浏览器存储；刷新或清空后移除。尚未连接 DSH。</p>
+  <details><summary>或粘贴 JSON</summary><form id="snapshot-paste"><label for="snapshot-json">完整快照 JSON</label><textarea id="snapshot-json" rows="5" spellcheck="false" placeholder="粘贴 schemaVersion、scope、episodes、skills、revisions、feedback"></textarea><button>导入粘贴内容</button></form></details></section>
+  ${state.status==='loading'?'<p role="status">正在读取快照…</p>':state.status==='error'?`<div class="snap-error" role="alert"><strong>导入失败</strong><p>${snapEscape(state.error)}</p><p>未加载任何记录，也不会回退为 MOCK。请修正后重新导入。</p></div>`:!ready?'<div class="snap-empty"><h2>尚未导入经验快照</h2><p>可选择插件 snapshot(scope) 导出的 JSON；目前没有预装真实运行数据。也可以先查看明确标注的 MOCK 字段示例。</p></div>':''}${content}</div>`;
+}
+
+function bindSnapshotImport(root,session,render) {
+  const state=session.state,find=s=>root.querySelector(s);if(!find('#snapshot-file'))return;
+  const refresh=()=>{render();};
+  find('#snapshot-file').onchange=e=>{const file=e.target.files?.[0];if(file)session.importFile(file);};
+  find('[data-snapshot-clear]').onclick=()=>session.clear();
+  find('[data-snapshot-example]').onclick=()=>session.importText(JSON.stringify(createSnapshotMock()),'内置 MOCK 字段示例','mock');
+  find('#snapshot-paste').onsubmit=e=>{e.preventDefault();session.importText(find('#snapshot-json').value);};
+  root.querySelectorAll('[data-snapshot-tab]').forEach(b=>b.onclick=()=>{Object.assign(state,{kind:b.dataset.snapshotTab,page:0,selected:0,query:''});refresh();});
+  root.querySelectorAll('[data-snapshot-kind]').forEach(b=>b.onclick=()=>{const kind=b.dataset.snapshotKind,index=Number(b.dataset.snapshotIndex);if(kind!==state.kind)Object.assign(state,{query:'',page:Math.floor(index/25)});Object.assign(state,{kind,selected:index});refresh();const detail=find('#snapshot-detail');detail?.focus({preventScroll:true});detail?.scrollIntoView({block:'start'});});
+  root.querySelectorAll('[data-snapshot-page]').forEach(b=>b.onclick=()=>{state.page=Number(b.dataset.snapshotPage);refresh();});
+  if(find('#snapshot-search'))find('#snapshot-search').onsubmit=e=>{e.preventDefault();state.query=find('#snapshot-query').value;state.page=0;state.selected=-1;refresh();find('#snapshot-query').focus();};
+}
+
 function safeReplaceState(...args) { if (location.protocol !== 'file:' && location.protocol !== 'data:') history.replaceState(...args); }
 
 const provider = createMockProvider();
+const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });
 const pages = [
   ['sources', '真实样本', 'book'],
+  ['import', '经验快照', 'download'],
   ['osworld', '任务故事草图', 'layers'],
   ['memories', '记忆总览', 'grid'], ['graph', '关系图谱', 'graph'], ['timeline', '演化时间线', 'clock'],
   ['traces', '检索与使用', 'search'], ['experience', '任务经验', 'layers'], ['manage', '更新与管理', 'shield'], ['evaluation', '数据与评测', 'chart']
@@ -474,7 +656,7 @@ function memoryButton(memory, label) { return `<button class="text-button" data-
 function navigate(page, day = state.day) {
   state.page = page; state.day = day; state.query = ''; state.kind = 'all'; state.status = 'all';
   if (page === 'traces') state.trace = null;
-  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
+  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'import' ? '#import' : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
 }
 function storyRoute() { return `#osworld?story=${state.story}&view=${state.storyView}&step=${state.storyStep}&scenario=${state.storyScenario}`; }
 function readRoute() {
@@ -549,6 +731,7 @@ function withdrawDialog(id,snapshot) {
   dialog.onclose=()=>{if(dialog.returnValue==='confirm'){try{provider.withdraw(id,state.day);render();notify('已模拟撤回；真实存储与索引未执行任何操作。')}catch(error){notify(error.message)}}};dialog.showModal();
 }
 function bind(snapshot) {
+  bindSnapshotImport($('#app'), snapshotSession, render);
   document.querySelectorAll('[data-nav]').forEach(button=>button.onclick=()=>navigate(button.dataset.nav));
   document.querySelectorAll('[data-day]').forEach(button=>button.onclick=()=>navigate(state.page,Number(button.dataset.day)));
   document.querySelectorAll('[data-memory]').forEach(button=>button.onclick=()=>{state.selected=button.dataset.memory;render();if(innerWidth<1200)$('#inspector').scrollIntoView({behavior:'smooth',block:'start'})});
@@ -568,19 +751,20 @@ function bind(snapshot) {
   document.querySelectorAll('[data-mock-step]').forEach(button => button.onclick = () => { const step = Math.min(3, Math.max(0, Number(button.dataset.mockStep))); updateStory({ storyStep: step }, '.mock-steps [data-mock-step="'+step+'"]'); });
   if ($('#mock-scenario')) $('#mock-scenario').onchange = event => updateStory({ storyScenario: event.target.value }, '#mock-scenario');
   $('button[data-theme]').onclick=()=>{state.theme=state.theme==='kylin'?'neutral':'kylin';render()};
-  $('[data-reset]').onclick=()=>{provider.reset();state.selected='mem-sort-v1';state.trace=null;state.story='formation';state.storyView='sources';state.storyStep=0;state.storyScenario='injected';navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
+  $('[data-reset]').onclick=()=>{provider.reset();snapshotSession.clear();state.selected='mem-sort-v1';state.trace=null;state.story='formation';state.storyView='sources';state.storyStep=0;state.storyScenario='injected';navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
   if ($('[data-tour]')) $('[data-tour]').onclick=()=>{state.selected='mem-sort-v1';navigate('timeline',1);notify('按 Day 01 → 03 → 07 → 10 → 14 回放；从事件打开记忆与轨迹。')};
 }
 function render() {
   const sourceMode=state.page==='sources';
   const storyMode=state.page==='osworld';
-  const publicMode=sourceMode||storyMode;
+  const importMode=state.page==='import';
+  const publicMode=sourceMode||storyMode||importMode;
   const snapshot=provider.getSnapshot(state.day);
-  document.body.dataset.mode=sourceMode?'sources':storyMode?'osworld':'mock';
+  document.body.dataset.mode=importMode?'import':sourceMode?'sources':storyMode?'osworld':'mock';
   if(!snapshot.memories.some(memory=>memory.id===state.selected))state.selected=snapshot.memories[0]?.id;
   document.body.dataset.theme=state.theme;
   const renderers={memories:renderList,graph:renderGraph,timeline:renderTimeline,traces:renderTrace,experience:renderExperience,manage:renderManage,evaluation:renderEvaluation};
-  $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${publicMode?'公开资料工作区':'演示工作区'}</strong><small>${sourceMode?'LongMemEval · 人工整理':storyMode?'OSWorld · 展示草图':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div>${storyMode?'':`<form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form>`}<div class="topbar-actions">${sourceMode?tag('公开样本','blue'):storyMode?tag(state.storyView==='mock'?'MOCK 预设演示':'官方定义 · 草图',state.storyView==='mock'?'amber':'blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${publicMode?'source-layout':''}"><main id="main" tabindex="-1">${sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):storyMode?renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario}):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${publicMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
+  $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${importMode?'本地只读工作区':publicMode?'公开资料工作区':'演示工作区'}</strong><small>${importMode?'经验快照 · 未连接服务':sourceMode?'LongMemEval · 人工整理':storyMode?'OSWorld · 展示草图':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div>${storyMode||importMode?'':`<form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form>`}<div class="topbar-actions">${importMode?tag(snapshotSession.state.status==='ready'?(snapshotSession.state.mode==='mock'?'MOCK 字段示例':'本地导入 · 未核验'):'本地只读','amber'):sourceMode?tag('公开样本','blue'):storyMode?tag(state.storyView==='mock'?'MOCK 预设演示':'官方定义 · 草图',state.storyView==='mock'?'amber':'blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${publicMode?'source-layout':''}"><main id="main" tabindex="-1">${importMode?renderSnapshotImport(snapshotSession.state):sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):storyMode?renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario}):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${publicMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
   bind(snapshot);
 }
 readRoute();window.addEventListener('hashchange',()=>{readRoute();render()});render();
