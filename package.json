@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Memory Console interactive prototype with explicit mock provenance",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=20.18.3" },
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",

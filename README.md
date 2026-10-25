@@ -1,26 +1,25 @@
 # 麒麟 Memory Console
 
-基于讨论稿制作的独立交互原型。查看事实与偏好、来源证据、时间更新、检索/注入轨迹，以及规划中的 Case → Strategy → 新任务链路。所有记忆和执行轨迹均为明确标注的 MOCK；OSWorld 卡片仅包含真实公开任务定义。当前未接 DSH、Memory 服务或评测运行器。
+基于讨论稿制作的独立交互原型。“真实样本”展示 4 条 LongMemEval oracle 样本、7 个原始会话及人工整理的记忆候选；其余工作区的记忆、时间轴和执行轨迹仍明确标注为 MOCK。OSWorld 卡片仅包含真实公开任务定义。当前未接 DSH、Memory 服务或评测运行器。
 
 ## 启动
 
-需要 Node.js 20 或以上，无运行依赖，无需 npm install。
+开发与测试需要 Node.js 20.18.3 或以上（支持 JSON import attributes），无运行依赖，无需 npm install。源模块页面使用现代 Chromium 浏览器；直接打开单文件演示不需要 Node。
 
 ```sh
-cd Memory-Console-本地交接/项目
-npm run dev
+node scripts/serve.mjs
 ```
 
-默认在本机回环地址的 4173 端口提供静态页面；需要调整端口时使用 `PORT=4174 npm run dev`。服务绑定回环地址，仅用于本地开发。将压缩包解压到你选择的本地目录后，在“项目”文件夹启动。
+将源码解压后，在含 package.json 的仓库目录运行上述命令。默认访问 http://127.0.0.1:4173/ ，服务绑定本机回环地址。设置 PORT 环境变量可调整端口。
 
 ## 构建与验证
 
 ```sh
-npm test
-npm run build
+node --test tests/*.test.mjs
+node scripts/build.mjs
 ```
 
-构建产生 `dist/memory-console.html`，为无外部资源的单文件版本，可复制给讨论参与者，在允许本地 HTML 的浏览器中打开。脚本不读取或写入外部服务。构建产物与截图不纳入源码。
+构建同时更新 `dist/memory-console.html` 和根目录 `双击打开演示.html`，两份内容一致，样本数据和样式全部内嵌。根目录演示纳入版本控制；dist 和临时截图不纳入。构建兼容 LF/CRLF，并在写出前校验内联脚本语法。npm test / npm run build 仍可使用。
 
 可选浏览器回归（需启动本地服务，且测试环境已提供 Playwright 与 Chromium）：
 
@@ -32,6 +31,9 @@ node tests/ui.cjs
 
 ## 已能演示
 
+- “真实样本”：事实、偏好、信息更新、时间推理；原文摘录可定位完整会话的具体消息。
+- 信息更新样本支持 5 月 25 日 / 27 日切换；早期视图不显示较新陈述，较新视图保留旧值和原文。
+- “原始会话已取得 / 记忆候选人工整理 / 检索与执行未采集”分别显示，避免把人工说明当成系统结果。
 - 事实/偏好/约束/案例/策略的搜索、类型与状态筛选。
 - Day 01、03、07、10、14 历史快照；未来记录与未来替代时间不可见。
 - 记忆详情、原始证据和作用域；图谱区分来源与注入关系。
@@ -51,19 +53,22 @@ node tests/ui.cjs
 | `src/data.js` | 合成记忆、证据、trace、生命周期事件 |
 | `src/model.js` | 可替换的 mock 数据入口、历史快照与撤回语义 |
 | `src/public-tasks.js` | 公开任务卡片，不含 evaluator 答案或初始化配置 |
+| `src/source-browser.js`、`src/sources.css` | 公开样本、人工候选与原文追溯工作区 |
+| `data/longmemeval/展示样本-原始会话.json` | 已整理的 4 条公开样本、7 个会话，不含评测答案字段 |
 | `src/app.js` | 页面、导航与交互 |
 | `src/styles.css` | 麒麟概念与中性主题、响应式布局 |
 | `scripts/serve.mjs` | 仅提供公开页面/资源的本地静态服务 |
 | `scripts/build.mjs` | 单文件打包，无外部构建工具 |
 | `tests/model.test.mjs` | 时间、更新范围、历史与来源隔离回归 |
+| `tests/sources.test.mjs` | 真实样本来源锚点、早期视图隔离、边界标识与空搜索 |
 | `tests/ui.cjs` | 浏览器完整演示与移动布局检查 |
 | `docs/演示与交接.md` | 演示步骤、真实接入所需数据、DSH 集成判断 |
 
 ## 当前限制
 
-LongMemEval 官方 README 的类型与字段已核验，原始样本因下载站点代理 403 尚未取得；没有真实 question_id、回放或评分。DSH 仓库/版本未知，不能确认原生页面插件或全局换肤能力。Case、Strategy 与自动冲突检测在后端仍按规划能力处理。
+LongMemEval oracle 的 500 条样本已取得，其中 4 条已接入页面；oracle 仅含证据会话，不代表 S/M 完整长历史。中文字段和摘要属于人工解读，没有真实记忆写入、检索、注入、执行或评分记录。DSH 仓库/版本未知，不能确认原生页面插件或全局换肤能力。Case、Strategy 与自动冲突检测在后端仍按规划能力处理。
 
-本实现只使用 mock provider，不提供一个遇到真实接口失败就回退合成数据的“在线模式”。真实 API 接入时必须单独处理加载、空结果、权限、错误与能力不可用状态。详见交接说明。
+模拟工作区使用 mock provider，真实样本使用单独的静态公开数据入口，不提供线上接口失败时回退合成数据的“在线模式”。真实 API 接入时必须单独处理加载、空结果、权限、错误与能力不可用状态。详见交接说明与 docs/改动记录.md。
 
 ## 协作与直接查看
 
