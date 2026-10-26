@@ -1,4 +1,4 @@
-function safeReplaceState(...args) { if (location.protocol !== 'file:' && location.protocol !== 'data:') history.replaceState(...args); }
+function safeReplaceState(...args) { if (location.protocol === 'http:' || location.protocol === 'https:') history.replaceState(...args); }
 import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
 import { publicTasks } from './public-tasks.js';

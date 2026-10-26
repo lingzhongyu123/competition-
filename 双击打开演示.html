@@ -680,7 +680,7 @@ function renderDemoGuide() {
   </div>`;
 }
 
-function safeReplaceState(...args) { if (location.protocol !== 'file:' && location.protocol !== 'data:') history.replaceState(...args); }
+function safeReplaceState(...args) { if (location.protocol === 'http:' || location.protocol === 'https:') history.replaceState(...args); }
 
 const provider = createMockProvider();
 const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });

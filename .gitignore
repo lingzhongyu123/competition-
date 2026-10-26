@@ -4,4 +4,6 @@ dist/
 .local/
 
 *.log
+plugins/memory-console-dsh/*.tgz
+plugins/memory-console-dsh/lib/
 
