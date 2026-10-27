@@ -54,7 +54,7 @@ test('the hours method carries into a new task without revealing a checked resul
   assert.match(renderMockStory('formation',3),/data-story="reuse"/);
   const start=renderMockStory('reuse',0,'checked');
   assert.match(start,/先统一单位，再算金额/);
-  assert.match(start,/09:15/);
+  assert.match(start,/9 小时 15 分钟/);
   assert.doesNotMatch(start,/>370<|MOCK 已记录采用/);
   const final=renderMockStory('reuse',3,'checked');
   assert.match(final,/9\.25 × 40 = 370/);
