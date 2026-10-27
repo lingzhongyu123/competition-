@@ -11,119 +11,143 @@ export function getGuideTarget(key) {
   }[key] || null;
 }
 
-// Reuse the existing, explicitly MOCK Chinese story and its evidence IDs.
+const guideEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const guideChapters = ['事实记忆','信息更新','任务经验','经验复用'];
+const guideFirstBatch = [
+  {id:'A',name:'选手甲',registered:'09:10',score:'9'},
+  {id:'B',name:'选手乙',registered:'09:30',score:'85'},
+  {id:'C',name:'选手丙',registered:'09:20',score:100}
+];
+const guideNextBatch = [
+  {id:'D',name:'选手丁',registered:'10:10',score:'12'},
+  {id:'E',name:'选手戊',registered:'10:30',score:'95'},
+  {id:'F',name:'选手己',registered:'10:20',score:110}
+];
 export function getGuideFrame(step) {
-  const index = Math.min(2, Math.max(0, Math.floor(Number(step) || 0)));
+  const index = Math.min(7, Math.max(0, Math.floor(Number(step) || 0)));
   const first = evidence.find(item => item.id === 'ev-d1');
   const changed = evidence.find(item => item.id === 'ev-d14');
-  const oldRule = memories.find(item => item.id === 'mem-sort-v1');
-  const newRule = memories.find(item => item.id === 'mem-sort-v2');
-  const source = index === 0 ? first : changed;
+  const again = evidence.find(item => item.id === 'ev-d3');
+  const oldRule = memories.find(item => item.id === 'mem-sort-v1').title;
+  const newRule = memories.find(item => item.id === 'mem-sort-v2').title;
+  const input = index >= 6 ? guideNextBatch : guideFirstBatch;
+  let rows = input.map(row => ({...row}));
+  if(index >= 1 && index <= 3) rows.sort((a,b) => b.registered.localeCompare(a.registered));
+  if(index === 4) rows.sort((a,b) => String(b.score).localeCompare(String(a.score)));
+  if(index === 5 || index === 7) rows.sort((a,b) => Number(b.score)-Number(a.score));
+  const quote = index < 2 ? first.text : index < 4 ? changed.text : index === 4
+    ? 'MOCK 操作记录：直接按文本排序，9 被排在了 100 前面。'
+    : index === 5 ? 'MOCK 修正记录：将成绩按数值比较，重新排序并检查结果。' : again.text;
   return {
-    step: index, value: index === 2 ? newRule.title : oldRule.title,
-    incoming: index > 0, history: index === 2, provenance: 'mock',
-    date: index === 0 ? '第一次要求' : '后来的新要求',
-    origin: index === 2 ? '来源 · 后来的新要求' : '来源 · 第一次要求',
-    quote: source.text, evidenceId: source.id,
-    caption: ['记下报名表的默认排序方式。', '用户明确要求改用成绩排序，其他要求不变。', '新规则生效，旧规则保留在历史中。'][index],
-    translation: index === 0 ? first.text.split('。')[0] + '。' : changed.text
+    step:index,chapter:Math.floor(index/2),chapterLabel:guideChapters[Math.floor(index/2)],provenance:'mock',
+    quote,sourceId:index<2?first.id:index<4?changed.id:index===4?'mock-registration-sort-error':index===5?'mock-registration-sort-fix':'mock-registration-next-batch',
+    wordingId:index<2?first.id:index<4?changed.id:index>=6?again.id:null,
+    actor:index===4||index===5?'操作记录（MOCK）':'用户原话（MOCK）',
+    caption:[
+      '先读任务：整理报名表，保留说明页。',
+      '把工作对象、排序要求和修改范围记下来。',
+      '用户明确改变排序方式；先收到新要求。',
+      '当前排序改为成绩降序，旧规则保留来源。',
+      '出现一次错误：按文本比较，9 被放到了 100 前面。',
+      '改用数值排序；留下“先检查类型”的经验候选。',
+      '新的一批表来了：找到现行规则和旧方法，还未采用。',
+      '沿用成绩降序，采用类型检查，再核对这一批的结果。'
+    ][index],
+    rows,batch:index>=6?'第二批报名数据':'第一批报名数据',
+    remembered:index>=1,rule:index>=3?newRule:oldRule,history:index>=3,
+    experience:index>=5,recalled:index>=6,adopted:index===7,checked:index===5||index===7,
+    wrong:index===4,
+    status:['等待整理','已按报名时间排序','等待更新规则','新规则已记住，待执行','发现排序错误','修正后检查符合（MOCK）','找到方法，待采用','采用后检查符合（MOCK）'][index]
   };
 }
 export function renderPresentationHeader() {
   return `<header class="motion-header"><a href="#guide" class="motion-brand"><span>◈</span> Memory Console</a><details class="motion-menu"><summary>更多内容</summary><nav aria-label="更多内容"><button data-guide="fact">事实来源</button><button data-guide="update">公开更新样本</button><button data-guide="formation">经验形成</button><button data-guide="reuse">经验复用</button><hr><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button><button data-nav="guide">返回首页</button></nav></details></header>`;
 }
 export function renderDemoGuide() {
-  return `<div class="motion-home">
-    ${renderPresentationHeader()}
-    <main id="main" class="motion-main" tabindex="-1"><div class="motion-heading"><h1>一条记忆，怎样更新？</h1><p>新的要求生效，旧的规则留下来源。</p></div>
-    <section class="memory-stage" data-step="0" data-motion="timeline" aria-label="信息更新可视化">
-      <div class="stage-label"><span class="stage-dot"></span>MOCK · 中文指令更新演示</div>
-      <div class="memory-scene"><article class="statement"><div class="scene-meta"><span>用户陈述</span><time data-date></time></div><p data-translation></p><details class="statement-source"><summary>来源原文</summary><blockquote data-quote></blockquote><small>自建中文故事 · 合成用户消息 · MOCK</small></details></article>
-      <div class="memory-flow" aria-hidden="true"><svg viewBox="0 0 160 60"><path d="M5 30H150"/><circle class="flow-packet" cx="14" cy="30" r="5"/><path d="m140 23 10 7-10 7"/></svg><span data-flow-label>已有记忆</span></div>
-      <div class="memory-stack"><article class="current-memory"><div class="scene-meta"><span>当前记忆</span><span class="current-indicator">有效</span></div><h2>报名表默认排序</h2><div class="memory-value rule-value" data-value>报名时间倒序</div><span class="memory-unit">当前规则</span><div class="memory-origin" data-origin>来源 · 第一次要求</div></article><div class="history-memory" hidden><span>历史记录</span><s>报名时间倒序</s><small>第一次要求</small></div></div></div>
-      <p class="stage-caption" role="status" aria-live="polite" data-caption></p>
-      <div class="playback-progress" aria-hidden="true"><div data-motion-progress></div></div><div class="playback"><button class="play-button" data-play aria-label="播放更新过程">▶ 播放</button><div class="step-track" aria-label="演示步骤">${['原有规则','收到新要求','更新并留档'].map((label,i)=>`<button data-frame="${i}" aria-pressed="${i===0}"><span class="step-dot">${i+1}</span>${label}</button>`).join('')}</div><button class="replay-button" data-replay aria-label="回到第一步">↺ 重置</button></div>
-    </section><footer class="motion-foot"><p>MOCK：自建中文案例，更新过程为预设动画。</p><button data-guide="sorting">查看规则与来源 ↗</button></footer></main>
-  </div>`;
+  return `<div class="motion-home case-home">${renderPresentationHeader()}
+    <main id="main" class="motion-main" tabindex="-1"><div class="motion-heading"><h1>帮我整理活动报名表</h1><p>围绕同一件事，看记忆如何形成、更新和再次使用。</p></div>
+    <section class="case-stage" aria-label="报名表记忆故事" data-step="0">
+      <div class="case-message"><div><span class="case-mock">MOCK</span><span data-case-actor></span></div><p data-case-quote></p></div>
+      <div class="case-scene"><article class="case-workbook"><div class="case-workbook-title"><span data-case-batch></span><span class="case-sheet-status" data-case-status></span></div><div class="case-table-wrap"><table><caption class="sr-only">自建报名表，所有选手与成绩均为 MOCK</caption><thead><tr><th scope="col">姓名</th><th scope="col">报名时间</th><th scope="col" data-score-header>成绩</th></tr></thead><tbody data-case-rows></tbody></table></div><div class="case-sheet-tabs"><span>报名数据</span><span><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><rect x="4" y="8" width="12" height="9" rx="2"/><path d="M7 8V5a3 3 0 0 1 6 0v3"/></svg> 说明页 · 保持原样</span></div></article>
+      <aside class="case-memory" aria-label="当前记忆"><h2>这件事留下的记忆</h2><div data-case-memory></div></aside></div>
+      <p class="case-caption" data-caption role="status" aria-live="polite"></p>
+      <div class="playback-progress" aria-hidden="true"><div data-motion-progress></div></div><div class="case-controls"><button class="play-button" data-play aria-label="播放完整故事">▶ 播放</button><div class="case-chapters" aria-label="故事章节">${guideChapters.map((label,i)=>`<button data-chapter="${i}" aria-pressed="${i===0}"><span>${i+1}</span>${label}</button>`).join('')}</div><div class="case-step-controls"><button data-case-prev aria-label="上一步">←</button><span data-case-position></span><button data-case-next aria-label="下一步">→</button><button data-replay aria-label="从头开始">↺</button></div></div>
+    </section><footer class="case-footer"><span>自建连贯故事，操作与结果均为 MOCK，未执行真实记忆写入。</span><details><summary>本幕来源</summary><p data-case-source></p><small>事实与更新沿用已有中文合成指令；排序错误、修正与复用为新编展示过程。原始公开样本保持独立。</small></details></footer></main></div>`;
 }
+
 export function bindDemoGuide(root, onNavigate) {
-  let step = 0, playing = false, timeline = null;
+  let step=0,playing=false,timeline=null,transition=null;
   const select = selector => root.querySelector(selector);
-  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const gsap = window.gsap;
-  // Semantic state is set directly: rendering never waits for animation completion.
-  const paint = () => {
-    const frame = getGuideFrame(step);
-    select('.memory-stage').dataset.step = String(step);
-    select('[data-date]').textContent = frame.date;
-    select('[data-translation]').textContent = frame.translation;
-    select('[data-quote]').textContent = frame.quote;
-    select('[data-value]').textContent = frame.value;
-    select('[data-origin]').textContent = frame.origin;
-    select('[data-flow-label]').textContent = ['已有记忆','传递新要求','新规则生效'][step];
-    select('.history-memory').hidden = !frame.history;
-    select('[data-caption]').textContent = frame.caption;
-    const play = select('[data-play]');
-    play.textContent = playing ? 'Ⅱ 暂停' : step === 2 ? '↻ 重播' : '▶ 播放';
-    play.setAttribute('aria-label', playing ? '暂停更新过程' : step === 2 ? '重播更新过程' : '播放更新过程');
-    play.setAttribute('aria-pressed', String(playing));
-    root.querySelectorAll('[data-frame]').forEach(button => {
-      button.setAttribute('aria-pressed', String(Number(button.dataset.frame) === step));
-      button.classList.toggle('passed', Number(button.dataset.frame) < step);
-    });
-    if(motion.matches || !gsap) select('[data-motion-progress]').style.transform = `scaleX(${step / 2})`;
-  };
-  const stop = () => { timeline?.pause(); playing = false; };
-  const clearVisuals = () => {
-    if(gsap) gsap.set([select('.statement'),select('[data-value]'),select('.history-memory'),select('.flow-packet'),select('[data-motion-progress]')], {clearProps:'all'});
-  };
-  const buildTimeline = () => {
-    timeline?.kill();
-    clearVisuals();
-    if(!gsap) return;
-    const clock = {progress:0};
-    timeline = gsap.timeline({paused:true, defaults:{duration:0.4,ease:'power2.out'},
-      onUpdate: () => {
-        const next = timeline.time() >= 3.45 ? 2 : timeline.time() >= 1.3 ? 1 : 0;
-        if(next !== step) {step=next;paint();}
-      },
-      onComplete: () => {playing=false;step=2;paint();}
-    });
-    timeline.addLabel('recorded',0).addLabel('incoming',1.8).addLabel('updated',4.4);
-    timeline.to(clock,{progress:1,duration:4.4,ease:'none'},0);
-    if(!motion.matches) {
-      timeline.to(select('.statement'),{autoAlpha:0,duration:0.18},1.1)
-        .fromTo(select('.statement'),{autoAlpha:0,y:6},{autoAlpha:1,y:0,immediateRender:false},1.3)
-        .fromTo(select('.flow-packet'),{autoAlpha:0,x:0},{autoAlpha:1,x:0,duration:0.1,immediateRender:false},2.0)
-        .to(select('.flow-packet'),{x:120,duration:0.85,ease:'power1.inOut'},2.1)
-        .to(select('.flow-packet'),{autoAlpha:0,duration:0.15},2.95)
-        .to(select('[data-value]'),{autoAlpha:0,y:14,duration:0.2},3.2)
-        .fromTo(select('[data-value]'),{autoAlpha:0,y:-12},{autoAlpha:1,y:0,immediateRender:false},3.45)
-        .fromTo(select('.history-memory'),{autoAlpha:0,y:-22},{autoAlpha:1,y:0,duration:0.55,immediateRender:false},3.45)
-        .fromTo(select('[data-motion-progress]'),{scaleX:0},{scaleX:1,duration:4.4,ease:'none',immediateRender:false},0);
+  const gsap=window.gsap;
+  const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const animated = () => gsap && !motion.matches;
+  const paint = (animate=false) => {
+    const frame=getGuideFrame(step);
+    const oldPositions=new Map([...root.querySelectorAll('[data-case-row]')].map(row=>[row.dataset.caseRow,row.getBoundingClientRect().top]));
+    transition?.kill();
+    if(gsap)gsap.set(select('.case-memory'),{clearProps:'opacity'});
+    select('.case-stage').dataset.step=String(step);
+    select('[data-case-actor]').textContent=frame.actor;
+    select('[data-case-quote]').textContent=frame.quote;
+    select('[data-case-batch]').textContent=frame.batch;
+    select('[data-case-status]').textContent=frame.status;
+    select('[data-score-header]').textContent=frame.wrong?'成绩 · 文本比较':frame.checked?'成绩 · 数值比较':'成绩';
+    select('[data-case-rows]').innerHTML=frame.rows.map(row=>`<tr data-case-row="${row.id}"><td>${guideEscape(row.name)}</td><td>${guideEscape(row.registered)}</td><td class="${frame.wrong?'score-wrong':frame.checked?'score-checked':''}">${guideEscape(row.score)}</td></tr>`).join('');
+    select('[data-case-memory]').innerHTML=frame.remembered?`<div class="case-memory-item"><small>工作对象</small><strong>活动报名表</strong></div><div class="case-memory-item case-rule"><small>当前排序</small><strong>${guideEscape(frame.rule)}</strong>${frame.history?'<span class="case-old-rule">历史：报名时间倒序</span>':''}</div><div class="case-memory-item"><small>保留要求</small><span>日期格式 YYYY-MM-DD<br>说明页保持原样</span></div>${frame.experience?`<div class="case-experience"><small>${frame.recalled?'找到的方法':'经验候选'} · MOCK</small><strong>先检查成绩类型，再按数值排序</strong><span>${frame.adopted?'本批已采用并检查（MOCK）':frame.recalled?'已找到，尚未采用':'来自上一步的失败与修正，尚未验证泛化'}</span></div>`:''}`:'<p class="case-memory-empty">等待从任务中记下要求。</p>';
+    select('[data-caption]').textContent=frame.caption;
+    select('[data-case-source]').textContent=`${frame.sourceId}：${frame.quote}${frame.wordingId ? `（措辞来自 ${frame.wordingId}，发生顺序为本故事预设）` : ''}`;
+    select('[data-case-position]').textContent=`${step+1} / 8`;
+    select('[data-case-prev]').disabled=step===0;
+    select('[data-case-next]').disabled=step===7;
+    root.querySelectorAll('[data-chapter]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.chapter)===frame.chapter)));
+    select('[data-motion-progress]').style.transform=`scaleX(${step/7})`;
+    updatePlay();
+    if(animate && animated()) {
+      transition=gsap.timeline({defaults:{duration:0.55,ease:'power2.out'}});
+      const targets=[...root.querySelectorAll('[data-case-row]')];
+      targets.forEach(row=>{
+        const old=oldPositions.get(row.dataset.caseRow);
+        transition.fromTo(row,{y:old===undefined?8:old-row.getBoundingClientRect().top,opacity:old===undefined?0:1},{y:0,opacity:1,immediateRender:false},0);
+      });
+      transition.fromTo(select('.case-memory'),{opacity:0.55},{opacity:1,duration:0.35},0);
     }
   };
-  const positions = ['recorded','incoming','updated'];
-  const showFrame = index => {
-    stop();step=index;
-    timeline?.seek(positions[index],true);
-    paint();
+  const updatePlay=()=>{
+    const button=select('[data-play]');
+    button.textContent=playing?'Ⅱ 暂停':step===7?'↻ 重播':'▶ 播放';
+    button.setAttribute('aria-label',playing?'暂停完整故事':step===7?'重播完整故事':'播放完整故事');
+    button.setAttribute('aria-pressed',String(playing));
   };
-  buildTimeline();paint();
-  select('[data-play]').onclick = () => {
-    if(playing) {stop();paint();return;}
-    if(!timeline) {showFrame((step+1)%3);return;}
-    if(step===2) showFrame(0);
-    playing=true;paint();timeline.play();
+  const stop=()=>{playing=false;timeline?.pause();transition?.pause();updatePlay();};
+  const build=()=>{
+    timeline?.kill();
+    if(!gsap)return;
+    const clock={value:0};
+    timeline=gsap.timeline({paused:true,onUpdate:()=>{
+      const next=Math.min(7,Math.floor(timeline.time()/3));
+      if(next!==step){step=next;paint(true);}
+    },onComplete:()=>{playing=false;step=7;paint(false);}});
+    for(let i=0;i<8;i++)timeline.addLabel('step'+i,i*3);
+    timeline.to(clock,{value:1,duration:23,ease:'none'},0);
   };
-  select('[data-replay]').onclick = () => {showFrame(0);select('.statement-source').open=false;};
-  root.querySelectorAll('[data-frame]').forEach(button => button.onclick = () => showFrame(Number(button.dataset.frame)));
-  root.querySelectorAll('[data-guide],[data-nav]').forEach(button => button.onclick = () => {
-    stop();onNavigate(button.dataset.guide ? getGuideTarget(button.dataset.guide) : {page:button.dataset.nav});
-  });
-  const hide = () => {if(document.hidden && playing){stop();paint();}};
-  const changeMotion = () => {const selected=step;stop();buildTimeline();showFrame(selected);};
-  document.addEventListener('visibilitychange',hide);
-  motion.addEventListener('change',changeMotion);
-  return () => {stop();timeline?.kill();document.removeEventListener('visibilitychange',hide);motion.removeEventListener('change',changeMotion);};
+  const show=index=>{
+    stop();step=Math.min(7,Math.max(0,index));
+    timeline?.seek('step'+step,true);paint(true);
+  };
+  build();paint(false);
+  select('[data-play]').onclick=()=>{
+    if(playing){stop();return;}
+    if(!timeline){show((step+1)%8);return;}
+    if(step===7)show(0);
+    playing=true;updatePlay();transition?.play();timeline.play();
+  };
+  select('[data-case-prev]').onclick=()=>show(step-1);
+  select('[data-case-next]').onclick=()=>show(step+1);
+  select('[data-replay]').onclick=()=>show(0);
+  root.querySelectorAll('[data-chapter]').forEach(button=>button.onclick=()=>show(Number(button.dataset.chapter)*2));
+  root.querySelectorAll('[data-guide],[data-nav]').forEach(button=>button.onclick=()=>{stop();onNavigate(button.dataset.guide?getGuideTarget(button.dataset.guide):{page:button.dataset.nav});});
+  const hide=()=>{if(document.hidden&&playing)stop();};
+  const changeMotion=()=>{stop();transition?.kill();paint(false);};
+  document.addEventListener('visibilitychange',hide);motion.addEventListener('change',changeMotion);
+  return()=>{timeline?.kill();transition?.kill();document.removeEventListener('visibilitychange',hide);motion.removeEventListener('change',changeMotion);};
 }
