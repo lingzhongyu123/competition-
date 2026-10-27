@@ -12,7 +12,7 @@ export function getGuideTarget(key) {
 }
 
 const guideEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const guideChapters = ['事实记忆','信息更新','任务经验','经验复用'];
+const guideChapters = ['事实记忆','信息更新','任务经验','复用过程'];
 const guideFirstBatch = [
   {id:'A',name:'选手甲',registered:'09:10',score:'9'},
   {id:'B',name:'选手乙',registered:'09:30',score:'85'},
@@ -40,21 +40,21 @@ export function getGuideFrame(step) {
     : index === 5 ? 'MOCK 修正记录：将成绩按数值比较，重新排序并检查结果。' : again.text;
   return {
     step:index,chapter:Math.floor(index/2),chapterLabel:guideChapters[Math.floor(index/2)],provenance:'mock',
-    quote,displayQuote:index<2?first.text.replace('日期统一为 YYYY-MM-DD。',''):quote,sourceId:index<2?first.id:index<4?changed.id:index===4?'mock-registration-sort-error':index===5?'mock-registration-sort-fix':'mock-registration-next-batch',
+    quote,displayQuote:['时间倒序。','时间倒序。','改为成绩从高到低。','改为成绩从高到低。','提取相关经验。','先检查成绩类型，再按数值排序。','新的一批数据乱序了，按之前的规则整理。','下次遇到乱序，就按规则来。'][index],sourceId:index<2?first.id:index<4?changed.id:index===4?'mock-registration-sort-error':index===5?'mock-registration-sort-fix':'mock-registration-next-batch',
     wordingId:index<2?first.id:index<4?changed.id:index>=6?again.id:null,
-    actor:index===4||index===5?'操作记录':'用户要求（节选）',
+    actor:index===4||index===5?'经验提取':index===7?'复用过程':'用户要求（简述）',
     caption:[
-      '先读任务：整理报名表，保留说明页。',
-      '把工作对象、排序要求和修改范围记下来。',
-      '用户明确改变排序方式；先收到新要求。',
-      '当前排序改为成绩降序，旧规则保留来源。',
-      '出现一次错误：按文本比较，9 被放到了 100 前面。',
-      '改用数值排序；留下“先检查类型”的经验候选。',
-      '新的一批表来了：找到现行规则和旧方法，还未采用。',
-      '沿用成绩降序，采用类型检查，再核对这一批的结果。'
+      '用户要求：时间倒序。',
+      '记住规则：时间倒序。',
+      '用户的要求变了，规则也要变。',
+      '当前规则：成绩从高到低。',
+      '先发现问题：按文本排序，把 9 排在了 100 前面。',
+      '提取相关经验：先检查类型，再按数值排序。',
+      '遇到新一批乱序数据，先找到之前的规则；尚未采用。',
+      '下次遇到乱序，就按规则来。'
     ][index],
     rows,batch:index>=6?'第二批报名数据':'第一批报名数据',
-    remembered:index>=1,rule:index>=3?newRule:oldRule,history:index>=3,
+    remembered:true,rule:index>=3?newRule:oldRule.replace('报名',''),history:index>=3,
     experience:index>=5,recalled:index>=6,adopted:index===7,checked:index===5||index===7,
     wrong:index===4,
     status:['等待整理','已按报名时间排序','等待更新规则','新规则已记住，待执行','发现排序错误','修正后检查符合（MOCK）','找到方法，待采用','采用后检查符合（MOCK）'][index]
@@ -93,7 +93,7 @@ export function bindDemoGuide(root, onNavigate) {
     select('[data-case-status]').textContent=frame.status;
     select('[data-score-header]').textContent=frame.wrong?'成绩 · 文本比较':frame.checked?'成绩 · 数值比较':'成绩';
     select('[data-case-rows]').innerHTML=frame.rows.map(row=>`<tr data-case-row="${row.id}"><td>${guideEscape(row.name)}</td><td>${guideEscape(row.registered)}</td><td class="${frame.wrong?'score-wrong':frame.checked?'score-checked':''}">${guideEscape(row.score)}</td></tr>`).join('');
-    select('[data-case-memory]').innerHTML=frame.remembered?`<div class="case-memory-item case-rule"><strong>${guideEscape(frame.rule)}</strong>${frame.history?'<details class="case-old-rule"><summary>查看旧规则</summary><p>报名时间倒序</p></details>':''}</div>${frame.experience?`<div class="case-experience"><small>${frame.recalled?'找到的方法':'经验候选'} · MOCK</small><strong>先检查成绩类型，再按数值排序</strong><span>${frame.adopted?'本批已采用并检查（MOCK）':frame.recalled?'已找到，尚未采用':'来自刚才的错误与修正，仍是候选'}</span></div>`:''}`:'<p class="case-memory-empty">等待从任务中记下要求。</p>';
+    select('[data-case-memory]').innerHTML=frame.remembered?`<div class="case-memory-item case-rule"><strong>${guideEscape(frame.rule)}</strong>${frame.history?'<details class="case-old-rule"><summary>查看旧规则</summary><p>时间倒序</p></details>':''}</div>${frame.experience?`<div class="case-experience"><small>${frame.recalled?'找到的方法':'经验候选'} · MOCK</small><strong>先检查成绩类型，再按数值排序</strong><span>${frame.adopted?'本批已采用并检查（MOCK）':frame.recalled?'已找到，尚未采用':'来自刚才的错误与修正，仍是候选'}</span></div>`:''}`:'<p class="case-memory-empty">等待从任务中记下要求。</p>';
     select('[data-caption]').textContent=frame.caption;
     select('[data-case-source]').textContent=`${frame.sourceId}：${frame.quote}${frame.wordingId ? `（措辞来自 ${frame.wordingId}，发生顺序为本故事预设）` : ''}`;
     select('[data-case-position]').textContent=`${step+1} / 8`;

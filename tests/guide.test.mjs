@@ -12,9 +12,9 @@ test('one activity has four chapters and later memory does not leak into earlier
     assert.equal(frame.recalled,i>=6);
     assert.equal(frame.adopted,i===7);
   }
-  assert.equal(getGuideFrame(0).remembered,false);
+  assert.equal(getGuideFrame(0).remembered,true);
   assert.equal(getGuideFrame(1).remembered,true);
-  assert.equal(getGuideFrame(2).rule,'报名时间倒序');
+  assert.equal(getGuideFrame(2).rule,'时间倒序');
   assert.equal(getGuideFrame(3).rule,'成绩从高到低');
   assert.equal(getGuideFrame(2).history,false);
   assert.equal(getGuideFrame(3).history,true);
