@@ -31,11 +31,11 @@ function reuse() {
 export function renderOsworldStory(mode = 'formation', options = {}) {
   const selected = mode === 'reuse' ? 'reuse' : 'formation';
   const demo = !!options.demo;
-  return `<div class="story-workspace"><div class="story-heading"><div><h1>${selected === 'formation' ? '经验怎样形成' : '经验怎样复用'}</h1><p>${demo ? 'MOCK · 人工预设过程，逐步查看。' : '公开任务 · 尚无真实执行记录。'}</p></div></div>
+  return `<div class="story-workspace"><div class="story-heading"><div><h1>${selected === 'formation' ? '经验怎样形成' : '经验怎样复用'}</h1><p>${demo ? 'MOCK · 把工时换成小时，再算报酬。' : '公开任务定义 · 过程与本页 MOCK 分开。'}</p></div></div>
   <div class="story-toolbar"><div class="story-tabs" role="group" aria-label="选择展示故事"><button data-story="formation" aria-pressed="${selected === 'formation'}">经验形成</button><button data-story="reuse" aria-pressed="${selected === 'reuse'}">经验复用</button></div>
   <div class="story-view-switch" role="group" aria-label="资料与演示模式"><button data-story-view="mock" aria-pressed="${demo}">MOCK 逐步演示</button><button data-story-view="sources" aria-pressed="${!demo}">官方任务</button></div></div>
   ${demo ? renderMockStory(selected, options.step, options.scenario) : `<section class="story-focus"><h2>${selected === 'formation' ? '完成任务，留下方法和依据。' : '借鉴流程，重新判断条件。'}</h2><p>${selected === 'formation' ? '工时是时间值，时薪是数字。先统一单位，再计算金额。' : '收入汇总和发票统计都用透视表，但求和不能直接照搬成计数。'}</p><div class="story-flow">${(selected === 'formation' ? ['任务输入','动作与修正','产物检查','经验候选'] : ['来源经验','适用条件','执行采用','结果核验']).map((label,i)=>`<div><span>0${i+1}</span><strong>${label}</strong></div>`).join('')}</div><p class="story-note">仅有任务定义；过程与结果尚未采集。可切换到 MOCK 逐步演示查看页面效果。</p></section>`}
   <details class="story-data"><summary>任务原文与资料状态</summary><p>已有一条本机真实失败记录，两次操作后官方评分均为 0.0；尚未接入本页。<a href="https://github.com/lingzhongyu123/competition-/blob/main/docs/OSWorld-%E6%9C%AC%E6%9C%BA%E8%BF%90%E8%A1%8C%E8%AE%B0%E5%BD%95.md" target="_blank" rel="noreferrer">查看运行记录 ↗</a></p>${selected === 'formation' ? formation() : reuse()}</details>
   <details class="story-data"><summary>接入所需记录</summary><p>任务 ID、运行 ID、动作与状态、产物检查、经验候选与来源、注入和采用引用。没有证据时保持未知。</p></details>
-  <footer class="story-footer">${demo ? 'MOCK 演示，未执行 OSWorld 或真实记忆写入。' : '任务定义不代表执行结果；尚无本项目的 OSWorld 评测。'}</footer></div>`;
+  <footer class="story-footer">${demo ? 'MOCK 演示，未执行 OSWorld 或真实记忆写入。' : '任务定义不能作为完成凭据；已有本机失败记录，未接入此图。'}</footer></div>`;
 }

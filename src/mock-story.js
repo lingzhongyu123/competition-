@@ -1,5 +1,3 @@
-const mockLabels = ['来源案例', '适用性判断', '注入与采用', '结果核验'];
-const mockFormationLabels = ['任务输入', '动作与修正', '产物检查', '经验候选'];
 const mockVariants = { injected: '只有注入记录', adopted: '看到执行采用', checked: '看到产物核验', blocked: '条件不符' };
 
 export function getMockReuseEvidence(step = 0, variant = 'injected') {
@@ -12,30 +10,43 @@ export function getMockReuseEvidence(step = 0, variant = 'injected') {
   return { stage, scenario, selected, injected, adopted, checked, rejected: stage >= 1 && scenario === 'blocked' };
 }
 
+// Both parts share the same authored hours example; public OSWorld definitions remain separate.
+function mockMetric(label,value,unit='') {
+  return `<div class="demo-metric"><span>${label}</span><strong>${value}</strong>${unit?`<small>${unit}</small>`:''}</div>`;
+}
+function mockArrow(label='') {
+  return `<div class="demo-arrow" aria-hidden="true">→${label?`<small>${label}</small>`:''}</div>`;
+}
+function mockHours(time,hours,result,showResult=true) {
+  return `<div class="hours-equation" aria-label="${time} 换算为 ${hours} 小时${showResult?'，乘以每小时 40，得到 '+result:''}"><div class="hours-conversion">${mockMetric('表格时间',time)}${mockArrow('换算')}${mockMetric('十进制小时',hours,'小时')}</div>${showResult?`<span class="demo-operator" aria-hidden="true">×</span><div class="hours-product">${mockMetric('每小时报酬','40')}${mockArrow()}${mockMetric('金额',result)}</div>`:''}</div>`;
+}
+function mockMethod() {
+  return '<div class="demo-method"><span>留下的方法 · MOCK 候选</span><strong>先统一单位，再算金额</strong><p>时间值换成小时；已经是小时就直接计算。</p></div>';
+}
 function mockFormation(stage) {
   const screens = [
-    `<h3>先看这次任务的输入</h3><p>借用“时间值工时 × 数值时薪”这个问题类型。下面的数字、表格和记录均由设计者编写。</p><table><caption>MOCK 输入表 · 自建示例</caption><thead><tr><th>累计工时</th><th>每小时报酬</th><th>目标</th></tr></thead><tbody><tr><td>08:30</td><td>40</td><td>计算金额，保留其他区域</td></tr></tbody></table><details class="mock-evidence"><summary>查看来源与说明</summary>MOCK 来源：mock-run-hours · 输入快照 01<br>实际 OSWorld 文件与 Agent 执行：未取得</details>`,
-    `<h3>把失败与修正一起留下</h3><ol class="mock-events"><li><code>mock-step-01</code><strong>检查输入类型</strong><p>累计工时按时间值存储；时薪是普通数值。</p></li><li><code>mock-step-02</code><strong>发现单位不一致</strong><p>预设失败动作：直接相乘，没有把时间值换算成小时。</p></li><li><code>mock-step-03</code><strong>修正计算方式</strong><p>预设修正动作：先转换为 8.5 小时，再按每小时 40 计算。</p></li></ol><details class="mock-evidence"><summary>查看来源与说明</summary>以上是人工编写的 MOCK 事件，未操作任何工作簿。</details>`,
-    `<h3>检查产物，才讨论方法是否有效</h3><table><caption>MOCK 产物摘要 · 预设记录</caption><thead><tr><th>检查项</th><th>示例期望</th><th>预设结果</th></tr></thead><tbody><tr><td>金额</td><td>8.5 × 40 = 340</td><td>MOCK 符合</td></tr><tr><td>无关区域</td><td>保持原样</td><td>MOCK 符合</td></tr></tbody></table><p>这里只展示检查记录的页面形式，没有生成或核验真实文件。</p><details class="mock-evidence"><summary>查看来源与说明</summary>MOCK 引用：mock-check-hours → mock-step-03 → mock-run-hours</details>`,
-    `<h3>形成带条件的经验候选</h3><dl class="mock-fields"><dt>候选</dt><dd>先核对时间值与业务单位，再计算金额</dd><dt>适用</dt><dd>输入确为表格时间值，另一项是每小时报酬</dd><dt>排除</dt><dd>工时已经是十进制小时；输入是含义不明的文本</dd><dt>来源</dt><dd>mock-run-hours / mock-step-01～03 / mock-check-hours</dd><dt>状态</dt><dd>MOCK 候选，未写入真实经验库</dd></dl><p>这条候选保留失败原因和检查来源，不能作为已证明可泛化的策略。</p>`
+    `<h3>这次，要算出多少报酬？</h3><div class="hours-equation hours-input">${mockMetric('累计工时','08:30','表格时间值')}<span class="demo-operator" aria-hidden="true">×</span>${mockMetric('每小时报酬','40')}${mockArrow()}${mockMetric('金额','?','待计算')}</div><p class="demo-takeaway">时间值不能直接当小时数。</p>`,
+    `<h3>问题出在单位，先换成小时</h3><div class="demo-error-line"><span>直接相乘</span><s>14.17</s><strong>单位未换算</strong></div>${mockHours('08:30','8.5','340')}<p class="demo-takeaway">08:30 是 8.5 小时。</p>`,
+    `<h3>算对了，还要检查其他区域</h3>${mockHours('08:30','8.5','340')}<div class="demo-checks"><span>✓ 金额 340</span><span>✓ 无关区域未改</span><small>均为 MOCK 预设检查</small></div>`,
+    `<h3>留下方法，下次少走弯路</h3><div class="demo-learning"><div><span>这次的错误</span><strong>把时间值当小时数</strong></div>${mockArrow()}${mockMethod()}</div><p class="demo-takeaway">只适用于工时与时薪计算；输入含义不明时先确认。</p>`
   ];
   return screens[stage];
 }
-
 function mockReuse(e) {
-  if (e.stage === 0) return `<h3>来源是一条自建的透视表案例</h3><p>用产品收入任务启发示例，但下面的案例、动作和检查记录均为 MOCK。</p><dl class="mock-fields"><dt>来源案例</dt><dd>mock-case-pivot-v1</dd><dt>预设动作</dt><dd>识别字段 → 新建工作表 → 按产品汇总收入 → 核对汇总</dd><dt>可借鉴部分</dt><dd>确认行字段、数据字段、聚合方式和输出位置的检查流程</dd><dt>来源记录</dt><dd>mock-run-revenue / mock-step-pivot / mock-check-revenue</dd></dl><details class="mock-evidence"><summary>查看来源与说明</summary>来源任务没有真实运行记录；此案例仅供解释经验结构。</details>`;
-  if (e.stage === 1) return `<h3>目标是计数，先判断能否借鉴</h3><table><caption>MOCK 条件检查</caption><thead><tr><th>条件</th><th>来源 → 目标</th><th>判断</th></tr></thead><tbody><tr><td>可操作的表格</td><td>${e.rejected ? 'Calc → 仅一张截图' : 'Calc → Calc'}</td><td>${e.rejected ? '不满足' : '符合'}</td></tr><tr><td>输出位置</td><td>新工作表 → 新工作表</td><td>共同点</td></tr><tr><td>统计方式</td><td>收入求和 → 发票次数</td><td>必须改为计数</td></tr></tbody></table><details class="mock-evidence"><summary>查看来源与说明</summary>${e.rejected ? 'MOCK 决策：排除该候选。只有截图，无法确认可编辑字段和数据区域；不注入、不自动执行。' : 'MOCK 决策：选中流程候选，重新确定 Invoice No. 字段和 Count；不复制来源金额、公式或结果。'}</details><p>“只有截图”是人为增加的反例条件，不是官方发票任务的描述。</p>`;
-  if (e.stage === 2) return `<h3>逐项核对注入与动作引用</h3><dl class="mock-fields"><dt>候选选择</dt><dd>${e.selected ? 'MOCK 选中 mock-strategy-pivot-v1' : 'MOCK 排除：条件不满足'}</dd><dt>注入片段</dt><dd>${e.injected ? 'MOCK：先确认数据区域与字段含义，按目标选择聚合方式，在新工作表输出并核验。' : '未注入'}</dd><dt>动作引用</dt><dd>${e.adopted ? 'MOCK mock-action-count 引用 mock-strategy-pivot-v1：将 Invoice No. 作为分组字段并使用计数。' : '无动作引用记录'}</dd><dt>当前结论</dt><dd>${e.rejected ? '候选被拒绝，未执行' : e.adopted ? 'MOCK 记录了采用；产物核验尚未展示' : '仅有 MOCK 注入记录，采用情况未知'}</dd></dl><details class="mock-evidence"><summary>查看来源与说明</summary>动作引用是预设的可观察事件示例，不展示或推断模型隐藏思考。</details>`;
-  return `<h3>${e.checked ? '有核验记录，才展示这次结果' : e.rejected ? '拒绝复用也是完整的决策' : '证据停在哪里，结论就停在哪里'}</h3>${e.checked ? `<table><caption>MOCK 发票输入与产物 · 自建三行示例</caption><thead><tr><th>输入</th><th>预设输出</th></tr></thead><tbody><tr><td>A-01、A-01、B-02</td><td>A-01：2 次；B-02：1 次</td></tr></tbody></table><details class="mock-evidence"><summary>查看来源与说明</summary>MOCK mock-check-count：预设计数检查符合；不是 OSWorld evaluator 结果。</details><p>这段示例展示“有采用记录 + 有产物检查”的页面形式。没有真实 Memory ON/OFF 对照，不能据此报告收益。</p>` : `<div class="mock-result">${e.rejected ? 'MOCK 条件不满足 → 未注入 → 未执行 → 无结果' : e.adopted ? 'MOCK 已记录采用；缺少产物检查，结果未知。' : 'MOCK 已注入；采用与结果均未知。'}</div><p>缺少的记录保持未知，不补成通过。</p>`}`;
+  if (e.stage===0) return `<h3>换一批工时，还能用刚才的方法吗？</h3><div class="demo-learning">${mockMethod()}${mockArrow()}<div class="demo-new-task"><span>新任务 · MOCK</span><strong>09:15 × 40</strong><p>先判断，暂不计算。</p></div></div>`;
+  if (e.stage===1) return `<h3>${e.rejected?'条件不同，先停下来':'先核对条件，再选方法'}</h3><div class="demo-condition"><div><span>输入</span><strong>${e.rejected?'只有一张截图':'可编辑的工时表'}</strong></div><div><span>工时类型</span><strong>${e.rejected?'无法确认':'表格时间值'}</strong></div><div><span>报酬单位</span><strong>每小时</strong></div></div><p class="demo-decision ${e.rejected?'is-blocked':''}">${e.rejected?'× 条件不符，不注入、不执行':'✓ 条件相符，选中“先统一单位”'}</p><p class="demo-takeaway">${e.rejected?'截图是自建反例，无法据此确认单元格类型。':'09:15 先换成 9.25 小时，不能直接相乘。'}</p>`;
+  if (e.stage===2) return `<h3>${e.rejected?'没有合适条件，就不采用':e.adopted?'执行中采用了这条方法':'找到并注入，还不等于采用'}</h3><div class="demo-evidence-chain">${[['找到方法',e.selected],['注入任务',e.injected],['执行采用',e.adopted]].map(([label,done],i)=>`${i?mockArrow():''}<div class="demo-evidence-node ${done?'is-present':''}"><span>${done?'✓':'—'}</span><strong>${label}</strong><small>${done?'MOCK 有记录':e.rejected?'未发生':'尚无记录'}</small></div>`).join('')}</div><p class="demo-takeaway">${e.rejected?'候选被拒绝，未执行。':e.adopted?'预设动作：9.25 × 40；还未展示产物检查。':'仅有 MOCK 注入记录，采用情况未知。'}</p>`;
+  return `<h3>${e.checked?'新任务也完成了换算与检查':e.rejected?'不满足条件，就不复用':'缺少记录，结果保持未知'}</h3>${e.checked?`${mockHours('09:15','9.25','370')}<div class="demo-checks"><span>✓ 已采用方法</span><span>✓ 金额 370</span><small>MOCK 预设结果，不是 OSWorld evaluator 结果</small></div>`:`<div class="demo-unknown"><strong>${e.rejected?'未执行':'结果未知'}</strong><p>${e.rejected?'未注入 → 未执行 → 无结果':e.adopted?'缺少产物检查，结果未知。':'已注入；采用与结果均未知。'}</p></div>`}`;
 }
-
 export function renderMockStory(mode = 'formation', step = 0, variant = 'injected') {
-  const e = getMockReuseEvidence(step, variant);
-  const reuse = mode === 'reuse';
-  const labels = reuse ? mockLabels : mockFormationLabels;
-  return `<section class="mock-playback" aria-label="MOCK 逐步演示"><details class="mock-warning"><summary>MOCK · 人工预设演示</summary><p>下面的输入、案例、动作、引用和结果均为自建示例；没有执行 OSWorld、调用 Memory 或生成真实文件。</p></details>
-  ${reuse ? `<label class="mock-scenario">查看哪种证据情况？<select id="mock-scenario">${Object.entries(mockVariants).map(([id,label])=>`<option value="${id}" ${id===e.scenario?'selected':''}>${label}</option>`).join('')}</select></label>` : ''}
-  <div class="mock-steps" role="group" aria-label="选择演示步骤">${labels.map((label,index)=>`<button data-mock-step="${index}" aria-pressed="${e.stage===index}"><small>0${index+1}</small>${label}</button>`).join('')}</div>
-  <article class="mock-detail" aria-live="polite"><span class="story-badge caution">MOCK · 第 ${e.stage+1} / 4 步</span>${reuse ? mockReuse(e) : mockFormation(e.stage)}</article>
-  <div class="mock-controls"><button data-mock-step="${e.stage-1}" ${e.stage===0?'disabled':''}>← 上一步</button><span>可直接点击上方步骤查看</span><button data-mock-step="${e.stage===3?0:e.stage+1}">${e.stage===3?'从头查看 ↺':'下一步 →'}</button></div></section>`;
+  const e=getMockReuseEvidence(step,variant),reuse=mode==='reuse';
+  const labels=reuse?['找到方法','核对条件','是否采用','检查结果']:['任务输入','错误与修正','检查结果','留下方法'];
+  return `<section class="mock-playback" aria-label="MOCK 逐步演示">
+  <div class="mock-steps" role="group" aria-label="选择演示步骤">${labels.map((label,index)=>`<button data-mock-step="${index}" aria-pressed="${e.stage===index}"><small>${index+1}</small>${label}</button>`).join('')}</div>
+  <article class="mock-detail audience-task" aria-live="polite"><span class="sr-only">MOCK · 第 ${e.stage+1} / 4 步</span>${reuse?mockReuse(e):mockFormation(e.stage)}</article>
+  <div class="mock-controls"><button data-mock-step="${e.stage-1}" ${e.stage===0?'disabled':''}>← 上一步</button><span>${e.stage+1} / 4</span><button data-mock-step="${e.stage===3?0:e.stage+1}">${e.stage===3?'从头查看 ↺':'下一步 →'}</button></div>
+  ${!reuse&&e.stage===3?'<button class="demo-next-story" data-story="reuse">用这条方法，看看新任务 →</button>':''}
+  ${reuse?`<details class="demo-scenario"><summary>切换证据情况 · ${mockVariants[e.scenario]}</summary><label class="mock-scenario">展示情形<select id="mock-scenario">${Object.entries(mockVariants).map(([id,label])=>`<option value="${id}" ${id===e.scenario?'selected':''}>${label}</option>`).join('')}</select></label></details>`:''}
+  <details class="mock-warning"><summary>MOCK · 人工预设演示</summary><p>同一工时示例贯穿经验形成与复用。输入、动作和检查均为自建；没有执行 OSWorld、调用 Memory 或生成真实文件。</p></details>
+  <details class="mock-evidence"><summary>查看来源与说明</summary><p>MOCK 来源：mock-run-hours、mock-check-hours；复用为自建 mock-run-hours-next，候选 mock-strategy-hours。没有真实经验库写入或 Memory ON/OFF 收益证明。实际 OSWorld 工时任务的失败记录保持独立，见下方任务资料。</p></details></section>`;
 }

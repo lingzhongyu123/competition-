@@ -69,7 +69,7 @@ export function renderPresentationHeader() {
 export function renderStoryContext(page) {
   if(page!=='sources' && page!=='osworld') return '';
   const dialogue=page==='sources';
-  return `<aside class="story-context" aria-label="与首页故事的关系"><div><strong>${dialogue?'记住要求 → 更新规则':'留下方法 → 下次采用'}</strong><p>${dialogue?'这里用 LongMemEval 原始对话，补充说明事实从哪来、后来怎样变化。':'这里用任务草图，补充说明经验如何形成，以及找到后是否真正采用。'}与首页报名表是独立案例。</p></div><div class="story-context-links">${dialogue?'<button data-guide="chapter0">回到事实记忆</button><button data-guide="chapter1">回到信息更新</button>':'<button data-guide="chapter2">回到任务经验</button><button data-guide="chapter3">回到复用过程</button>'}</div></aside>`;
+  return `<aside class="story-context" aria-label="与首页故事的关系"><div><strong>${dialogue?'记住要求 → 更新规则':'留下方法 → 下次采用'}</strong><p>${dialogue?'LongMemEval 公开对话示例':'MOCK 任务示例'} · 与首页报名表是独立案例。</p></div><div class="story-context-links">${dialogue?'<button data-guide="chapter0">回到事实记忆</button><button data-guide="chapter1">回到信息更新</button>':'<button data-guide="chapter2">回到任务经验</button><button data-guide="chapter3">回到复用过程</button>'}</div></aside>`;
 }
 export function renderDemoGuide() {
   return `<div class="motion-home case-home">${renderPresentationHeader()}

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { getSourceView, renderSourceBrowser } from '../src/source-browser.js';
+import { getSourceView, renderSourceBrowser, getSourceExcerpt } from '../src/source-browser.js';
 
 const data = JSON.parse(readFileSync(new URL('../data/longmemeval/展示样本-原始会话.json', import.meta.url), 'utf8'));
 
@@ -54,4 +54,14 @@ test('invalid routes fall back safely and sample search has an honest empty stat
   const html = renderSourceBrowser('e47becba', 1, '不存在的样本');
   assert.match(html, /没有匹配的样本/);
   assert.doesNotMatch(html, /source-record-title/);
+});
+
+
+test('visible excerpts are exact original substrings rather than rewritten quotations', () => {
+  for(const sample of data.cases) for(const [si,ti] of sample.anchors) {
+    const original=sample.sessions[si].turns[ti].content;
+    const excerpt=getSourceExcerpt(sample.id,original);
+    assert.ok(original.includes(excerpt));
+    assert.ok(excerpt.length < original.length);
+  }
 });
