@@ -6,7 +6,7 @@
 
 iframe 不具备同源权限；这是演示挂载，不代表 Console 页面已读取 DSH/Memory 的实时数据。DSH 原生 Memory 插件在两条合成模型任务中自动保存了事实偏好；新会话轨迹可见该偏好被检索并注入，上下文与回答一致。经验 episode 有 2 条但技能为 0，尚未验证经验复用或效果收益。当前主题只覆盖经 DSH `theme.overrideTokens()` 支持的颜色 token，按钮关闭或卸载伴随插件时释放覆盖；它不是麒麟官方主题，也不修改团队仓库的 DSH 源码。固定版本和可复现构建见 [插件说明](../plugins/memory-console-dsh/README.md)。
 
-本机 Docker 引擎恢复；OSWorld 官方 Ubuntu 虚拟机镜像仍在下载，容器内没有 `/dev/kvm`。所以尚无 OSWorld 任务轨迹、官方评分或记忆 ON/OFF 收益。此边界与上面的页面挂载验证分开。
+后续已在无 `/dev/kvm` 的本机 Docker 中运行 OSWorld 官方 Ubuntu 虚拟机和工时任务，取得一次未触碰基线及两次失败动作的官方评分，均为 0.0。DSH 模型仅根据转写的屏幕文字建议公式，OSWorld 动作由外部操作分别执行；没有建立 DSH Agent 自动控制 OSWorld 的链路，也没有记忆 ON/OFF 收益。详见[本机运行记录](OSWorld-本机运行记录.md)。此边界与上面的页面挂载验证分开。
 
 > 2026-10-25 源码核查：用户提供 dsh-advanced-mem-plugin 仓库后，核对了 0.3.0 / DSH 0.2.1-rc.2 的兼容基线、原生配置页入口、Memory 程序接口和 OSWorld bridge。详见 [源码核查与接入清单](Memory插件-源码核查与接入清单.md)。2026-10-26 的本机挂载实测见上；团队实际部署及实时 Memory 联调仍未完成。
 
