@@ -51,3 +51,15 @@ test('rewinding restores the earlier batch and callers cannot mutate the story f
   assert.equal(getGuideFrame(-100).step,0);
   assert.equal(getGuideFrame(100).step,7);
 });
+
+
+test('the active rule column does not certify an unsorted or erroneous table as sorted', () => {
+  assert.equal(getGuideFrame(0).activeColumn,'registered');
+  assert.equal(getGuideFrame(0).sortedColumn,null);
+  assert.equal(getGuideFrame(1).sortedColumn,'registered');
+  assert.equal(getGuideFrame(3).activeColumn,'score');
+  assert.equal(getGuideFrame(3).sortedColumn,'registered');
+  assert.equal(getGuideFrame(4).sortedColumn,null);
+  assert.equal(getGuideFrame(6).sortedColumn,null);
+  assert.equal(getGuideFrame(7).sortedColumn,'score');
+});

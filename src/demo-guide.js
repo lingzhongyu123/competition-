@@ -40,7 +40,7 @@ export function getGuideFrame(step) {
     : index === 5 ? 'MOCK 修正记录：将成绩按数值比较，重新排序并检查结果。' : again.text;
   return {
     step:index,chapter:Math.floor(index/2),chapterLabel:guideChapters[Math.floor(index/2)],provenance:'mock',
-    quote,displayQuote:['时间倒序。','时间倒序。','改为成绩从高到低。','改为成绩从高到低。','提取相关经验。','先检查成绩类型，再按数值排序。','新的一批数据乱序了，按之前的规则整理。','下次遇到乱序，就按规则来。'][index],sourceId:index<2?first.id:index<4?changed.id:index===4?'mock-registration-sort-error':index===5?'mock-registration-sort-fix':'mock-registration-next-batch',
+    quote,displayQuote:['时间倒序。','时间倒序。','改为成绩从高到低。','改为成绩从高到低。','提取相关经验。','修正完成，记下这次的方法。','新的一批数据乱序了，按之前的规则整理。','下次遇到乱序，就按规则来。'][index],sourceId:index<2?first.id:index<4?changed.id:index===4?'mock-registration-sort-error':index===5?'mock-registration-sort-fix':'mock-registration-next-batch',
     wordingId:index<2?first.id:index<4?changed.id:index>=6?again.id:null,
     actor:index===4||index===5?'经验提取':index===7?'复用过程':'用户要求（简述）',
     caption:[
@@ -57,7 +57,9 @@ export function getGuideFrame(step) {
     remembered:true,rule:index>=3?newRule:oldRule.replace('报名',''),history:index>=3,
     experience:index>=5,recalled:index>=6,adopted:index===7,checked:index===5||index===7,
     wrong:index===4,
-    status:['等待整理','已按报名时间排序','等待更新规则','新规则已记住，待执行','发现排序错误','修正后检查符合（MOCK）','找到方法，待采用','采用后检查符合（MOCK）'][index]
+    activeColumn:index>=3?'score':'registered',
+    sortedColumn:index>=1&&index<=3?'registered':index===5||index===7?'score':null,
+    status:['待排序','已排序','要求已变','等待按新规则排序','排序有误：9 在 100 前','已修正 · MOCK','找到方法，待采用','已采用并检查 · MOCK'][index]
   };
 }
 export function renderPresentationHeader() {
@@ -65,18 +67,18 @@ export function renderPresentationHeader() {
 }
 export function renderDemoGuide() {
   return `<div class="motion-home case-home">${renderPresentationHeader()}
-    <main id="main" class="motion-main" tabindex="-1"><div class="motion-heading"><h1>帮我整理活动报名表</h1><p>围绕同一件事，看记忆如何形成、更新和再次使用。</p></div>
-    <section class="case-stage" aria-label="报名表记忆故事" data-step="0">
+    <main id="main" class="motion-main" tabindex="-1"><div class="motion-heading"><h1>帮我整理活动报名表</h1></div>
+    <section class="case-stage" aria-label="报名表记忆故事" data-step="0"><div class="case-chapters" aria-label="故事章节">${guideChapters.map((label,i)=>`<button data-chapter="${i}" aria-pressed="${i===0}"><span>${i+1}</span>${label}</button>`).join('')}</div>
       <div class="case-message"><div><span class="case-mock">MOCK</span><span data-case-actor></span></div><p data-case-quote></p></div>
-      <div class="case-scene"><article class="case-workbook"><div class="case-workbook-title"><span data-case-batch></span><span class="case-sheet-status" data-case-status></span></div><div class="case-table-wrap"><table><caption class="sr-only">自建报名表，所有选手与成绩均为 MOCK</caption><thead><tr><th scope="col">姓名</th><th scope="col">报名时间</th><th scope="col" data-score-header>成绩</th></tr></thead><tbody data-case-rows></tbody></table></div><div class="case-sheet-tabs"><span>报名数据</span><span><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><rect x="4" y="8" width="12" height="9" rx="2"/><path d="M7 8V5a3 3 0 0 1 6 0v3"/></svg> 说明页 · 保持原样</span></div></article>
+      <div class="case-scene"><article class="case-workbook"><div class="case-workbook-title"><span data-case-batch></span><span class="case-sheet-status" data-case-status></span></div><div class="case-table-wrap"><table><caption class="sr-only">自建报名表，所有选手与成绩均为 MOCK</caption><thead><tr><th scope="col">姓名</th><th scope="col" data-time-header>报名时间</th><th scope="col" data-score-header>成绩</th></tr></thead><tbody data-case-rows></tbody></table></div></article>
       <aside class="case-memory" aria-label="当前记忆"><h2>当前规则</h2><div data-case-memory></div></aside></div>
-      <p class="case-caption" data-caption role="status" aria-live="polite"></p>
-      <div class="playback-progress" aria-hidden="true"><div data-motion-progress></div></div><div class="case-controls"><button class="play-button" data-play aria-label="播放完整故事">▶ 播放</button><div class="case-chapters" aria-label="故事章节">${guideChapters.map((label,i)=>`<button data-chapter="${i}" aria-pressed="${i===0}"><span>${i+1}</span>${label}</button>`).join('')}</div><div class="case-step-controls"><button data-case-prev aria-label="上一步">←</button><span data-case-position></span><button data-case-next aria-label="下一步">→</button><button data-replay aria-label="从头开始">↺</button></div></div>
-    </section><footer class="case-footer"><span>自建连贯故事，操作与结果均为 MOCK，未执行真实记忆写入。</span><details><summary>本幕来源</summary><p data-case-source></p><small>事实与更新沿用已有中文合成指令；排序错误、修正与复用为新编展示过程。原始公开样本保持独立。</small></details></footer></main></div>`;
+      <p class="sr-only" data-caption role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="playback-progress" aria-hidden="true"><div data-motion-progress></div></div><div class="case-controls"><button class="play-button" data-play aria-label="播放完整故事">▶ 播放</button><div class="case-step-controls"><button data-case-prev aria-label="上一步">←</button><span data-case-position></span><button data-case-next aria-label="下一步">→</button><button data-replay aria-label="从头开始">↺</button></div></div>
+    </section><footer class="case-footer"><span>MOCK 演示，不代表真实执行。</span><details><summary>本幕来源</summary><p data-case-source></p><small>事实与更新沿用已有中文合成指令；排序错误、修正与复用为新编展示过程。原始公开样本保持独立。</small></details></footer></main></div>`;
 }
 
 export function bindDemoGuide(root, onNavigate) {
-  let step=0,playing=false,timeline=null,transition=null;
+  let step=0,playing=false,timeline=null,transition=null,previousFrame=null;
   const select = selector => root.querySelector(selector);
   const gsap=window.gsap;
   const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -91,8 +93,13 @@ export function bindDemoGuide(root, onNavigate) {
     select('[data-case-quote]').textContent=frame.displayQuote;
     select('[data-case-batch]').textContent=frame.batch;
     select('[data-case-status]').textContent=frame.status;
-    select('[data-score-header]').textContent=frame.wrong?'成绩 · 文本比较':frame.checked?'成绩 · 数值比较':'成绩';
-    select('[data-case-rows]').innerHTML=frame.rows.map(row=>`<tr data-case-row="${row.id}"><td>${guideEscape(row.name)}</td><td>${guideEscape(row.registered)}</td><td class="${frame.wrong?'score-wrong':frame.checked?'score-checked':''}">${guideEscape(row.score)}</td></tr>`).join('');
+    for(const [key,selector,label] of [['registered','[data-time-header]','报名时间'],['score','[data-score-header]','成绩']]) {
+      const header=select(selector),active=frame.activeColumn===key;
+      header.innerHTML=`${label}${active?'<span class="case-sort-arrow" aria-hidden="true">↓</span>':''}${key==='score'&&frame.wrong?'<small>文本</small>':''}`;
+      header.classList.toggle('case-col-active',active);
+      header.setAttribute('aria-sort',frame.sortedColumn===key?'descending':'none');
+    }
+    select('[data-case-rows]').innerHTML=frame.rows.map(row=>`<tr data-case-row="${row.id}"><td>${guideEscape(row.name)}</td><td class="${frame.activeColumn==='registered'?'case-col-active':''}">${guideEscape(row.registered)}</td><td class="${frame.wrong?'score-wrong':frame.checked?'score-checked':frame.activeColumn==='score'?'case-col-active':''}">${guideEscape(row.score)}</td></tr>`).join('');
     select('[data-case-memory]').innerHTML=frame.remembered?`<div class="case-memory-item case-rule"><strong>${guideEscape(frame.rule)}</strong>${frame.history?'<details class="case-old-rule"><summary>查看旧规则</summary><p>时间倒序</p></details>':''}</div>${frame.experience?`<div class="case-experience"><small>${frame.recalled?'找到的方法':'经验候选'} · MOCK</small><strong>先检查成绩类型，再按数值排序</strong><span>${frame.adopted?'本批已采用并检查（MOCK）':frame.recalled?'已找到，尚未采用':'来自刚才的错误与修正，仍是候选'}</span></div>`:''}`:'<p class="case-memory-empty">等待从任务中记下要求。</p>';
     select('[data-caption]').textContent=frame.caption;
     select('[data-case-source]').textContent=`${frame.sourceId}：${frame.quote}${frame.wordingId ? `（措辞来自 ${frame.wordingId}，发生顺序为本故事预设）` : ''}`;
@@ -107,10 +114,13 @@ export function bindDemoGuide(root, onNavigate) {
       const targets=[...root.querySelectorAll('[data-case-row]')];
       targets.forEach(row=>{
         const old=oldPositions.get(row.dataset.caseRow);
-        transition.fromTo(row,{y:old===undefined?8:old-row.getBoundingClientRect().top,opacity:old===undefined?0:1},{y:0,opacity:1,immediateRender:false},0);
+        const delta=old===undefined?8:old-row.getBoundingClientRect().top;
+        if(old===undefined||Math.abs(delta)>0.5)transition.fromTo(row,{y:delta,opacity:old===undefined?0:1},{y:0,opacity:1,immediateRender:false},0);
       });
-      transition.fromTo(select('.case-memory'),{opacity:0.55},{opacity:1,duration:0.35},0);
+      if(previousFrame?.rule!==frame.rule)transition.fromTo(select('.case-rule'),{opacity:0.4,y:5},{opacity:1,y:0,duration:0.35},0);
+      if(frame.experience&&!previousFrame?.experience)transition.fromTo(select('.case-experience'),{opacity:0,y:6},{opacity:1,y:0,duration:0.4},0);
     }
+    previousFrame=frame;
   };
   const updatePlay=()=>{
     const button=select('[data-play]');
