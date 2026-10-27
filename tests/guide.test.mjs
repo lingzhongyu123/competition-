@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getGuideFrame, getGuideTarget } from '../src/demo-guide.js';
+import { getGuideFrame, getGuideTarget, renderStoryContext } from '../src/demo-guide.js';
 import { evidence } from '../src/data.js';
 
 test('one activity has four chapters and later memory does not leak into earlier stages', () => {
@@ -62,4 +62,15 @@ test('the active rule column does not certify an unsorted or erroneous table as 
   assert.equal(getGuideFrame(4).sortedColumn,null);
   assert.equal(getGuideFrame(6).sortedColumn,null);
   assert.equal(getGuideFrame(7).sortedColumn,'score');
+});
+
+
+test('supporting materials return to the matching chapter without merging independent evidence', () => {
+  for(let i=0;i<4;i++) assert.deepEqual(getGuideTarget('chapter'+i),{page:'guide',guideStep:i*2});
+  assert.match(renderStoryContext('sources'),/LongMemEval/);
+  assert.match(renderStoryContext('sources'),/chapter1/);
+  assert.doesNotMatch(renderStoryContext('sources'),/chapter3/);
+  assert.match(renderStoryContext('osworld'),/chapter3/);
+  assert.match(renderStoryContext('osworld'),/独立案例/);
+  assert.equal(renderStoryContext('import'),'');
 });

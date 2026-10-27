@@ -3,7 +3,7 @@ import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
 import { publicTasks } from './public-tasks.js';
 import { renderSourceBrowser, bindSourceBrowser, getSourceView } from './source-browser.js';
-import { renderDemoGuide, bindDemoGuide, renderPresentationHeader, getGuideTarget } from './demo-guide.js';
+import { renderDemoGuide, bindDemoGuide, renderPresentationHeader, renderStoryContext, getGuideTarget } from './demo-guide.js';
 import { renderOsworldStory } from './osworld-story.js';
 import { createSnapshotSession } from './snapshot-import.js';
 import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
@@ -18,7 +18,7 @@ const pages = [
   ['memories', '记忆总览', 'grid'], ['graph', '关系图谱', 'graph'], ['timeline', '演化时间线', 'clock'],
   ['traces', '检索与使用', 'search'], ['experience', '任务经验', 'layers'], ['manage', '更新与管理', 'shield'], ['evaluation', '数据与评测', 'chart']
 ];
-const state = { page: 'guide', day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' };
+const state = { page: 'guide', guideStep: 0, day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' };
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const paths = {
@@ -42,13 +42,14 @@ function memoryButton(memory, label) { return `<button class="text-button" data-
 function navigate(page, day = state.day) {
   state.page = page; state.day = day; state.query = ''; state.kind = 'all'; state.status = 'all';
   if (page === 'traces') state.trace = null;
-  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'import' || page === 'guide' ? `#${page}` : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
+  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'guide' ? `#guide?step=${state.guideStep}` : page === 'import' ? '#import' : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
 }
 function storyRoute() { return `#osworld?story=${state.story}&view=${state.storyView}&step=${state.storyStep}&scenario=${state.storyScenario}`; }
 function readRoute() {
   const [page, query] = location.hash.slice(1).split('?');
   if (pages.some(([id]) => id === page)) state.page = page;
   const params = new URLSearchParams(query);
+  if (state.page === 'guide') state.guideStep = Math.min(7,Math.max(0,Math.floor(Number(params.get('step'))||0)));
   if (state.page === 'sources') { const view = getSourceView(params.get('sample') || state.sample, params.get('phase') ?? 1); state.sample = view.sample.id; state.phase = view.phase; }
   if (state.page === 'osworld') { state.story = params.get('story') === 'reuse' ? 'reuse' : 'formation'; state.storyView = params.get('view') === 'mock' ? 'mock' : 'sources'; state.storyStep = Math.min(3, Math.max(0, Number(params.get('step')) || 0)); state.storyStep = Math.floor(state.storyStep); state.storyScenario = ['injected','adopted','checked','blocked'].includes(params.get('scenario')) ? params.get('scenario') : 'injected'; }
   const day = Number(params.get('day'));
@@ -159,7 +160,7 @@ function render() {
       Object.assign(state, target);
       navigate(target.page);
       $('#main').focus({ preventScroll: true });
-    });
+    }, state.guideStep);
     return;
   }
   const guideMode=state.page==='guide';
@@ -178,7 +179,7 @@ function render() {
     const content = state.page === 'manage' ? ruleContent : importMode ? renderSnapshotImport(snapshotSession.state)
       : sourceMode ? renderSourceBrowser(state.sample,state.phase,state.sourceQuery)
       : renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario});
-    $('#app').innerHTML = `${renderPresentationHeader()}<div class="presentation-page"><main id="main" tabindex="-1">${content}</main></div>`;
+    $('#app').innerHTML = `${renderPresentationHeader()}<div class="presentation-page"><main id="main" tabindex="-1">${renderStoryContext(state.page)}${content}</main></div>`;
     bind(snapshot);
     return;
   }

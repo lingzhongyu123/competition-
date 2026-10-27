@@ -1,6 +1,7 @@
 import { evidence, memories } from './data.js';
 
 export function getGuideTarget(key) {
+  if (/^chapter[0-3]$/.test(key)) return { page: 'guide', guideStep: Number(key.at(-1))*2 };
   return {
     fact: { page: 'sources', sample: 'e47becba', phase: 1, sourceQuery: '' },
     update: { page: 'sources', sample: '6a1eabeb', phase: 0, sourceQuery: '' },
@@ -63,7 +64,12 @@ export function getGuideFrame(step) {
   };
 }
 export function renderPresentationHeader() {
-  return `<header class="motion-header"><a href="#guide" class="motion-brand"><span>◈</span> Memory Console</a><details class="motion-menu"><summary>更多内容</summary><nav aria-label="更多内容"><button data-guide="fact">事实来源</button><button data-guide="update">公开更新样本</button><button data-guide="formation">经验形成</button><button data-guide="reuse">经验复用</button><hr><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button><button data-nav="guide">返回首页</button></nav></details></header>`;
+  return `<header class="motion-header"><a href="#guide" class="motion-brand"><span>◈</span> Memory Console</a><details class="motion-menu"><summary>补充材料</summary><nav aria-label="补充材料"><button data-guide="fact">对话样本 · 事实与更新</button><button data-guide="formation">任务样本 · 经验与复用</button><hr><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button><button data-nav="guide">返回首页</button></nav></details></header>`;
+}
+export function renderStoryContext(page) {
+  if(page!=='sources' && page!=='osworld') return '';
+  const dialogue=page==='sources';
+  return `<aside class="story-context" aria-label="与首页故事的关系"><div><strong>${dialogue?'记住要求 → 更新规则':'留下方法 → 下次采用'}</strong><p>${dialogue?'这里用 LongMemEval 原始对话，补充说明事实从哪来、后来怎样变化。':'这里用任务草图，补充说明经验如何形成，以及找到后是否真正采用。'}与首页报名表是独立案例。</p></div><div class="story-context-links">${dialogue?'<button data-guide="chapter0">回到事实记忆</button><button data-guide="chapter1">回到信息更新</button>':'<button data-guide="chapter2">回到任务经验</button><button data-guide="chapter3">回到复用过程</button>'}</div></aside>`;
 }
 export function renderDemoGuide() {
   return `<div class="motion-home case-home">${renderPresentationHeader()}
@@ -77,8 +83,8 @@ export function renderDemoGuide() {
     </section><footer class="case-footer"><span>MOCK 演示，不代表真实执行。</span><details><summary>本幕来源</summary><p data-case-source></p><small>事实与更新沿用已有中文合成指令；排序错误、修正与复用为新编展示过程。原始公开样本保持独立。</small></details></footer></main></div>`;
 }
 
-export function bindDemoGuide(root, onNavigate) {
-  let step=0,playing=false,timeline=null,transition=null,previousFrame=null;
+export function bindDemoGuide(root, onNavigate, initialStep=0) {
+  let step=getGuideFrame(initialStep).step,playing=false,timeline=null,transition=null,previousFrame=null;
   const select = selector => root.querySelector(selector);
   const gsap=window.gsap;
   const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -144,7 +150,7 @@ export function bindDemoGuide(root, onNavigate) {
     stop();step=Math.min(7,Math.max(0,index));
     timeline?.seek('step'+step,true);paint(true);
   };
-  build();paint(false);
+  build();timeline?.seek('step'+step,true);paint(false);
   select('[data-play]').onclick=()=>{
     if(playing){stop();return;}
     if(!timeline){show((step+1)%8);return;}
