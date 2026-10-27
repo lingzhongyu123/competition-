@@ -1,18 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getGuideFrame } from '../src/demo-guide.js';
+import { getGuideFrame, getGuideTarget } from '../src/demo-guide.js';
+import { evidence } from '../src/data.js';
 
-test('home replay keeps later statements and history out of the earlier stage', () => {
+test('explicit mock change updates the current rule only after the new instruction arrives', () => {
   const early = getGuideFrame(0);
-  assert.equal(early.value, '27:12');
-  assert.equal(early.history, false);
-  assert.ok(!early.quote.includes('25:50'));
   const incoming = getGuideFrame(1);
-  assert.equal(incoming.value, '27:12');
-  assert.ok(incoming.quote.includes('25:50'));
-  assert.equal(incoming.history, false);
   const updated = getGuideFrame(2);
-  assert.equal(updated.value, '25:50');
+  assert.equal(early.value, '报名时间倒序');
+  assert.ok(!early.quote.includes('成绩'));
+  assert.equal(incoming.value, early.value);
+  assert.match(incoming.quote, /改为按成绩从高到低排序/);
+  assert.match(incoming.quote, /其他要求不变/);
+  assert.equal(incoming.history, false);
+  assert.equal(updated.value, '成绩从高到低');
   assert.equal(updated.history, true);
   assert.deepEqual(getGuideFrame(0), early);
+});
+
+test('home story retains existing MOCK evidence rather than rewriting public samples', () => {
+  for (const step of [0, 1, 2]) {
+    const frame = getGuideFrame(step);
+    const source = evidence.find(item => item.id === frame.evidenceId);
+    assert.equal(frame.provenance, 'mock');
+    assert.equal(source.provenance, 'mock');
+    assert.equal(frame.quote, source.text);
+    assert.ok(frame.quote.includes(frame.translation));
+  }
+  assert.deepEqual(getGuideTarget('sorting'), {page:'manage',day:14});
+  assert.equal(getGuideTarget('update').sample, '6a1eabeb');
 });
