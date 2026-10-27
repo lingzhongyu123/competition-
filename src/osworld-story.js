@@ -31,7 +31,7 @@ function reuse() {
 export function renderOsworldStory(mode = 'formation', options = {}) {
   const selected = mode === 'reuse' ? 'reuse' : 'formation';
   const demo = !!options.demo;
-  return `<div class="story-workspace"><div class="story-heading"><div><h1>${demo ? '工时报酬' : selected === 'formation' ? '经验怎样形成' : '经验怎样复用'}</h1><p>${demo ? 'MOCK 示例，表格与操作均为人工预设。' : '公开任务定义 · 过程与本页 MOCK 分开。'}</p></div></div>
+  return `<div class="story-workspace"><div class="story-heading"><div><h1>${demo ? '整理下载文件' : selected === 'formation' ? '经验怎样形成' : '经验怎样复用'}</h1><p>${demo ? 'MOCK 示例，文件与整理过程均为人工预设。' : '公开任务定义 · 过程与本页 MOCK 分开。'}</p></div></div>
   <div class="story-toolbar"><div class="story-tabs" role="group" aria-label="选择展示故事"><button data-story="formation" aria-pressed="${selected === 'formation'}">经验形成</button><button data-story="reuse" aria-pressed="${selected === 'reuse'}">经验复用</button></div>
 </div>
   ${demo ? renderMockStory(selected, options.step, options.scenario) : `<section class="story-focus"><h2>${selected === 'formation' ? '完成任务，留下方法和依据。' : '借鉴流程，重新判断条件。'}</h2><p>${selected === 'formation' ? '工时是时间值，时薪是数字。先统一单位，再计算金额。' : '收入汇总和发票统计都用透视表，但求和不能直接照搬成计数。'}</p><div class="story-flow">${(selected === 'formation' ? ['任务输入','动作与修正','产物检查','经验候选'] : ['来源经验','适用条件','执行采用','结果核验']).map((label,i)=>`<div><span>0${i+1}</span><strong>${label}</strong></div>`).join('')}</div><p class="story-note">仅有任务定义；过程与结果尚未采集。可切换到 MOCK 逐步演示查看页面效果。</p></section>`}
