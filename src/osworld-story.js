@@ -14,7 +14,7 @@ function formation() {
   return `<div class="story-scenario"><div><span class="story-kicker">故事 03 / 任务经验</span><h2>一次任务，怎样留下可复查的经验？</h2><p>先展示真实任务要求，再为将来的运行证据预留位置。经验候选是展示假设，需等执行与检查记录来支持。</p></div><span class="story-badge design">展示草图</span></div>
   <div class="story-grid two">${taskDefinition(workHours, '输入 / LibreOffice Calc')}
   <section class="story-hypothesis"><span class="story-badge manual">设计者提出的候选</span><h3>先核对类型与单位</h3><p>这道任务同时提到“累计工时是时间值、时薪是数字，直接相乘不正确”。可讨论的经验候选是先识别数据类型和业务单位，再决定怎样计算。</p><div class="story-condition"><strong>适用条件</strong><span>时间格式的工时 × 数值时薪</span></div><div class="story-condition"><strong>不能直接外推</strong><span>不同表格布局、地区设置或输出格式还需重新检查</span></div></section></div>
-  <div class="story-flow" aria-label="任务经验形成所需证据"><div><span>01</span><strong>任务要求</strong><small>官方定义已取得</small></div><div><span>02</span><strong>动作与状态</strong><small>运行轨迹未采集</small></div><div><span>03</span><strong>产物与检查</strong><small>尚未运行</small></div><div><span>04</span><strong>经验确认</strong><small>候选待验证</small></div></div>
+  <div class="story-flow" aria-label="任务经验形成所需证据"><div><span>01</span><strong>任务要求</strong><small>官方定义已取得</small></div><div><span>02</span><strong>动作与状态</strong><small>本页运行轨迹未采集</small></div><div><span>03</span><strong>产物与检查</strong><small>产物检查未接入</small></div><div><span>04</span><strong>经验确认</strong><small>候选待验证</small></div></div>
   <div class="story-grid two">${missing('执行过程', '需要 run_id、任务环境、截图或状态、动作顺序、失败与修正步骤；任务定义中的 trajectory 路径不是本系统的运行记录。')}${missing('产物与结果', '需要产物位置、检查规则与实际结果，才能判断任务是否成功，以及哪一步值得保留为经验。')}</div>
   <div class="story-note">页面当前只提出经验候选。未观察到本项目的 Agent 执行，也未生成真实 Case。</div>`;
 }
@@ -30,10 +30,12 @@ function reuse() {
 
 export function renderOsworldStory(mode = 'formation', options = {}) {
   const selected = mode === 'reuse' ? 'reuse' : 'formation';
-  return `<div class="story-workspace"><div class="story-heading"><div><div class="eyebrow">OSWORLD / 展示草图</div><h1>任务经验与复用</h1><p>${options.demo ? "受公开任务类型启发的自建演示。所有运行与结果均为人工预设。" : "真实公开任务定义 + 明确标注的设计假设。执行和评测记录等待接入。"}</p></div><span class="story-badge ${options.demo ? "caution" : "real"}">${options.demo ? "MOCK · 自建示例" : "3 条官方任务"}</span></div>
-  <div class="story-tabs" role="group" aria-label="选择展示故事"><button data-story="formation" aria-pressed="${selected === 'formation'}">01 任务经验如何形成</button><button data-story="reuse" aria-pressed="${selected === 'reuse'}">02 经验怎样复用</button></div>
-  <div class="story-view-switch" role="group" aria-label="资料与演示模式"><button data-story-view="sources" aria-pressed="${!options.demo}">资料现状</button><button data-story-view="mock" aria-pressed="${!!options.demo}">MOCK 逐步演示</button><span>模拟记录仅用于说明页面和证据关系</span></div>
-  ${options.demo ? renderMockStory(selected, options.step, options.scenario) : selected === 'formation' ? formation() : reuse()}
-  <details class="story-data"><summary>与张旭讨论：需要提供哪些记录？</summary><div><strong>任务与执行</strong><p>task_id、环境版本、run_id、每步时间/动作/状态、产物、实际检查结果。</p><strong>经验形成</strong><p>case_id、来源 run_id、结论、失败原因、适用条件与版本；没有真实运行时只保留人工候选。</p><strong>复用验证</strong><p>候选及排序、选中理由、实际注入片段、目标 run_id、动作引用与结果；不能从最后的成功反推使用了哪条经验。</p></div></details>
-  <footer class="story-footer">资料边界：OSWorld 任务要求已核实；迁移配对和经验假设由本方案提出；Memory/DSH 尚未接入，Agent 未运行。</footer></div>`;
+  const demo = !!options.demo;
+  return `<div class="story-workspace"><div class="story-heading"><div><h1>${selected === 'formation' ? '经验怎样形成' : '经验怎样复用'}</h1><p>${demo ? 'MOCK · 人工预设过程，逐步查看。' : '公开任务 · 尚无真实执行记录。'}</p></div></div>
+  <div class="story-toolbar"><div class="story-tabs" role="group" aria-label="选择展示故事"><button data-story="formation" aria-pressed="${selected === 'formation'}">经验形成</button><button data-story="reuse" aria-pressed="${selected === 'reuse'}">经验复用</button></div>
+  <div class="story-view-switch" role="group" aria-label="资料与演示模式"><button data-story-view="mock" aria-pressed="${demo}">MOCK 逐步演示</button><button data-story-view="sources" aria-pressed="${!demo}">官方任务</button></div></div>
+  ${demo ? renderMockStory(selected, options.step, options.scenario) : `<section class="story-focus"><h2>${selected === 'formation' ? '完成任务，留下方法和依据。' : '借鉴流程，重新判断条件。'}</h2><p>${selected === 'formation' ? '工时是时间值，时薪是数字。先统一单位，再计算金额。' : '收入汇总和发票统计都用透视表，但求和不能直接照搬成计数。'}</p><div class="story-flow">${(selected === 'formation' ? ['任务输入','动作与修正','产物检查','经验候选'] : ['来源经验','适用条件','执行采用','结果核验']).map((label,i)=>`<div><span>0${i+1}</span><strong>${label}</strong></div>`).join('')}</div><p class="story-note">仅有任务定义；过程与结果尚未采集。可切换到 MOCK 逐步演示查看页面效果。</p></section>`}
+  <details class="story-data"><summary>任务原文与资料状态</summary><p>已有一条本机真实失败记录，两次操作后官方评分均为 0.0；尚未接入本页。<a href="https://github.com/lingzhongyu123/competition-/blob/main/docs/OSWorld-%E6%9C%AC%E6%9C%BA%E8%BF%90%E8%A1%8C%E8%AE%B0%E5%BD%95.md" target="_blank" rel="noreferrer">查看运行记录 ↗</a></p>${selected === 'formation' ? formation() : reuse()}</details>
+  <details class="story-data"><summary>接入所需记录</summary><p>任务 ID、运行 ID、动作与状态、产物检查、经验候选与来源、注入和采用引用。没有证据时保持未知。</p></details>
+  <footer class="story-footer">${demo ? 'MOCK 演示，未执行 OSWorld 或真实记忆写入。' : '任务定义不代表执行结果；尚无本项目的 OSWorld 评测。'}</footer></div>`;
 }

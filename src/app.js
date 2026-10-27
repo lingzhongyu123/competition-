@@ -3,7 +3,7 @@ import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
 import { publicTasks } from './public-tasks.js';
 import { renderSourceBrowser, bindSourceBrowser, getSourceView } from './source-browser.js';
-import { renderDemoGuide, bindDemoGuide, getGuideTarget } from './demo-guide.js';
+import { renderDemoGuide, bindDemoGuide, renderPresentationHeader, getGuideTarget } from './demo-guide.js';
 import { renderOsworldStory } from './osworld-story.js';
 import { createSnapshotSession } from './snapshot-import.js';
 import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
@@ -127,7 +127,7 @@ function bind(snapshot) {
   bindSnapshotImport($('#app'), snapshotSession, render);
   document.querySelectorAll('[data-nav]').forEach(button=>button.onclick=()=>navigate(button.dataset.nav));
   document.querySelectorAll('[data-day]').forEach(button=>button.onclick=()=>navigate(state.page,Number(button.dataset.day)));
-  document.querySelectorAll('[data-memory]').forEach(button=>button.onclick=()=>{state.selected=button.dataset.memory;render();if(innerWidth<1200)$('#inspector').scrollIntoView({behavior:'smooth',block:'start'})});
+  document.querySelectorAll('[data-memory]').forEach(button=>button.onclick=()=>{state.selected=button.dataset.memory;render();const inspector=$('#inspector');if(inspector?.tagName==='DETAILS')inspector.open=true;if(innerWidth<1200)inspector?.scrollIntoView({behavior:'smooth',block:'start'})});
   document.querySelectorAll('[data-trace]').forEach(button=>button.onclick=()=>{state.page='traces';state.trace=button.dataset.trace;safeReplaceState(null,'',`#traces?day=${state.day}`);render()});
   document.querySelectorAll('[data-evidence]').forEach(button=>button.onclick=()=>{const memory=snapshot.memories.find(item=>item.evidenceIds.includes(button.dataset.evidence));if(memory){state.selected=memory.id;render();const detail=$('#evidence-'+button.dataset.evidence);if(detail){detail.open=true;detail.scrollIntoView({behavior:'smooth',block:'nearest'})}}});
   document.querySelectorAll('[data-graph]').forEach(button=>button.onclick=()=>{state.graph=button.dataset.graph;render()});
@@ -143,8 +143,8 @@ function bind(snapshot) {
   document.querySelectorAll('[data-story-view]').forEach(button => button.onclick = () => updateStory({ storyView: button.dataset.storyView, storyStep: 0 }, '[data-story-view="'+button.dataset.storyView+'"]'));
   document.querySelectorAll('[data-mock-step]').forEach(button => button.onclick = () => { const step = Math.min(3, Math.max(0, Number(button.dataset.mockStep))); updateStory({ storyStep: step }, '.mock-steps [data-mock-step="'+step+'"]'); });
   if ($('#mock-scenario')) $('#mock-scenario').onchange = event => updateStory({ storyScenario: event.target.value }, '#mock-scenario');
-  $('button[data-theme]').onclick=()=>{state.theme=state.theme==='kylin'?'neutral':'kylin';render()};
-  $('[data-reset]').onclick=()=>{provider.reset();snapshotSession.clear();state.selected='mem-sort-v1';state.trace=null;state.story='formation';state.storyView='sources';state.storyStep=0;state.storyScenario='injected';navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
+  if ($('button[data-theme]')) $('button[data-theme]').onclick=()=>{state.theme=state.theme==='kylin'?'neutral':'kylin';render()};
+  if ($('[data-reset]')) $('[data-reset]').onclick=()=>{provider.reset();snapshotSession.clear();state.selected='mem-sort-v1';state.trace=null;state.story='formation';state.storyView='sources';state.storyStep=0;state.storyScenario='injected';navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
   if ($('[data-tour]')) $('[data-tour]').onclick=()=>{state.selected='mem-sort-v1';navigate('timeline',1);notify('按 Day 01 → 03 → 07 → 10 → 14 回放；从事件打开记忆与轨迹。')};
 }
 let disposeGuide = null;
@@ -168,9 +168,20 @@ function render() {
   const importMode=state.page==='import';
   const publicMode=sourceMode||storyMode||importMode||guideMode;
   const snapshot=provider.getSnapshot(state.day);
-  document.body.dataset.mode=guideMode?'guide':importMode?'import':sourceMode?'sources':storyMode?'osworld':'mock';
+  document.body.dataset.mode=state.page==='manage'?'rules':guideMode?'guide':importMode?'import':sourceMode?'sources':storyMode?'osworld':'mock';
   if(!snapshot.memories.some(memory=>memory.id===state.selected))state.selected=snapshot.memories[0]?.id;
   document.body.dataset.theme=state.theme;
+  if (publicMode || state.page === 'manage') {
+    const ruleHtml = state.page === 'manage' ? renderManage(snapshot) : '';
+    const ruleEnd = ruleHtml.indexOf('</section>') + 10;
+    const ruleContent = ruleHtml ? `<div class="rule-presentation"><div class="story-heading"><div><h1>排序规则的变化</h1><p>MOCK · 自建中文指令与预设更新。</p></div></div>${ruleHtml.slice(0,ruleEnd)}<details class="rule-inspector" id="inspector"><summary>查看所选规则的来源</summary>${renderInspector(snapshot)}</details><details class="rule-tools"><summary>模拟管理操作</summary>${ruleHtml.slice(ruleEnd)}</details></div>` : '';
+    const content = state.page === 'manage' ? ruleContent : importMode ? renderSnapshotImport(snapshotSession.state)
+      : sourceMode ? renderSourceBrowser(state.sample,state.phase,state.sourceQuery)
+      : renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario});
+    $('#app').innerHTML = `${renderPresentationHeader()}<div class="presentation-page"><main id="main" tabindex="-1">${content}</main></div>`;
+    bind(snapshot);
+    return;
+  }
   const renderers={memories:renderList,graph:renderGraph,timeline:renderTimeline,traces:renderTrace,experience:renderExperience,manage:renderManage,evaluation:renderEvaluation};
   $('#app').innerHTML=`<aside class="sidebar"><div class="brand"><span class="brand-symbol">◈</span><div><strong>记忆工作区</strong><small>MEMORY CONSOLE</small></div></div><div class="workspace-switch"><span class="workspace-avatar">M</span><div><strong>${guideMode?'展示与讨论':importMode?'本地只读工作区':publicMode?'公开资料工作区':'演示工作区'}</strong><small>${guideMode?'四条故事 · 证据边界':importMode?'经验快照 · 未连接服务':sourceMode?'LongMemEval · 人工整理':storyMode?'OSWorld · 展示草图':'本地合成数据'}</small></div><span class="status-dot"></span></div><div class="nav-heading">工作台</div><nav aria-label="主导航">${pages.map(([id,label,symbol])=>`<button class="nav-item ${state.page===id?'active':''}" data-nav="${id}" aria-label="${label}" title="${label}" ${state.page===id?'aria-current="page"':''}>${icon(symbol)}<span>${label}</span>${id==='experience'?'<span class="nav-mini">规划</span>':''}</button>`).join('')}</nav><div class="sidebar-bottom"><div class="connection"><span class="offline-dot"></span><div><strong>独立原型</strong><small>DSH / Memory 尚未接入</small></div></div><button data-reset>${icon('clock',16)} 重置演示</button><p>麒麟概念视觉 · 非官方规范</p></div></aside><div class="shell"><header class="topbar"><div class="app-identity">${icon('layers',20)}<span>记忆控制台</span></div>${storyMode||importMode||guideMode?'':`<form class="header-search" id="header-search">${icon('search',15)}<input id="global-query" type="search" value="${esc(sourceMode?state.sourceQuery:state.query)}" placeholder="${sourceMode?'搜索样本':'搜索记忆'}" aria-label="${sourceMode?'搜索真实样本':'全局搜索记忆'}"></form>`}<div class="topbar-actions">${guideMode?tag('展示导览 · 未连接服务','blue'):importMode?tag(snapshotSession.state.status==='ready'?(snapshotSession.state.mode==='mock'?'MOCK 字段示例':'本地导入 · 未核验'):'本地只读','amber'):sourceMode?tag('公开样本','blue'):storyMode?tag(state.storyView==='mock'?'MOCK 预设演示':'官方定义 · 草图',state.storyView==='mock'?'amber':'blue'):tag('MOCK 数据模式','amber')}<button class="icon-button" data-theme aria-label="${state.theme==='kylin'?'切换为中性主题':'切换为麒麟概念主题'}" title="切换主题">${icon('sun')}</button><span class="avatar">演</span></div></header><div class="content-shell ${publicMode?'source-layout':''}"><main id="main" tabindex="-1">${guideMode?renderDemoGuide():importMode?renderSnapshotImport(snapshotSession.state):sourceMode?renderSourceBrowser(state.sample,state.phase,state.sourceQuery):storyMode?renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario}):`${state.page==='memories'?'<div class="source-entry"><span>已有真实公开样本，可查看原始会话与信息更新。</span><button class="text-button" data-nav="sources">查看真实样本 →</button></div>':''}${top(snapshot)}${renderers[state.page](snapshot)}<div class="demo-footer"><span>模拟时间轴 · 无实测成绩 · 刷新恢复状态</span><button class="text-button" data-tour>从头演示 ${icon('arrow',14)}</button></div>`}</main>${publicMode?'':`<aside class="inspector" id="inspector" aria-label="记忆详情">${renderInspector(snapshot)}</aside>`}</div></div>`;
   bind(snapshot);

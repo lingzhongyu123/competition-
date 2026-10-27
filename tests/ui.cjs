@@ -81,7 +81,7 @@ const path = require('node:path');
     await page.setViewportSize({width:1600,height:1100});
     await page.goto('about:blank');
     await page.setContent(await fs.readFile(path.join(root,'dist/memory-console.html'),'utf8'));
-    await page.getByRole('heading',{name:'记住变化，也留下来处。',exact:true}).waitFor();
+    await page.getByRole('heading',{name:'一条记忆，怎样更新？',exact:true}).waitFor();
     await page.getByText('更多内容',{exact:true}).click();
     await page.getByRole('button',{name:'MOCK 数据检查',exact:true}).click();
     await page.getByRole('heading',{name:'记忆总览',exact:true}).waitFor();

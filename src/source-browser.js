@@ -32,25 +32,24 @@ export function renderSourceBrowser(id, phase, query = '') {
     ? '在 5 月 25 日这次陈述之后，已有证据支持的个人最好成绩是 27:12。切换到较新陈述，再看信息如何变化。'
     : sample.summary;
   return `<div class="source-workspace">
-    <div class="source-heading"><div><div class="eyebrow">LONGMEMEVAL / 真实样本</div><h1>从原话到记忆</h1><p>沿着一条真实会话，查看信息来源与变化。</p></div><span class="source-mode">公开会话 · 人工整理</span></div>
-    <div class="source-sample-nav" aria-label="选择真实样本">${matching.map(item => `<button data-source-sample="${item.id}" aria-pressed="${item.id === sample.id}"><small>${sourceEscape(item.label)}</small><strong>${sourceEscape(item.title)}</strong><code>${item.id}</code></button>`).join('')}</div>
+    <div class="source-heading"><div><h1>从原话到记忆</h1><p>公开会话 · 人工整理，未连接真实记忆服务。</p></div></div>
+    <details class="source-picker"><summary>切换案例 · ${sourceEscape(sample.label)}</summary><div class="source-sample-nav" aria-label="选择真实样本">${matching.map(item => `<button data-source-sample="${item.id}" aria-pressed="${item.id === sample.id}"><small>${sourceEscape(item.label)}</small><strong>${sourceEscape(item.title)}</strong></button>`).join('')}</div></details>
     ${matching.length ? '' : '<div class="source-empty" role="status">没有匹配的样本。可以搜索“学历”“成绩”或样本 ID。</div>'}
-    ${activeVisible ? `<div class="source-status" aria-label="证据取得情况"><div><span class="source-dot ready"></span><strong>原始会话</strong><span>已取得</span></div><div><span class="source-dot manual"></span><strong>记忆候选</strong><span>人工整理</span></div><div><span class="source-dot"></span><strong>检索与执行</strong><span>未采集</span></div></div>
-    <section class="source-record" aria-labelledby="source-record-title"><div class="source-record-heading"><div><small>${sourceEscape(sample.label)} / <code>${sample.id}</code></small><h2 id="source-record-title">${sourceEscape(sample.title)}</h2></div><span>${visibleSessions.length} 个可见会话</span></div>
+    ${activeVisible ? `<section class="source-record" aria-labelledby="source-record-title"><h2 class="source-simple-title" id="source-record-title">${sourceEscape(sample.title)}</h2>
     ${isUpdate ? `<div class="source-time-control" aria-label="按陈述时间查看"><span>查看时点</span><button data-source-phase="0" aria-pressed="${view.phase === 0}">5 月 25 日<small>第一条陈述</small></button><button data-source-phase="1" aria-pressed="${view.phase === 1}">5 月 27 日<small>较新陈述</small></button></div>` : ''}
     <div class="source-columns"><article class="source-analysis"><h3>人工整理的记忆候选</h3><div class="source-fact"><span>${sourceEscape(annotation.field)}</span><strong class="${isUpdate ? 'source-score' : ''}">${sourceEscape(value)}</strong><small>${sourceEscape(annotation.translation)}</small>${anchorButton(selectedAnchor, '查看这条信息的原文 ↓')}</div>
     ${isUpdate && view.phase === 1 ? `<div class="source-prior"><span>保留的历史陈述</span><strong>27:12</strong><small>5 月 25 日陈述</small>${anchorButton(anchors[0], '追溯旧陈述')}</div>` : ''}
-    <p class="source-summary">${sourceEscape(summary)}</p><p class="source-caution">${sourceEscape(annotation.note)}</p>
-    <details class="source-question"><summary>查看数据集问题</summary><p>${sourceEscape(sample.questionZh)}</p><p lang="en">${sourceEscape(sample.question)}</p><small>提问时间：${sourceEscape(sample.questionDate)}</small><p>这是数据集的问题，尚未运行模型作答。</p></details></article>
+    <details class="source-explanation"><summary>查看解读与注意事项</summary><p class="source-summary">${sourceEscape(summary)}</p><p class="source-caution">${sourceEscape(annotation.note)}</p>
+    <details class="source-question"><summary>查看数据集问题</summary><p>${sourceEscape(sample.questionZh)}</p><p lang="en">${sourceEscape(sample.question)}</p><small>提问时间：${sourceEscape(sample.questionDate)}</small><p>这是数据集的问题，尚未运行模型作答。</p></details></details></article>
     <article class="source-evidence"><h3>来源原文 <span>真实公开会话</span></h3>${anchors.map(([si, ti]) => {
       const session = sample.sessions[si], turn = session.turns[ti];
-      return `<div class="source-quote"><div class="source-quote-meta"><strong>${sourceEscape(session.date)}</strong><span>用户 · 消息 #${ti + 1}</span></div><blockquote lang="en">${sourceEscape(turn.content)}</blockquote><code>${sourceEscape(session.id)}</code>${anchorButton([si, ti], '定位到完整会话 ↓')}</div>`;
+      return `<div class="source-quote"><div class="source-quote-meta"><strong>${sourceEscape(session.date)}</strong><span>用户原话</span></div><blockquote lang="en">${sourceEscape(turn.content)}</blockquote>${anchorButton([si, ti], '定位到完整会话 ↓')}</div>`;
     }).join('')}</article></div>
     <details class="source-transcripts"><summary>展开完整原始会话（${visibleSessions.length} 个）</summary><p>保留数据集原始会话内容与顺序。下面的助手消息也来自数据集；日期未附加推测的时区。</p>${visibleSessions.map(session => {
       const si = sample.sessions.indexOf(session);
       return `<details class="source-session"><summary>${sourceEscape(session.date)} · ${sourceEscape(session.id)} · ${session.turns.length} 条消息</summary>${session.turns.map(turn => `<article class="source-turn ${turn.role === 'user' ? 'source-user' : ''}" id="source-turn-${sample.id}-${si}-${turn.index}" tabindex="-1"><strong>${sourceEscape(turn.role)} · 消息 #${turn.index + 1}</strong><p lang="en">${sourceEscape(turn.content)}</p></article>`).join('')}</details>`;
     }).join('')}</details></section>` : ''}
-    <footer class="source-boundary"><p>这里展示公开数据与人工解读。记忆写入、检索、注入及执行记录尚未采集，评测尚未运行。</p><details><summary>数据版本与来源</summary><p>oracle 只保留证据会话，不能代表 S/M 完整长历史的检索难度。页面未载入 answer、answer_session_ids、has_answer 等评测字段。</p><p><a href="https://github.com/xiaowu0162/LongMemEval" target="_blank" rel="noreferrer">LongMemEval 官方项目</a> · <a href="https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/tree/${sourceEscape(sourceDataset.revision)}" target="_blank" rel="noreferrer">固定数据版本</a></p><code>revision: ${sourceEscape(sourceDataset.revision)}<br>原始 oracle SHA-256: ${sourceEscape(sourceDataset.sha256)}</code></details></footer>
+    <footer class="source-boundary"><details><summary>数据来源与验证范围</summary><p>这里展示公开数据与人工解读。检索与执行未采集；记忆写入、注入及执行记录尚未采集，评测尚未运行。</p><p>oracle 只保留证据会话，不能代表 S/M 完整长历史的检索难度。页面未载入 answer、answer_session_ids、has_answer 等评测字段。</p><p><a href="https://github.com/xiaowu0162/LongMemEval" target="_blank" rel="noreferrer">LongMemEval 官方项目</a> · <a href="https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/tree/${sourceEscape(sourceDataset.revision)}" target="_blank" rel="noreferrer">固定数据版本</a></p><code>revision: ${sourceEscape(sourceDataset.revision)}<br>原始 oracle SHA-256: ${sourceEscape(sourceDataset.sha256)}</code></details></footer>
   </div>`;
 }
 

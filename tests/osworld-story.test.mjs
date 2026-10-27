@@ -8,7 +8,8 @@ test('experience formation uses the real work-hours task but leaves run evidence
   assert.match(html, /时间值、时薪是数字/);
   assert.match(html, /设计者提出的候选/);
   assert.match(html, /运行轨迹未采集/);
-  assert.match(html, /尚未运行/);
+  assert.match(html, /产物检查未接入/);
+  assert.match(html, /本机真实失败记录/);
   assert.match(html, /未生成真实 Case/);
   assert.doesNotMatch(html, /执行成功|真实 Case 已形成|评分通过/);
 });

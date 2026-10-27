@@ -10,7 +10,7 @@ function snapshotLink(snapshot,kind,id) {
   return index<0?`<span class="snap-missing">${snapEscape(id)} · 来源缺失</span>`:`<button class="text-button" data-snapshot-kind="${kind}" data-snapshot-index="${index}">${snapEscape(id)}</button>`;
 }
 function snapshotQuotes(quotes) { return quotes.length?quotes.map(q=>`<div class="snap-quote"><code>${snapEscape(q.eventId)}</code><pre>${snapEscape(q.quote)}</pre></div>`).join(''):'<p class="snap-muted">未记录引用原文</p>'; }
-function snapshotSkill(snapshot,s) {
+function snapshotSkillAll(snapshot,s) {
   return `<h3>${snapEscape(s.title)}</h3><p>${snapEscape(s.description)}</p><dl>${snapField('ID / 版本',s.id+' / v'+s.version)}${snapField('文件中的状态',s.status)}${snapField('类型',s.kind)}${snapField('置信度 / 提议值',s.confidence+' / '+s.proposedConfidence+'（非成功率）')}${snapField('创建 / 更新',snapTime(s.createdAt)+' / '+snapTime(s.updatedAt))}${snapField('最近验证 / 到期',snapTime(s.lastValidatedAt)+' / '+snapTime(s.expiresAt))}</dl><p class="snap-muted">状态按文件原值展示，不重新判定是否过期或满足宿主策略。</p>
   ${[['适用情境',s.applicability],['前置条件',s.preconditions],['流程',s.procedure],['注意事项',s.cautions],['验证方法',s.verification],['所需工具',s.requiredTools]].map(([k,v])=>`<h4>${k}</h4>${snapList(v)}`).join('')}
   <h4>来源任务</h4>${s.episodeIds.length?s.episodeIds.map(id=>snapshotLink(snapshot,'episodes',id)).join(' '):'<p>未记录</p>'}
@@ -18,7 +18,13 @@ function snapshotSkill(snapshot,s) {
   <h4>环境 / 标签</h4><pre>${snapEscape(JSON.stringify({environment:s.environment,tags:s.tags},null,2))}</pre>
   <h4>该策略的版本记录</h4>${snapshot.revisions.map((r,i)=>r.skillId===s.id?`<button class="text-button" data-snapshot-kind="revisions" data-snapshot-index="${i}">v${r.version} · ${snapEscape(r.reason)}</button>`:'').join('')||'<p>未记录</p>'}`;
 }
-function snapshotEpisode(snapshot,e) {
+function snapshotSkill(snapshot,s) {
+  return `<h3>${snapEscape(s.title)}</h3><p>${snapEscape(s.description)}</p><p class="snap-status-line">文件中的状态：${snapEscape(s.status)} · 来源未核验</p>
+  <h4>怎样使用</h4>${snapList(s.procedure)}<h4>适用条件</h4>${snapList(s.applicability)}
+  <h4>来源任务</h4>${s.episodeIds.length?s.episodeIds.map(id=>snapshotLink(snapshot,'episodes',id)).join(' '):'<p>未记录</p>'}
+  <details><summary>字段、版本与验证依据</summary>${snapshotSkillAll(snapshot,s)}</details>`;
+}
+function snapshotEpisodeAll(snapshot,e) {
   return `<h3>${snapEscape(e.task)}</h3><p>${snapEscape(e.summary)}</p><dl>${snapField('任务 ID',e.id)}${snapField('会话',e.sessionId)}${snapField('开始 / 完成',snapTime(e.startedAt)+' / '+snapTime(e.completedAt))}${snapField('文件声明的结果',e.outcome.status)}${snapField('结果来源',e.outcome.source)}${snapField('声明理由',e.outcome.reason)}${snapField('采集完整性',e.capture?`${e.capture.complete} / ${e.capture.end}`:'未记录')}</dl>
   <p class="snap-notice">这里展示文件声明，Console 未核验执行环境、证据原件或评估规则。</p>
   <h4>前驱与任务修订</h4><p>${e.derivedFrom?snapshotLink(snapshot,'episodes',e.derivedFrom):'derivedFrom 未记录'}</p>${e.taskContext?`<p>修订 ${e.taskContext.revision} · ${snapEscape(e.taskContext.kind)}</p><p>${snapEscape(e.taskContext.latestRequest)}</p><p>${e.taskContext.previousEpisodeId?snapshotLink(snapshot,'episodes',e.taskContext.previousEpisodeId):'无前驱任务'}</p>`:'<p>未记录 taskContext</p>'}
@@ -27,6 +33,11 @@ function snapshotEpisode(snapshot,e) {
   ${e.outcome.assessment?`<h4>文件中的结果评估</h4><dl>${snapField('评估者',e.outcome.assessment.assessor)}${snapField('评估 ID',e.outcome.assessment.id)}${snapField('观察时间',snapTime(e.outcome.assessment.observedAt))}${snapField('完整覆盖声明',e.outcome.assessment.requirementsComplete)}</dl>${e.outcome.assessment.criteria.map(c=>`<details><summary>${snapEscape(c.status)} · ${snapEscape(c.requirement)}</summary>${snapshotQuotes(c.evidence)}</details>`).join('')}`:'<p>未记录 assessment</p>'}
   <h4>召回记录（不等于注入或采用）</h4>${e.recalledSkills?.length?e.recalledSkills.map(r=>`<p>${snapshotLink(snapshot,'skills',r.id)} · 当时版本 v${r.version}（链接查看当前条目）</p>`).join(''):'<p>未记录</p>'}
   <h4>来源 ID / 环境 / 提炼器</h4><pre>${snapEscape(JSON.stringify({evidence:e.evidence,environment:e.environment,learnedBy:e.learnedBy},null,2))}</pre>`;
+}
+function snapshotEpisode(snapshot,e) {
+  return `<h3>${snapEscape(e.task)}</h3><p>${snapEscape(e.summary)}</p><p class="snap-status-line">文件声明的结果：${snapEscape(e.outcome.status)} · 未独立核验</p>
+  <h4>动作过程</h4>${e.steps.map((s,i)=>`<details><summary>${i+1}. ${snapEscape(s.action)}</summary><pre>${snapEscape(s.observation)}</pre></details>`).join('')||'<p>未记录动作</p>'}
+  <details><summary>字段、引用与结果依据</summary>${snapshotEpisodeAll(snapshot,e)}</details>`;
 }
 function snapshotDetail(snapshot,kind,item) {
   if(kind==='skills')return snapshotSkill(snapshot,item);
@@ -45,7 +56,7 @@ export function renderSnapshotImport(state) {
   if(ready){
     const rows=snapshotRows(state),pages=Math.max(1,Math.ceil(rows.length/25));const page=Math.min(state.page,pages-1);
     const selected=rows.find(r=>r.index===state.selected)?.item;
-    content=`<section class="snap-provenance"><strong>${state.mode==='mock'?'MOCK · 自建字段示例':'本地导入 · 来源未核验'}</strong><p>${snapEscape(state.label)} · schemaVersion 1 · ${snapEscape(data.scope)}</p><p>仅校验展示所需字段结构；不等于上游完整校验、来源认证或运行验证。</p></section>
+    content=`<section class="snap-provenance"><strong>${state.mode==='mock'?'MOCK · 自建字段示例':'本地导入 · 来源未核验'}</strong><details><summary>文件与校验范围</summary><p>${snapEscape(state.label)} · schemaVersion 1 · ${snapEscape(data.scope)}</p><p>仅校验展示所需字段结构；不等于上游完整校验、来源认证或运行验证。</p></details></section>
     ${state.data.warnings.length?`<aside class="snap-notice"><strong>引用或证据不完整</strong>${snapList(state.data.warnings)}</aside>`:''}
     <div class="snap-tabs" role="group" aria-label="快照记录类型">${Object.entries(snapKinds).map(([k,label])=>`<button data-snapshot-tab="${k}" aria-pressed="${state.kind===k}">${label} ${data[k].length}</button>`).join('')}</div>
     <form id="snapshot-search"><label for="snapshot-query">搜索当前类型</label><input id="snapshot-query" type="search" value="${snapEscape(state.query)}" placeholder="标题、任务或 ID"><button>搜索</button></form>
@@ -53,9 +64,9 @@ export function renderSnapshotImport(state) {
     <article class="snap-detail" id="snapshot-detail" tabindex="-1" aria-label="快照记录详情">${selected?snapshotDetail(data,state.kind,selected):'<p>请选择左侧记录查看详情。</p>'}</article></div>`;
   }
   return `<div class="snapshot-workspace"><div class="story-heading"><div><div class="eyebrow">MEMORY / 本地只读</div><h1>经验快照</h1><p>查看插件导出的任务、策略与来源，保留它们各自的证据状态。</p></div><span class="story-badge caution">${ready?(state.mode==='mock'?'MOCK 示例':'导入 · 未核验'):'等待导入'}</span></div>
-  <section class="snap-upload"><label for="snapshot-file">选择 ExperienceSnapshot JSON（最多 5 MiB）</label><input id="snapshot-file" type="file" accept=".json,application/json"><div class="snap-actions"><button data-snapshot-example>查看 MOCK 字段示例</button><button data-snapshot-clear>清空本页数据</button></div><p>文件只在当前页面内存中读取，不上传、不保存到浏览器存储；刷新或清空后移除。尚未连接 DSH。</p>
-  <details><summary>或粘贴 JSON</summary><form id="snapshot-paste"><label for="snapshot-json">完整快照 JSON</label><textarea id="snapshot-json" rows="5" spellcheck="false" placeholder="粘贴 schemaVersion、scope、episodes、skills、revisions、feedback"></textarea><button>导入粘贴内容</button></form></details></section>
-  ${state.status==='loading'?'<p role="status">正在读取快照…</p>':state.status==='error'?`<div class="snap-error" role="alert"><strong>导入失败</strong><p>${snapEscape(state.error)}</p><p>未加载任何记录，也不会回退为 MOCK。请修正后重新导入。</p></div>`:!ready?'<div class="snap-empty"><h2>尚未导入经验快照</h2><p>可选择插件 snapshot(scope) 导出的 JSON；目前没有预装真实运行数据。也可以先查看明确标注的 MOCK 字段示例。</p></div>':''}${content}</div>`;
+  <details class="snap-upload" ${ready?'':'open'}><summary>${ready?'更换文件或导入方式':'导入经验快照'}</summary><label for="snapshot-file">选择 ExperienceSnapshot JSON（最多 5 MiB）</label><input id="snapshot-file" type="file" accept=".json,application/json"><div class="snap-actions"><button data-snapshot-example>查看 MOCK 字段示例</button><button data-snapshot-clear>清空本页数据</button></div><p>文件只在当前页面内存中读取，不上传、不保存到浏览器存储；刷新或清空后移除。尚未连接 DSH。</p>
+  <details><summary>或粘贴 JSON</summary><form id="snapshot-paste"><label for="snapshot-json">完整快照 JSON</label><textarea id="snapshot-json" rows="5" spellcheck="false" placeholder="粘贴 schemaVersion、scope、episodes、skills、revisions、feedback"></textarea><button>导入粘贴内容</button></form></details></details>
+  ${state.status==='loading'?'<p role="status">正在读取快照…</p>':state.status==='error'?`<div class="snap-error" role="alert"><strong>导入失败</strong><p>${snapEscape(state.error)}</p><p>未加载任何记录，也不会回退为 MOCK。请修正后重新导入。</p></div>`:!ready?'':''}${content}</div>`;
 }
 
 export function bindSnapshotImport(root,session,render) {

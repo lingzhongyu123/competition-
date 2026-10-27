@@ -4,6 +4,8 @@
 
 DSH 页面试验及可切换的麒麟风格预览见 [插件说明](plugins/memory-console-dsh/README.md)和 [实际验证记录](docs/DSH-前端接入可行性核查.md)。
 
+展示页遵循“一个页面讲一件事”：事实保留候选与原话，经验默认进入 MOCK 分步过程，规则页保留新旧对照。公共展示页共用简洁页头，来源、字段与接入说明按需展开；完整 MOCK 工作台仅供数据检查。
+
 ## 启动
 
 开发与测试需要 Node.js 20.18.3 或以上（支持 JSON import attributes），无运行依赖，无需 npm install。源模块页面使用现代 Chromium 浏览器；直接打开单文件演示不需要 Node。
@@ -96,3 +98,7 @@ LongMemEval oracle 的 500 条样本已取得，其中 4 条已接入页面；or
 GitHub 仓库：https://github.com/lingzhongyu123/competition- 。下载源码 ZIP 并解压后，双击根目录的 `双击打开演示.html` 即可查看演示。GitHub 文件页展示源码，不是已部署的网站。
 
 后续改动同时保存在本地并同步此仓库，具体约定见 AGENTS.md。
+
+### 展示动效
+
+首页使用本地固定版本 GSAP 3.15.0 编排指令、连线、规则和历史记录，支持暂停/续播、选步及重播。运行时内嵌在单文件中，离线展示无需 CDN；版权及来源见 [vendor 说明](src/vendor/README.md)。系统减少动态效果时保留步骤状态，关闭位移动画。
