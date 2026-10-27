@@ -57,7 +57,7 @@ test('the hours method carries into a new task without revealing a checked resul
   assert.match(start,/09:15/);
   assert.doesNotMatch(start,/>370<|MOCK 已记录采用/);
   const final=renderMockStory('reuse',3,'checked');
-  assert.match(final,/>9.25</);
+  assert.match(final,/9\.25 × 40 = 370/);
   assert.match(final,/>370</);
   assert.doesNotMatch(final,/Invoice|透视表|mock-case-pivot/);
 });

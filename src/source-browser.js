@@ -48,23 +48,22 @@ export function renderSourceBrowser(id, phase, query = '') {
   const { sample, isUpdate, annotation, anchors, visibleSessions } = view;
   const matching = sourceDataset.cases.filter(item => `${item.label} ${item.title} ${item.id} ${item.summary}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   const activeVisible = matching.some(item => item.id === sample.id);
-  const selectedAnchor = isUpdate ? anchors[anchors.length - 1] : anchors[0];
   const value = annotation.values[isUpdate ? view.phase : 0];
   const anchorButton = ([si, ti], label) => `<button class="text-button" data-source-anchor="source-turn-${sample.id}-${si}-${ti}">${sourceEscape(label)}</button>`;
   const summary = isUpdate && view.phase === 0
     ? '在 5 月 25 日这次陈述之后，已有证据支持的个人最好成绩是 27:12。切换到较新陈述，再看信息如何变化。'
     : sample.summary;
   return `<div class="source-workspace">
-    <div class="source-heading"><div><h1>从原话到记忆</h1><p>LongMemEval 公开对话 · 人工整理示意</p></div></div>
-    <details class="source-picker"><summary>切换案例 · ${sourceEscape(sample.label)}</summary><div class="source-sample-nav" aria-label="选择真实样本">${matching.map(item => `<button data-source-sample="${item.id}" aria-pressed="${item.id === sample.id}"><small>${sourceEscape(item.label)}</small><strong>${sourceEscape(item.title)}</strong></button>`).join('')}</div></details>
+    <div class="source-heading"><div><h1>对话记录</h1><p>公开样本，人工整理</p></div></div>
+    <nav class="source-case-tabs" aria-label="选择真实样本">${matching.map(item=>`<button data-source-sample="${item.id}" aria-pressed="${item.id===sample.id}">${sourceEscape({e47becba:'学历专业','8a2466db':'软件偏好','6a1eabeb':'成绩更新',gpt4_2655b836:'事件先后'}[item.id])}</button>`).join('')}</nav>
     ${matching.length ? '' : '<div class="source-empty" role="status">没有匹配的样本。可以搜索“学历”“成绩”或样本 ID。</div>'}
     ${activeVisible ? `<section class="source-record" aria-labelledby="source-record-title"><h2 class="source-simple-title" id="source-record-title">${sourceEscape(sample.title)}</h2>
     ${isUpdate ? `<div class="source-time-control" aria-label="按陈述时间查看"><span>查看时点</span><button data-source-phase="0" aria-pressed="${view.phase === 0}">5 月 25 日<small>第一条陈述</small></button><button data-source-phase="1" aria-pressed="${view.phase === 1}">5 月 27 日<small>较新陈述</small></button></div>` : ''}
-    <div class="source-visual-chain" aria-label="用户原话到记忆候选"><article class="source-evidence"><h3>用户原话 · 中文节译</h3>${anchors.map(([si, ti]) => {
+    <div class="source-visual-chain" aria-label="用户原话到记忆候选"><article class="source-evidence"><h3>对话摘录 <small>中文节译</small></h3>${anchors.map(([si, ti]) => {
       const session = sample.sessions[si], turn = session.turns[ti];
-      return `<div class="source-quote"><div class="source-quote-meta"><strong>${isUpdate ? (si===sample.anchors[0][0] ? '5 月 25 日' : '5 月 27 日') : '真实公开会话'}</strong></div><blockquote>${sourceEscape(sourceExcerptZh(sample.id,turn.content))}</blockquote><details class="source-english-excerpt"><summary>英文原句</summary><p lang="en">${sourceEscape(getSourceExcerpt(sample.id,turn.content))}</p></details>${anchorButton([si, ti], '查看完整原话')}</div>`;
-    }).join('')}</article><div class="source-chain-arrow" aria-hidden="true">→</div><article class="source-analysis"><h3>人工整理的记忆候选</h3><div class="source-fact"><span>${sourceEscape(annotation.field)}</span><strong class="${isUpdate ? 'source-score' : ''}">${sourceEscape(sample.id==='e47becba' ? annotation.translation : value)}</strong><small>${sourceEscape(sample.id==='e47becba' ? value : annotation.translation)}</small></div>
-    ${isUpdate && view.phase === 1 ? `<div class="source-prior"><span>保留的历史陈述</span><strong>27:12</strong><small>5 月 25 日陈述</small>${anchorButton(anchors[0], '追溯旧陈述')}</div><p class="source-short-note">新陈述更新当前值，旧陈述仍保留。</p>` : `<p class="source-short-note">${isUpdate ? '这是当时的陈述。切换日期，看后来怎么说。' : sample.id==='gpt4_2655b836' ? '按事件发生时间排列，不按说话顺序。' : '从原话中记下这条信息。'}</p>`}
+      return `<div class="source-quote"><div class="source-quote-meta"><strong>${isUpdate ? (si===sample.anchors[0][0] ? '5 月 25 日' : '5 月 27 日') : session.date.split(' (')[0]}</strong></div><blockquote>${sourceEscape(sourceExcerptZh(sample.id,turn.content))}</blockquote><details class="source-english-excerpt"><summary>英文原句</summary><p lang="en">${sourceEscape(getSourceExcerpt(sample.id,turn.content))}</p></details>${anchorButton([si, ti], '查看完整原话')}</div>`;
+    }).join('')}</article><article class="source-analysis"><h3>人工整理的记忆候选</h3><div class="source-fact ${sample.id==='gpt4_2655b836'?'source-event-record':''}"><span>${sourceEscape(annotation.field)}</span>${sample.id==='gpt4_2655b836'?'<ol class="source-event-timeline"><li><time>3 月 15 日</time><strong>首次保养</strong></li><li><time>3 月 22 日</time><strong>GPS 故障，送修</strong></li></ol>':`<strong class="${isUpdate?'source-score':''}">${sourceEscape(sample.id==='e47becba'?annotation.translation:value)}</strong><small>${sourceEscape(sample.id==='e47becba'?value:annotation.translation)}</small>`}</div>
+    ${isUpdate && view.phase === 1 ? `<div class="source-prior"><span>保留的历史陈述</span><strong>27:12</strong><small>5 月 25 日陈述</small>${anchorButton(anchors[0], '追溯旧陈述')}</div><p class="source-short-note">新陈述更新当前值，旧陈述仍保留。</p>` : `<p class="source-short-note">${isUpdate ? '这是当时的陈述。切换日期，看后来怎么说。' : sample.id==='gpt4_2655b836' ? '按事件发生时间排列，不按说话顺序。' : '记录来自左侧原话，尚未写入真实记忆服务。'}</p>`}
     </article></div>
     <details class="source-explanation"><summary>解读与边界</summary><p class="source-summary">${sourceEscape(summary)}</p><p class="source-caution">${sourceEscape(annotation.note)}</p>${isUpdate && view.phase===1 ? '<p>25:50 是后来陈述中已有的最好成绩；希望打破它是未来目标。两次陈述之间的刷新事件未提供。</p>' : ''}
     <details class="source-question"><summary>数据集问题</summary><p>${sourceEscape(sample.questionZh)}</p><p lang="en">${sourceEscape(sample.question)}</p><small>提问时间：${sourceEscape(sample.questionDate)}</small><p>尚未运行模型作答。</p></details></details>
