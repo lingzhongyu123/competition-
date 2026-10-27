@@ -3,7 +3,7 @@ import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
 import { publicTasks } from './public-tasks.js';
 import { renderSourceBrowser, bindSourceBrowser, getSourceView } from './source-browser.js';
-import { renderDemoGuide, getGuideTarget } from './demo-guide.js';
+import { renderDemoGuide, bindDemoGuide, getGuideTarget } from './demo-guide.js';
 import { renderOsworldStory } from './osworld-story.js';
 import { createSnapshotSession } from './snapshot-import.js';
 import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
@@ -11,7 +11,7 @@ import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
 const provider = createMockProvider();
 const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });
 const pages = [
-  ['guide', '展示导览', 'book'],
+  ['guide', '首页演示', 'book'],
   ['sources', '真实样本', 'book'],
   ['import', '经验快照', 'download'],
   ['osworld', '任务故事草图', 'layers'],
@@ -147,7 +147,21 @@ function bind(snapshot) {
   $('[data-reset]').onclick=()=>{provider.reset();snapshotSession.clear();state.selected='mem-sort-v1';state.trace=null;state.story='formation';state.storyView='sources';state.storyStep=0;state.storyScenario='injected';navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
   if ($('[data-tour]')) $('[data-tour]').onclick=()=>{state.selected='mem-sort-v1';navigate('timeline',1);notify('按 Day 01 → 03 → 07 → 10 → 14 回放；从事件打开记忆与轨迹。')};
 }
+let disposeGuide = null;
 function render() {
+  if (disposeGuide) { disposeGuide(); disposeGuide = null; }
+  if (state.page === 'guide') {
+    document.body.dataset.mode = 'guide';
+    document.body.dataset.theme = state.theme;
+    $('#app').innerHTML = renderDemoGuide();
+    disposeGuide = bindDemoGuide($('#app'), target => {
+      if (!target) return;
+      Object.assign(state, target);
+      navigate(target.page);
+      $('#main').focus({ preventScroll: true });
+    });
+    return;
+  }
   const guideMode=state.page==='guide';
   const sourceMode=state.page==='sources';
   const storyMode=state.page==='osworld';

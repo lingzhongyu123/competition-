@@ -130,35 +130,28 @@ body[data-theme=neutral]{--accent:#627389;--sidebar:#edf0f3;--accent-soft:#edf0f
 
 .snap-detail{scroll-margin-top:75px}
 
-/* Presentation navigation only; never styles the host or existing workspaces. */
-.guide-workspace{max-width:1120px;color:#303b49;line-height:1.7;font-size:14px}
-.guide-heading{padding:4px 0 23px;border-bottom:1px solid var(--line)}
-.guide-heading .eyebrow{font-size:10px;letter-spacing:1px;color:#6c7e96}
-.guide-heading h1{font-size:27px;letter-spacing:0;margin:10px 0 7px}
-.guide-heading>p{color:#647287}.guide-boundary{font-size:12px;color:#7b663e;margin-top:15px}
-.guide-lanes{display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:23px 0}
-.guide-lanes>div{border-left:3px solid #9ab9e2;padding-left:15px}
-.guide-lanes>div:last-child{border-color:#9ebeb9}.guide-lanes strong{font-size:15px}
-.guide-lanes small{font-size:11px;font-weight:400;color:#778391;margin-left:8px}
-.guide-lanes p{font-size:12px;color:#6c7786;margin-top:5px}
-.guide-section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:5px 0 12px}
-.guide-section-heading h2,.guide-evidence h2,.guide-handoff h2{font-size:16px}
-.guide-section-heading>span{font-size:11px;color:#778391}
-.guide-stories{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.guide-story{display:flex;flex-direction:column;align-items:flex-start;padding:20px;border:1px solid #e1e6ee;border-radius:6px;background:#fff;min-width:0}
-.guide-story-top{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;margin-bottom:10px}
-.guide-number{font-size:18px;color:#638aba;font-variant-numeric:tabular-nums}.guide-status{font-size:10px;color:#5c6c82;background:#f1f4f8;padding:3px 7px;border-radius:3px}
-.guide-story h2{font-size:19px}.guide-story h3{font-size:13px;color:#506581;font-weight:500;margin:4px 0 12px}
-.guide-story>p{font-size:12px;color:#5a6575}.guide-look{width:100%;margin:14px 0 10px;padding:10px 12px;background:#f6f8fb;border-left:2px solid #b4c9e8;font-size:12px}
-.guide-look strong{font-weight:500;color:#405a7b}.guide-look p{color:#637186;margin-top:3px}
-.guide-story .guide-missing{color:#897144;font-size:11px;margin-bottom:15px}.guide-story button{margin-top:auto;text-align:left;white-space:normal}
-.guide-evidence{margin-top:26px;padding:20px 0;border-top:1px solid var(--line)}
-.guide-evidence>p{font-size:12px;color:#748092;margin:5px 0 12px}
-.guide-evidence dl{margin:0}.guide-evidence dl>div{display:grid;grid-template-columns:200px 1fr;gap:20px;padding:10px 0;border-bottom:1px solid #edf0f4;font-size:12px}
-.guide-evidence dt{font-weight:500;color:#435d7f}.guide-evidence dd{margin:0;color:#667385}
-.guide-handoff{display:flex;gap:24px;align-items:center;padding:18px;background:#f4f7fb;border-radius:5px;margin:0 0 12px}
-.guide-handoff p{font-size:12px;color:#637186;margin:6px 0}.guide-handoff small{font-size:11px;color:#788493}.guide-handoff button{flex-shrink:0}
-@media(max-width:700px){.guide-heading h1{font-size:23px}.guide-lanes,.guide-stories{grid-template-columns:1fr;gap:14px}.guide-section-heading,.guide-handoff{align-items:flex-start;flex-direction:column}.guide-story{padding:16px}.guide-evidence dl>div{grid-template-columns:1fr;gap:3px}.guide-heading,.guide-workspace{overflow-wrap:anywhere}}
+/* The home page has one visual story; inspection tools remain secondary. */
+body[data-mode=guide]{background:#f6f7f9;color:#263442}
+.motion-home{min-height:100vh;font-family:"Microsoft YaHei",system-ui,sans-serif}
+.motion-header{height:68px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e1e5e9;background:#fff}
+.motion-brand{display:flex;align-items:center;gap:10px;color:#273745;font-size:15px;font-weight:600}.motion-brand span{font-size:26px;color:#3376c4}
+.motion-menu{position:relative;font-size:13px}.motion-menu summary{cursor:pointer;padding:9px 14px;border:1px solid #dce2e8;border-radius:5px;list-style:none}.motion-menu summary:after{content:' ⌄';margin-left:12px}
+.motion-menu nav{position:absolute;right:0;top:48px;width:200px;padding:8px;background:white;border:1px solid #dce2e8;box-shadow:0 8px 24px #23364d12;z-index:50;border-radius:6px}.motion-menu button{display:block;width:100%;text-align:left;padding:10px;border-radius:4px}.motion-menu button:hover{background:#eef4fb}.motion-menu hr{border:0;border-top:1px solid #e4e8ed}
+.motion-main{max-width:1160px;margin:0 auto;padding:48px 40px 28px}.motion-heading{margin-bottom:30px}.motion-kicker{font-size:12px;color:#56728d;letter-spacing:2px}.motion-heading h1{font-size:32px;font-weight:600;letter-spacing:0;margin:10px 0}.motion-heading p{color:#6b7785;font-size:14px}
+.memory-stage{background:#fff;border:1px solid #dee5eb;border-radius:10px;overflow:hidden}.stage-label{padding:20px 26px;font-size:12px;color:#6b7b89;display:flex;align-items:center;gap:8px}.stage-dot{width:6px;height:6px;background:#6d91b7;border-radius:50%}
+.memory-scene{display:grid;grid-template-columns:minmax(0,1fr) 140px minmax(0,1fr);align-items:center;padding:32px 48px 20px;min-height:310px;background:radial-gradient(#dfe6ed .7px,transparent .7px);background-size:16px 16px}
+.statement{background:#f6f8fb;border:1px solid #e2e8ef;border-radius:8px;padding:22px;align-self:center;transition:border-color .4s,transform .4s}.scene-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#697b8d}.statement>p{font-size:19px;line-height:1.9;margin:20px 0;color:#2f4355}.statement-source summary{font-size:12px;color:#527597;cursor:pointer}.statement-source blockquote{margin:12px 0 8px;font-size:12px;line-height:1.8;color:#5e6f80;overflow-wrap:anywhere}.statement-source small{font-size:10px}
+.memory-flow{text-align:center;color:#8496a9}.memory-flow svg{width:100%;height:60px;fill:none;stroke:#cbd8e5;stroke-width:1.5}.memory-flow span{font-size:11px}.flow-travel{stroke:#3c81d2;stroke-width:3;stroke-dasharray:12 150;opacity:0}
+.current-memory{position:relative;background:#fff;border:1px solid #7fa7d1;border-radius:8px;padding:22px;box-shadow:0 7px 22px #25578c0b;transition:border-color .5s,background .5s}.current-indicator{font-size:10px;color:#2c7e6a;background:#eaf5ef;border-radius:3px;padding:2px 6px}.current-memory h2{font-size:14px;font-weight:500;margin-top:22px;color:#50677b}.memory-value{font-size:60px;line-height:1.3;letter-spacing:-2px;font-weight:500;font-variant-numeric:tabular-nums;color:#276ab1}.memory-unit{font-size:11px;color:#8894a0}.memory-origin{margin-top:17px;padding-top:12px;border-top:1px solid #edf0f3;font-size:11px;color:#748494}.memory-stack{position:relative;padding-bottom:48px;margin-bottom:-48px}
+.history-memory{position:absolute;left:12px;right:12px;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #dde3e9;border-top:0;padding:10px 12px;background:#f5f7f9;border-radius:0 0 6px 6px;font-size:11px;color:#84909c}.history-memory[hidden]{display:none}.history-memory s{font-size:15px;font-variant-numeric:tabular-nums}.history-memory small{font-size:10px}
+.stage-caption{text-align:center;min-height:64px;padding:26px 16px 16px;color:#64788b;font-size:13px}.playback{display:flex;align-items:center;gap:22px;padding:20px 26px;border-top:1px solid #e6ebef;margin-top:12px}.play-button{min-width:92px;padding:9px 15px;background:#3278c9;color:#fff;border-radius:5px;font-size:13px}.step-track{display:flex;align-items:center;justify-content:center;flex:1;gap:0}.step-track button{display:flex;align-items:center;gap:8px;font-size:12px;color:#7d8b99;position:relative;padding:8px 18px}.step-track button+button:before{content:'';width:20px;border-top:1px solid #dce4ec;position:absolute;left:-10px}.step-dot{display:grid;place-items:center;width:21px;height:21px;border:1px solid #d3dce6;border-radius:50%;font-size:10px}.step-track button[aria-pressed=true]{color:#276ab1}.step-track button[aria-pressed=true] .step-dot{background:#3278c9;border-color:#3278c9;color:#fff}.step-track .passed .step-dot{border-color:#76a5d6;color:#3278c9}.replay-button{font-size:12px;color:#697f92;padding:8px}
+.motion-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:17px;font-size:11px;color:#7a8795}.motion-foot button{font-size:12px;color:#527597;white-space:nowrap}
+.memory-stage[data-step="1"] .statement{border-color:#7fa7d1;transform:translateY(-4px)}.memory-stage[data-step="1"] .flow-travel{opacity:1;animation:memory-travel 1.2s ease-out 1}.memory-stage[data-step="2"] .flow-travel{opacity:1;animation:memory-travel .8s ease-out 1}.memory-stage[data-step="2"] .current-memory{background:#f5faff;border-color:#387fc8}.memory-stage[data-step="2"] .memory-value{animation:memory-value-in .55s ease-out}.memory-stage[data-step="2"] .history-memory{animation:memory-history-in .55s ease-out}
+@keyframes memory-travel{from{stroke-dashoffset:30}to{stroke-dashoffset:-140}}@keyframes memory-value-in{from{opacity:.15;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes memory-history-in{from{opacity:0;transform:translateY(-22px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:1400px){.motion-main{padding-top:64px}.memory-scene{min-height:360px}}
+@media(max-width:800px){.motion-main{padding:28px 22px}.memory-scene{padding:24px;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)}.statement,.current-memory{padding:16px}.statement>p{font-size:16px}.memory-value{font-size:48px}.step-track button{padding:8px;font-size:11px}.step-track button+button:before{display:none}.playback{gap:10px;padding:16px}.history-memory small{display:none}}
+@media(max-width:540px){.motion-header{height:58px;padding:0 18px}.motion-brand{font-size:13px}.motion-main{padding:26px 16px}.motion-heading h1{font-size:25px}.motion-heading{margin-bottom:22px}.memory-scene{grid-template-columns:1fr;padding:10px 22px 20px;gap:12px}.statement>p{margin:10px 0;font-size:16px}.memory-flow{height:34px;display:flex;align-items:center;justify-content:center;gap:8px}.memory-flow svg{width:45px;height:30px;transform:rotate(90deg)}.memory-stack{margin-bottom:0}.current-memory h2{margin-top:10px}.memory-value{font-size:48px}.memory-origin{margin-top:8px}.stage-caption{padding:12px;min-height:44px}.playback{flex-wrap:wrap;justify-content:space-between;margin-top:0}.step-track{order:-1;flex-basis:100%;justify-content:space-between}.step-track button{padding:5px 0}.motion-foot{align-items:flex-start;gap:12px}.motion-foot p{max-width:230px}.stage-label{padding:16px 22px}.history-memory small{display:block}}
+@media(prefers-reduced-motion:reduce){.motion-home *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -651,33 +644,75 @@ function bindSnapshotImport(root,session,render) {
   if(find('#snapshot-search'))find('#snapshot-search').onsubmit=e=>{e.preventDefault();state.query=find('#snapshot-query').value;state.page=0;state.selected=-1;refresh();find('#snapshot-query').focus();};
 }
 
-// Curated presentation routes, not backend capability or evaluation results.
+
 function getGuideTarget(key) {
-  const targets = {
+  return {
     fact: { page: 'sources', sample: 'e47becba', phase: 1, sourceQuery: '' },
     update: { page: 'sources', sample: '6a1eabeb', phase: 0, sourceQuery: '' },
     formation: { page: 'osworld', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' },
     reuse: { page: 'osworld', story: 'reuse', storyView: 'sources', storyStep: 0, storyScenario: 'injected' },
     import: { page: 'import' }
-  };
-  return targets[key] || null;
+  }[key] || null;
 }
 
+// A manually authored illustration of public statements, never a backend replay.
+function getGuideFrame(step) {
+  const index = Math.min(2, Math.max(0, Math.floor(Number(step) || 0)));
+  const view = getSourceView('6a1eabeb', index === 0 ? 0 : 1);
+  const anchor = view.anchors.at(-1);
+  const session = view.sample.sessions[anchor[0]];
+  return {
+    step: index, value: index === 2 ? '25:50' : '27:12',
+    incoming: index > 0, history: index === 2,
+    date: index === 0 ? '5 月 25 日' : '5 月 27 日',
+    quote: session.turns[anchor[1]].content,
+    caption: ['先记住一条信息。', '新的陈述来了，等待更新。', '更新当前值，保留旧信息的来源。'][index],
+    translation: index === 0 ? '最近一次慈善 5K 跑，我的个人最好成绩是 27:12。' : '我希望这次能打破自己 25:50 的个人最好成绩。'
+  };
+}
 function renderDemoGuide() {
-  const stories = [
-    ['fact', '01', '事实记忆', 'AI 记住的信息从哪里来？', '公开会话 · 人工候选', '从学历专业的用户原话出发，查看人工整理的记忆候选，再定位完整会话。', '点击原文，核对候选是否超出用户说过的内容。', '真实系统的提取与写入记录尚未取得。', '查看事实来源'],
-    ['update', '02', '信息更新', '新信息出现后，旧信息去哪了？', '公开会话 · 人工对照', '先看 5 月 25 日陈述的 27:12，再切到 5 月 27 日的 25:50，保留两次来源。', '比较两个陈述时点；陈述时间不等于比赛发生时间。', '这不是 Memory 真实版本日志或更新操作。', '从较早陈述开始'],
-    ['formation', '03', '任务经验', '一次操作怎样成为可复用经验？', '官方任务 · 待采集过程', '从工时计算任务出发，讨论输入、动作、修正、结果与经验候选之间的联系。', '先看资料现状，再自行选择标为 MOCK 的四步演示。', '真实执行轨迹、工作簿和核验结果尚未取得。', '查看经验形成故事'],
-    ['reuse', '04', '经验复用', '找到旧经验，就能说它有用吗？', '官方任务 · 拟议配对', '比较产品收入汇总与发票次数统计：共用建表思路，Sum 与 Count 的适用条件不同。', '在 MOCK 演示中对比只有注入、看到采用、看到核验及条件不符。', '注入不等于采用，采用不等于通过；真实收益未评测。', '查看经验复用故事']
-  ];
-  return `<div class="guide-workspace">
-    <header class="guide-heading"><div class="eyebrow">MEMORY CONSOLE / 展示导览</div><h1>把记忆的来龙去脉讲清楚</h1><p>沿着四条故事，观察事实如何变化、经验如何形成与复用。</p><div class="guide-boundary">独立展示原型 · 尚未连接 DSH / Memory 服务 · 正式评测未运行</div></header>
-    <section class="guide-lanes" aria-label="两类记忆的展示重点"><div><strong>事实记忆 <small>Factual memory</small></strong><p>关于用户和环境的信息：关注原话、作用范围、新旧值与来源。</p></div><div><strong>经验记忆 <small>Experience memory</small></strong><p>关于如何完成任务的知识：关注动作、结果、适用条件与复用证据。</p></div></section>
-    <div class="guide-section-heading"><h2>建议按顺序讲解</h2><span>随时从左侧“展示导览”返回</span></div>
-    <section class="guide-stories" aria-label="四条展示故事">${stories.map(([id, number, title, question, status, description, action, missing, label]) => `<article class="guide-story"><div class="guide-story-top"><span class="guide-number">${number}</span><span class="guide-status">${status}</span></div><h2>${title}</h2><h3>${question}</h3><p>${description}</p><div class="guide-look"><strong>演示时看什么</strong><p>${action}</p></div><p class="guide-missing">证据边界：${missing}</p><button class="secondary" data-guide="${id}">${label} →</button></article>`).join('')}</section>
-    <section class="guide-evidence" aria-labelledby="guide-evidence-title"><h2 id="guide-evidence-title">讲结论之前，先看证据走到哪一步</h2><p>这些是本原型的资料状态，不代表上游插件的全部能力。</p><dl><div><dt>原始来源</dt><dd>已有公开会话与官方任务定义；它们不包含本项目的实际运行结果。</dd></div><div><dt>记忆形成与更新</dt><dd>目前展示人工候选、原文对照或 MOCK；真实写入和版本记录待提供。</dd></div><div><dt>检索 → 注入 → 采用 → 核验</dt><dd>逐项需要独立记录。当前过程演示为 MOCK，缺少证据时不能推进结论。</dd></div><div><dt>效果比较</dt><dd>尚无真实 ON/OFF 对照，不能用合成数字说明收益。</dd></div></dl></section>
-    <section class="guide-handoff"><div><h2>拿到经验快照后，可以接着看什么？</h2><p>导入协作者提供的 JSON，查看任务、策略、版本和反馈，沿引用追溯来源。导入仅检查展示结构，文件内容仍标为“来源未核验”。</p><small>没有文件也可查看明确标注的 MOCK 字段示例。导入内容只留在当前页面内存中。</small></div><button class="secondary" data-guide="import">打开经验快照 →</button></section>
+  return `<div class="motion-home">
+    <header class="motion-header"><a href="#guide" class="motion-brand"><span>◈</span> Memory Console</a><details class="motion-menu"><summary>更多内容</summary><nav aria-label="更多内容"><button data-guide="fact">事实来源</button><button data-guide="formation">经验形成</button><button data-guide="reuse">经验复用</button><hr><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button></nav></details></header>
+    <main id="main" class="motion-main" tabindex="-1"><div class="motion-heading"><span class="motion-kicker">记忆 · 信息更新</span><h1>记住变化，也留下来处。</h1><p>一条新的陈述，怎样改变已有记忆？</p></div>
+    <section class="memory-stage" data-step="0" aria-label="信息更新可视化">
+      <div class="stage-label"><span class="stage-dot"></span>公开样本 · 人工编排动画</div>
+      <div class="memory-scene"><article class="statement"><div class="scene-meta"><span>用户陈述</span><time data-date></time></div><p data-translation></p><details class="statement-source"><summary>来源原文</summary><blockquote data-quote lang="en"></blockquote><small>LongMemEval 公开会话 · 上方为节译</small></details></article>
+      <div class="memory-flow" aria-hidden="true"><svg viewBox="0 0 160 60"><path d="M5 30H150"/><path class="flow-travel" d="M5 30H150"/><path d="m140 23 10 7-10 7"/></svg><span data-flow-label>已有记忆</span></div>
+      <div class="memory-stack"><article class="current-memory"><div class="scene-meta"><span>当前记忆</span><span class="current-indicator">有效</span></div><h2>5K 个人最好成绩</h2><div class="memory-value" data-value>27:12</div><span class="memory-unit">分 : 秒</span><div class="memory-origin" data-origin>来源 · 5 月 25 日的陈述</div></article><div class="history-memory" hidden><span>历史记录</span><s>27:12</s><small>来源 · 5 月 25 日</small></div></div></div>
+      <p class="stage-caption" role="status" aria-live="polite" data-caption></p>
+      <div class="playback"><button class="play-button" data-play aria-label="播放更新过程">▶ 播放</button><div class="step-track" aria-label="演示步骤">${['已有记忆','新陈述','完成更新'].map((label,i)=>`<button data-frame="${i}" aria-pressed="${i===0}"><span class="step-dot">${i+1}</span>${label}</button>`).join('')}</div><button class="replay-button" data-replay aria-label="回到第一步">↺ 重置</button></div>
+    </section><footer class="motion-foot"><p>公开会话的人工对照，未执行真实记忆写入。日期为陈述时间。</p><button data-guide="update">查看完整案例 ↗</button></footer></main>
   </div>`;
+}
+function bindDemoGuide(root, onNavigate) {
+  let step = 0, playing = false, timer = null;
+  const select = selector => root.querySelector(selector);
+  const stop = () => { clearTimeout(timer); timer = null; playing = false; };
+  const paint = () => {
+    const frame = getGuideFrame(step);
+    select('.memory-stage').dataset.step = String(step);
+    select('[data-date]').textContent = frame.date;
+    select('[data-translation]').textContent = frame.translation;
+    select('[data-quote]').textContent = frame.quote;
+    select('[data-value]').textContent = frame.value;
+    select('[data-origin]').textContent = `来源 · ${step === 2 ? '5 月 27 日' : '5 月 25 日'}的陈述`;
+    select('[data-flow-label]').textContent = ['已有记忆','等待更新','更新并保留历史'][step];
+    select('.history-memory').hidden = !frame.history;
+    select('[data-caption]').textContent = frame.caption;
+    const play = select('[data-play]');
+    play.textContent = playing ? 'Ⅱ 暂停' : step === 2 ? '↻ 重播' : '▶ 播放';
+    play.setAttribute('aria-label', playing ? '暂停更新过程' : step === 2 ? '重播更新过程' : '播放更新过程');
+    root.querySelectorAll('[data-frame]').forEach(button => {button.setAttribute('aria-pressed', String(Number(button.dataset.frame) === step));button.classList.toggle('passed',Number(button.dataset.frame)<step);});
+  };
+  const schedule = () => { timer = setTimeout(() => { if (!root.isConnected) {stop(); return;} step++; if(step===2) stop(); paint(); if(playing) schedule(); }, 2400); };
+  select('[data-play]').onclick = () => { if(playing) stop(); else {if(step===2) step=0;playing=true;schedule();} paint(); };
+  select('[data-replay]').onclick = () => {stop();step=0;select('.statement-source').open=false;paint();};
+  root.querySelectorAll('[data-frame]').forEach(button => button.onclick = () => {stop();step=Number(button.dataset.frame);paint();});
+  root.querySelectorAll('[data-guide],[data-nav]').forEach(button => button.onclick = () => {stop();onNavigate(button.dataset.guide ? getGuideTarget(button.dataset.guide) : {page:button.dataset.nav});});
+  const hide = () => {if(document.hidden && playing){stop();paint();}};
+  document.addEventListener('visibilitychange',hide);
+  paint();
+  return () => {stop();document.removeEventListener('visibilitychange',hide);};
 }
 
 function safeReplaceState(...args) { if (location.protocol === 'http:' || location.protocol === 'https:') history.replaceState(...args); }
@@ -685,7 +720,7 @@ function safeReplaceState(...args) { if (location.protocol === 'http:' || locati
 const provider = createMockProvider();
 const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });
 const pages = [
-  ['guide', '展示导览', 'book'],
+  ['guide', '首页演示', 'book'],
   ['sources', '真实样本', 'book'],
   ['import', '经验快照', 'download'],
   ['osworld', '任务故事草图', 'layers'],
@@ -821,7 +856,21 @@ function bind(snapshot) {
   $('[data-reset]').onclick=()=>{provider.reset();snapshotSession.clear();state.selected='mem-sort-v1';state.trace=null;state.story='formation';state.storyView='sources';state.storyStep=0;state.storyScenario='injected';navigate('memories',1);notify('已恢复初始数据，从 Day 01 开始演示。')};
   if ($('[data-tour]')) $('[data-tour]').onclick=()=>{state.selected='mem-sort-v1';navigate('timeline',1);notify('按 Day 01 → 03 → 07 → 10 → 14 回放；从事件打开记忆与轨迹。')};
 }
+let disposeGuide = null;
 function render() {
+  if (disposeGuide) { disposeGuide(); disposeGuide = null; }
+  if (state.page === 'guide') {
+    document.body.dataset.mode = 'guide';
+    document.body.dataset.theme = state.theme;
+    $('#app').innerHTML = renderDemoGuide();
+    disposeGuide = bindDemoGuide($('#app'), target => {
+      if (!target) return;
+      Object.assign(state, target);
+      navigate(target.page);
+      $('#main').focus({ preventScroll: true });
+    });
+    return;
+  }
   const guideMode=state.page==='guide';
   const sourceMode=state.page==='sources';
   const storyMode=state.page==='osworld';

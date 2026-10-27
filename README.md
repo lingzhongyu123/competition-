@@ -33,7 +33,7 @@ node tests/ui.cjs
 
 ## 已能演示
 
-- 默认首页为“展示导览”：按事实、更新、经验形成、复用四条故事进入现有页面，说明各自的来源、操作重点与证据边界；已有带 hash 的深链接仍进入原页面。
+- 默认首页为单条动态记忆演示：播放 5K 成绩从 27:12 更新至 25:50 的人工对照过程，可暂停、回退和重播。原文按需展开，其他故事与数据检查放入“更多内容”；已有 hash 深链接保留。
 
 - “经验快照”：本地只读导入插件 ExperienceSnapshot v1，查看策略、任务、版本和反馈；文件来源未核验，与内置 MOCK 分开。格式与限制见 [导入说明](docs/经验快照-只读导入格式.md)。
 
@@ -66,7 +66,7 @@ node tests/ui.cjs
 | `data/longmemeval/展示样本-原始会话.json` | 已整理的 4 条公开样本、7 个会话，不含评测答案字段 |
 | `src/mock-story.js` | 自建逐步演示与证据状态；不执行 Agent 或写入经验库 |
 | `src/snapshot-import.js`、`src/snapshot-view.js`、`src/snapshot.css` | 快照结构检查、内存会话与只读浏览；无上传或在线请求 |
-| `src/demo-guide.js`、`src/guide.css` | 四条故事的导览入口、展示重点与证据边界 |
+| `src/demo-guide.js`、`src/guide.css` | 首页动态演示、阶段控制及次级入口 |
 | `src/app.js` | 页面、导航与交互 |
 | `src/styles.css` | 麒麟概念与中性主题、响应式布局 |
 | `scripts/serve.mjs` | 仅提供公开页面/资源的本地静态服务 |
