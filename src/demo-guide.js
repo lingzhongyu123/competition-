@@ -63,8 +63,8 @@ export function getGuideFrame(step) {
     status:['待排序','已排序','要求已变','等待按新规则排序','排序有误：9 在 100 前','已修正 · MOCK','找到方法，待采用','已采用并检查 · MOCK'][index]
   };
 }
-export function renderPresentationHeader() {
-  return `<header class="motion-header"><a href="#guide" class="motion-brand"><span>◈</span> Memory Console</a><details class="motion-menu"><summary>补充材料</summary><nav aria-label="补充材料"><button data-guide="fact">对话样本 · 事实与更新</button><button data-guide="formation">任务样本 · 经验与复用</button><hr><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button><button data-nav="guide">返回首页</button></nav></details></header>`;
+export function renderPresentationHeader(page = 'guide') {
+  return `<header class="motion-header"><a href="#guide" class="motion-brand"><svg viewBox="0 0 28 28" width="28" height="28" fill="none" aria-hidden="true"><path d="M5 8h18v16H5z" fill="currentColor" opacity=".12"/><path d="M9 4h14v16H9zM5 8h14v16H5z" stroke="currentColor" stroke-width="1.6"/><path d="M9 13h6m-6 4h6" stroke="currentColor" stroke-width="1.6"/></svg>Memory Console</a><nav class="presentation-nav" aria-label="展示导航"><button data-nav="guide" ${page==='guide'?'aria-current="page"':''}>首页演示</button><button data-guide="fact" ${page==='sources'?'aria-current="page"':''}>对话样本</button><button data-guide="formation" ${page==='osworld'?'aria-current="page"':''}>任务样本</button></nav><details class="motion-menu"><summary>工具</summary><nav aria-label="检查工具"><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button></nav></details></header>`;
 }
 export function renderStoryContext(page) {
   if(page!=='sources' && page!=='osworld') return '';

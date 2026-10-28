@@ -12,10 +12,12 @@ export function getMockReuseEvidence(step = 0, variant = 'injected') {
 
 // Entirely authored MOCK files. No local disk or OSWorld files are read or moved.
 function file(name, kind) {
-  return `<span class="sort-file sort-file--${kind}"><span aria-hidden="true">${kind === 'image' ? '▧' : '▤'}</span>${name}</span>`;
+  const drawing = kind === 'image' ? '<rect x="4" y="5" width="24" height="22" rx="2"/><circle cx="12" cy="12" r="2"/><path d="m5 23 7-6 5 4 5-8 6 9"/>' : '<path d="M8 3h12l6 6v20H8zM20 3v7h6M12 16h10m-10 5h10"/>';
+  const type = name.endsWith('.png') ? 'PNG 图片' : name.endsWith('.jpg') ? 'JPG 图片' : 'PDF 文档';
+  return `<span class="sort-file sort-file--${kind}"><svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${drawing}</svg><span class="sort-file-name">${name}<small>${type}</small></span></span>`;
 }
 function folder(name, files, tone = '') {
-  return `<div class="sort-folder ${tone}"><div class="sort-folder-label"><span aria-hidden="true">▰</span><strong>${name}</strong></div><div class="sort-folder-files">${files.length ? files.join('') : '<span class="sort-empty">等待整理</span>'}</div></div>`;
+  return `<div class="sort-folder ${tone}"><div class="sort-folder-label"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 7V5h7l2 3h9v12H3z"/><path d="M3 9h18"/></svg><strong>${name}</strong>${tone==='sort-folder--wrong'?'<small>有文件放错</small>':tone==='sort-folder--right'?'<small>✓ 已归类</small>':''}</div><div class="sort-folder-files">${files.length ? files.join('') : '<span class="sort-empty">等待整理</span>'}</div></div>`;
 }
 function formationFiles(stage) {
   const cover = file('报告封面.png', 'image');

@@ -179,7 +179,7 @@ function render() {
     const content = state.page === 'manage' ? ruleContent : importMode ? renderSnapshotImport(snapshotSession.state)
       : sourceMode ? renderSourceBrowser(state.sample,state.phase,state.sourceQuery)
       : renderOsworldStory(state.story,{demo:state.storyView==='mock',step:state.storyStep,scenario:state.storyScenario});
-    $('#app').innerHTML = `${renderPresentationHeader()}<div class="presentation-page"><main id="main" tabindex="-1">${renderStoryContext(state.page)}${content}</main></div>`;
+    $('#app').innerHTML = `${renderPresentationHeader(state.page)}<div class="presentation-page"><main id="main" tabindex="-1">${renderStoryContext(state.page)}${content}</main></div>`;
     bind(snapshot);
     return;
   }

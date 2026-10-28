@@ -11,8 +11,8 @@ if (/<\/script/i.test(js)) throw new Error('Script contains an unsafe HTML closi
 new Script(`(()=>{${js}\n})();`); // Reject broken standalone scripts before replacing the deliverables.
 const html = (await read('index.html'))
   .replace('<link rel="stylesheet" href="./src/styles.css">','<style></style>')
-  .replace(/^[ \t]*<link rel="stylesheet" href="\.\/src\/(?:sources|osworld|snapshot|guide)\.css">\r?\n/gm,'');
-const css = await read('src/styles.css') + '\n' + await read('src/sources.css') + '\n' + await read('src/osworld.css') + '\n' + await read('src/snapshot.css') + '\n' + await read('src/guide.css');
+  .replace(/^[ \t]*<link rel="stylesheet" href="\.\/src\/(?:sources|osworld|snapshot|guide|presentation)\.css">\r?\n/gm,'');
+const css = await read('src/styles.css') + '\n' + await read('src/sources.css') + '\n' + await read('src/osworld.css') + '\n' + await read('src/snapshot.css') + '\n' + await read('src/guide.css') + '\n' + await read('src/presentation.css');
 const vendor = await read('src/vendor/gsap.min.js');
 new Script(vendor);
 if (/<\/script/i.test(vendor)) throw new Error('Unsafe vendor script');
