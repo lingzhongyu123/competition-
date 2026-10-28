@@ -526,7 +526,7 @@ function reuseFiles(checked) {
   const newDocument = file('项目方案.pdf', 'document');
   return `<div class="sort-scene"><div class="sort-inbox"><span>新下载的文件</span>${newImage}${newDocument}</div>${checked ? `<div class="sort-move" aria-hidden="true">↓</div><div class="sort-folders">${folder('图片', [newImage], 'sort-folder--right')}${folder('文档', [newDocument], 'sort-folder--right')}</div>` : '<p class="sort-pending">还没有可核对的整理结果。</p>'}</div>`;
 }
-function formation(stage) {
+function mockFileFormation(stage) {
   const screens = [
     `<h2>把下载文件分成图片和文档</h2>${formationFiles(0)}`,
     `<h2>第一张图放错了</h2>${formationFiles(1)}`,
@@ -535,7 +535,7 @@ function formation(stage) {
   ];
   return screens[stage];
 }
-function reuse(e) {
+function mockFileReuse(e) {
   if (e.stage === 0) return `<h2>又来一批文件</h2>${reuseFiles(false)}${method()}`;
   if (e.stage === 1) return `<h2>${e.rejected ? '先确认这些到底是什么文件' : '这次还能按类型整理吗？'}</h2><div class="demo-condition"><div><span>收到的内容</span><strong>${e.rejected ? '只有文件截图' : '可读取的文件'}</strong></div><div><span>文件类型</span><strong>${e.rejected ? '无法确认' : '.png 图片、.pdf 文档'}</strong></div></div><p class="demo-decision ${e.rejected ? 'is-blocked' : ''}">${e.rejected ? '× 信息不够，先不整理' : '✓ 条件相同，选中上次的方法'}</p>`;
   if (e.stage === 2) return `<h2>${e.rejected ? '条件不明，停止复用' : e.adopted ? '这次确实按类型整理了' : '方法已送达，还不知道是否用上'}</h2><div class="demo-evidence-chain">${[['找到方法',e.selected],['交给这次任务',e.injected],['实际用上',e.adopted]].map(([label,done])=>`<div class="demo-evidence-node ${done?'is-present':''}"><span>${done?'✓':'—'}</span><strong>${label}</strong><small>${done?'MOCK 有记录':e.rejected?'未发生':'尚无记录'}</small></div>`).join('')}</div><p class="demo-takeaway">${e.rejected ? '没有文件本体，无法确认类型。' : e.adopted ? 'MOCK 预设了按类型归类的动作，结果仍待检查。' : '仅有方法注入记录，不能据此认定已整理。'}</p>`;
@@ -546,7 +546,7 @@ function renderMockStory(mode = 'formation', step = 0, variant = 'injected') {
   const labels = isReuse ? ['又来新任务','能不能用','有没有用上','结果怎么样'] : ['收到任务','发现问题','改对结果','记住办法'];
   return `<section class="mock-playback" aria-label="MOCK 逐步演示">
   <div class="mock-steps" role="group" aria-label="选择演示步骤">${labels.map((label,index)=>`<button data-mock-step="${index}" aria-pressed="${e.stage===index}"><small>${index+1}</small>${label}</button>`).join('')}</div>
-  <article class="mock-detail audience-task" aria-live="polite"><span class="sr-only">MOCK · 第 ${e.stage+1} / 4 步</span>${isReuse ? reuse(e) : formation(e.stage)}</article>
+  <article class="mock-detail audience-task" aria-live="polite"><span class="sr-only">MOCK · 第 ${e.stage+1} / 4 步</span>${isReuse ? mockFileReuse(e) : mockFileFormation(e.stage)}</article>
   <div class="mock-controls"><button data-mock-step="${e.stage-1}" ${e.stage===0?'disabled':''}>← 上一步</button><span>${e.stage+1} / 4</span><button data-mock-step="${e.stage===3?0:e.stage+1}">${e.stage===3?'从头查看 ↺':'下一步 →'}</button></div>
   ${!isReuse&&e.stage===3?'<button class="demo-next-story" data-story="reuse">用这条方法，看看新任务 →</button>':''}
   ${isReuse?`<details class="demo-scenario"><summary>切换证据情况 · ${mockVariants[e.scenario]}</summary><label class="mock-scenario">展示情形<select id="mock-scenario">${Object.entries(mockVariants).map(([id,label])=>`<option value="${id}" ${id===e.scenario?'selected':''}>${label}</option>`).join('')}</select></label></details>`:''}
