@@ -11,7 +11,7 @@ const server = http.createServer(async (request, response) => {
     const url = new URL(request.url, 'http://127.0.0.1');
     const name = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
     // Serve only the entry point and public source/assets, never project metadata.
-    if (!(name === '/index.html' || name === '/longmemeval-runs.html' || name === '/data/longmemeval/展示样本-原始会话.json' || name === '/LongMemEval-真实样本导览.html' || name === '/双击打开演示.html' || name.startsWith('/src/') || name.startsWith('/artifacts/'))) throw new Error('Not public');
+    if (!(name === '/index.html' || name === '/longmemeval-runs.html' || name === '/longmemeval-public.html' || name === '/data/longmemeval/展示样本-原始会话.json' || name === '/LongMemEval-真实样本导览.html' || name === '/双击打开演示.html' || name.startsWith('/src/') || name.startsWith('/artifacts/'))) throw new Error('Not public');
     const file = await realpath(path.join(root, name));
     const relative = path.relative(root, file);
     if (relative.startsWith('..') || path.isAbsolute(relative) || relative.split(path.sep).some(part => part.startsWith('.'))) throw new Error('Outside root');

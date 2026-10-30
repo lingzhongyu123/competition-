@@ -30,6 +30,7 @@ jobs:
           mkdir -p _site
           cp "双击打开演示.html" _site/index.html
           cp longmemeval-runs.html _site/longmemeval-runs.html
+          cp longmemeval-public.html _site/longmemeval-public.html
           touch _site/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
