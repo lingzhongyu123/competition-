@@ -1,4 +1,13 @@
 /* Presentation surfaces. One sheet, one conversation, or one file view per page. */
+.checks-page{max-width:1440px;margin:0 auto;padding:28px 24px;font-family:"Segoe UI","Microsoft YaHei",sans-serif}
+.checks-page h1{font-size:26px;margin:0 0 18px}.checks-page>p{font-size:14px;line-height:1.8;color:#53677b;margin:14px 0}
+.check-modebar{display:flex;gap:12px;border-bottom:1px solid #dce1e6;margin-bottom:20px}
+.check-modebar button{min-height:44px;padding:10px 14px;border-bottom:2px solid transparent;font-size:14px;color:#53677b}
+.check-modebar button[aria-current="page"]{color:#1768ac;border-color:#1768ac;font-weight:600;opacity:1}
+.checks-frame{width:100%;height:calc(100vh - 245px);min-height:540px;border:1px solid #dce1e6;border-radius:4px;background:white}
+.checks-fallback a{color:#1768ac;text-decoration:underline}
+body[data-mode="checks"]{background:#f3f4f6;--desk-paper:#fff;--desk-ink:#243343;--desk-muted:#5d6877;--desk-blue:#1768ac;--desk-line:#dce1e6}
+@media(max-width:650px){.checks-page{padding:22px 16px}.checks-frame{min-height:600px}.check-modebar button{padding:10px 8px;font-size:13px}}
 body:is([data-mode="guide"],[data-mode="sources"],[data-mode="osworld"],[data-mode="import"],[data-mode="rules"]){
   --desk-bg:#f3f4f6;
   --desk-paper:#fff;

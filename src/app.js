@@ -11,6 +11,7 @@ import { renderSnapshotImport, bindSnapshotImport } from './snapshot-view.js';
 const provider = createMockProvider();
 const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });
 const pages = [
+  ['checks', '数据检查', 'grid'],
   ['guide', '首页演示', 'book'],
   ['sources', '真实样本', 'book'],
   ['import', '经验快照', 'download'],
@@ -60,7 +61,7 @@ function memoryStatus(memory) { return tag(statusLabels[memory.status], memory.s
 function top(snapshot) {
   const active = snapshot.memories.filter(memory => memory.status === 'active');
   const evidenceCount = new Set(snapshot.memories.flatMap(memory => memory.evidenceIds)).size;
-  return `<div class="heading"><div><div class="eyebrow">WORKSPACE / 两周记忆演示</div><h1>${pages.find(([id]) => id === state.page)[1]}</h1><p class="subtitle">看见记忆的来源、变化与使用过程。</p></div><button class="secondary" data-export>${icon('download')} 导出当前证据包</button></div>
+  return `<nav class="check-modebar" aria-label="检查数据来源"><button data-nav="checks">离线运行数据</button><button data-nav="memories" aria-current="page">MOCK 演示数据</button></nav><div class="heading"><div><div class="eyebrow">WORKSPACE / 两周记忆演示</div><h1>${pages.find(([id]) => id === state.page)[1]}</h1><p class="subtitle">看见记忆的来源、变化与使用过程。</p></div><button class="secondary" data-export>${icon('download')} 导出当前证据包</button></div>
   <section class="story-card" aria-label="模拟时间回放"><div class="story-copy"><div class="eyebrow">MEMORY IN MOTION <span>合成故事</span></div><h2>${stages[state.day].title}</h2><p>${stages[state.day].text}</p></div><div class="time-controls">${days.map(day => `<button data-day="${day}" class="day ${day === state.day ? 'active' : ''}" aria-pressed="${day === state.day}"><span>DAY ${String(day).padStart(2, '0')}</span><strong>${stages[day].label}</strong></button>`).join('')}</div></section>
   <div class="metrics"><div class="metric"><span class="metric-icon blue-bg">${icon('layers')}</span><div><span>当前有效记忆</span><strong>${active.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon teal-bg">${icon('link')}</span><div><span>来源证据</span><strong>${evidenceCount}<small> 条 · 合成记录</small></strong></div></div><div class="metric"><span class="metric-icon purple-bg">${icon('search')}</span><div><span>检索轨迹</span><strong>${snapshot.traces.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon gray-bg">${icon('chart')}</span><div><span>正式评测</span><strong class="small-value">未运行</strong></div></div></div>`;
 }
@@ -151,6 +152,13 @@ function bind(snapshot) {
 let disposeGuide = null;
 function render() {
   if (disposeGuide) { disposeGuide(); disposeGuide = null; }
+  if (state.page === 'checks') {
+    document.body.dataset.mode = 'checks';
+    $('#app').innerHTML = `${renderPresentationHeader('checks')}<main id="main" class="checks-page" tabindex="-1"><h1>数据检查</h1><nav class="check-modebar" aria-label="检查数据来源"><button aria-current="page" disabled>离线运行数据</button><button data-nav="memories">MOCK 演示数据</button></nav><p>导入本机 LongMemEval 导出目录，查看实际上下文、回答、记忆节点和来源。文件只在当前浏览器读取，不上传。</p><iframe class="checks-frame" title="LongMemEval 离线运行数据检查" src="./longmemeval-runs.html"></iframe><p class="checks-fallback">如内嵌页面无法打开，可<a href="./longmemeval-runs.html" target="_blank" rel="noopener">单独打开运行档案</a>。离线记录不代表在线服务，评分仍为档案声明。</p></main>`;
+    document.querySelectorAll('[data-nav]').forEach(button => button.onclick = () => navigate(button.dataset.nav));
+    document.querySelectorAll('[data-guide]').forEach(button => button.onclick = () => { const target=getGuideTarget(button.dataset.guide); if(target){Object.assign(state,target);navigate(target.page);} });
+    return;
+  }
   if (state.page === 'guide') {
     document.body.dataset.mode = 'guide';
     document.body.dataset.theme = state.theme;

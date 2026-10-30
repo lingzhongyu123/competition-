@@ -224,6 +224,15 @@ body[data-mode=guide]{background:#f3f5f7}.motion-heading h1{font-size:30px;font-
 @media(max-width:700px){.sort-folders{gap:10px}.sort-folder-label{padding:9px 10px}.sort-folder-files{padding:10px}.sort-file{font-size:12px;padding:8px 6px;white-space:normal;overflow-wrap:anywhere}.sort-folder-files .sort-file{width:100%}.sort-method strong{font-size:19px}.sort-folder{min-height:150px}}
 
 /* Presentation surfaces. One sheet, one conversation, or one file view per page. */
+.checks-page{max-width:1440px;margin:0 auto;padding:28px 24px;font-family:"Segoe UI","Microsoft YaHei",sans-serif}
+.checks-page h1{font-size:26px;margin:0 0 18px}.checks-page>p{font-size:14px;line-height:1.8;color:#53677b;margin:14px 0}
+.check-modebar{display:flex;gap:12px;border-bottom:1px solid #dce1e6;margin-bottom:20px}
+.check-modebar button{min-height:44px;padding:10px 14px;border-bottom:2px solid transparent;font-size:14px;color:#53677b}
+.check-modebar button[aria-current="page"]{color:#1768ac;border-color:#1768ac;font-weight:600;opacity:1}
+.checks-frame{width:100%;height:calc(100vh - 245px);min-height:540px;border:1px solid #dce1e6;border-radius:4px;background:white}
+.checks-fallback a{color:#1768ac;text-decoration:underline}
+body[data-mode="checks"]{background:#f3f4f6;--desk-paper:#fff;--desk-ink:#243343;--desk-muted:#5d6877;--desk-blue:#1768ac;--desk-line:#dce1e6}
+@media(max-width:650px){.checks-page{padding:22px 16px}.checks-frame{min-height:600px}.check-modebar button{padding:10px 8px;font-size:13px}}
 body:is([data-mode="guide"],[data-mode="sources"],[data-mode="osworld"],[data-mode="import"],[data-mode="rules"]){
   --desk-bg:#f3f4f6;
   --desk-paper:#fff;
@@ -1085,7 +1094,7 @@ function getGuideFrame(step) {
   };
 }
 function renderPresentationHeader(page = 'guide') {
-  return `<header class="motion-header"><a href="#guide" class="motion-brand"><svg viewBox="0 0 28 28" width="28" height="28" fill="none" aria-hidden="true"><path d="M5 8h18v16H5z" fill="currentColor" opacity=".12"/><path d="M9 4h14v16H9zM5 8h14v16H5z" stroke="currentColor" stroke-width="1.6"/><path d="M9 13h6m-6 4h6" stroke="currentColor" stroke-width="1.6"/></svg>Memory Console</a><nav class="presentation-nav" aria-label="展示导航"><button data-nav="guide" ${page==='guide'?'aria-current="page"':''}>首页演示</button><button data-guide="fact" ${page==='sources'?'aria-current="page"':''}>对话样本</button><button data-guide="formation" ${page==='osworld'?'aria-current="page"':''}>任务样本</button></nav><details class="motion-menu"><summary>工具</summary><nav aria-label="检查工具"><a href="https://lingzhongyu123.github.io/competition-/longmemeval-runs.html" target="_blank" rel="noopener">LongMemEval 运行档案</a><button data-guide="import">导入经验快照</button><button data-nav="memories">MOCK 数据检查</button></nav></details></header>`;
+  return `<header class="motion-header"><a href="#guide" class="motion-brand"><svg viewBox="0 0 28 28" width="28" height="28" fill="none" aria-hidden="true"><path d="M5 8h18v16H5z" fill="currentColor" opacity=".12"/><path d="M9 4h14v16H9zM5 8h14v16H5z" stroke="currentColor" stroke-width="1.6"/><path d="M9 13h6m-6 4h6" stroke="currentColor" stroke-width="1.6"/></svg>Memory Console</a><nav class="presentation-nav" aria-label="展示导航"><button data-nav="guide" ${page==='guide'?'aria-current="page"':''}>首页演示</button><button data-guide="fact" ${page==='sources'?'aria-current="page"':''}>对话样本</button><button data-guide="formation" ${page==='osworld'?'aria-current="page"':''}>任务样本</button></nav><details class="motion-menu"><summary>工具</summary><nav aria-label="检查工具"><a href="https://lingzhongyu123.github.io/competition-/longmemeval-runs.html" target="_blank" rel="noopener">LongMemEval 运行档案</a><button data-guide="import">导入经验快照</button><button data-nav="checks">数据检查</button></nav></details></header>`;
 }
 function renderStoryContext(page) {
   if(page!=='sources' && page!=='osworld') return '';
@@ -1194,6 +1203,7 @@ function safeReplaceState(...args) { if (location.protocol === 'http:' || locati
 const provider = createMockProvider();
 const snapshotSession = createSnapshotSession(() => { if(state.page==='import') render(); });
 const pages = [
+  ['checks', '数据检查', 'grid'],
   ['guide', '首页演示', 'book'],
   ['sources', '真实样本', 'book'],
   ['import', '经验快照', 'download'],
@@ -1243,7 +1253,7 @@ function memoryStatus(memory) { return tag(statusLabels[memory.status], memory.s
 function top(snapshot) {
   const active = snapshot.memories.filter(memory => memory.status === 'active');
   const evidenceCount = new Set(snapshot.memories.flatMap(memory => memory.evidenceIds)).size;
-  return `<div class="heading"><div><div class="eyebrow">WORKSPACE / 两周记忆演示</div><h1>${pages.find(([id]) => id === state.page)[1]}</h1><p class="subtitle">看见记忆的来源、变化与使用过程。</p></div><button class="secondary" data-export>${icon('download')} 导出当前证据包</button></div>
+  return `<nav class="check-modebar" aria-label="检查数据来源"><button data-nav="checks">离线运行数据</button><button data-nav="memories" aria-current="page">MOCK 演示数据</button></nav><div class="heading"><div><div class="eyebrow">WORKSPACE / 两周记忆演示</div><h1>${pages.find(([id]) => id === state.page)[1]}</h1><p class="subtitle">看见记忆的来源、变化与使用过程。</p></div><button class="secondary" data-export>${icon('download')} 导出当前证据包</button></div>
   <section class="story-card" aria-label="模拟时间回放"><div class="story-copy"><div class="eyebrow">MEMORY IN MOTION <span>合成故事</span></div><h2>${stages[state.day].title}</h2><p>${stages[state.day].text}</p></div><div class="time-controls">${days.map(day => `<button data-day="${day}" class="day ${day === state.day ? 'active' : ''}" aria-pressed="${day === state.day}"><span>DAY ${String(day).padStart(2, '0')}</span><strong>${stages[day].label}</strong></button>`).join('')}</div></section>
   <div class="metrics"><div class="metric"><span class="metric-icon blue-bg">${icon('layers')}</span><div><span>当前有效记忆</span><strong>${active.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon teal-bg">${icon('link')}</span><div><span>来源证据</span><strong>${evidenceCount}<small> 条 · 合成记录</small></strong></div></div><div class="metric"><span class="metric-icon purple-bg">${icon('search')}</span><div><span>检索轨迹</span><strong>${snapshot.traces.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon gray-bg">${icon('chart')}</span><div><span>正式评测</span><strong class="small-value">未运行</strong></div></div></div>`;
 }
@@ -1334,6 +1344,13 @@ function bind(snapshot) {
 let disposeGuide = null;
 function render() {
   if (disposeGuide) { disposeGuide(); disposeGuide = null; }
+  if (state.page === 'checks') {
+    document.body.dataset.mode = 'checks';
+    $('#app').innerHTML = `${renderPresentationHeader('checks')}<main id="main" class="checks-page" tabindex="-1"><h1>数据检查</h1><nav class="check-modebar" aria-label="检查数据来源"><button aria-current="page" disabled>离线运行数据</button><button data-nav="memories">MOCK 演示数据</button></nav><p>导入本机 LongMemEval 导出目录，查看实际上下文、回答、记忆节点和来源。文件只在当前浏览器读取，不上传。</p><iframe class="checks-frame" title="LongMemEval 离线运行数据检查" src="./longmemeval-runs.html"></iframe><p class="checks-fallback">如内嵌页面无法打开，可<a href="./longmemeval-runs.html" target="_blank" rel="noopener">单独打开运行档案</a>。离线记录不代表在线服务，评分仍为档案声明。</p></main>`;
+    document.querySelectorAll('[data-nav]').forEach(button => button.onclick = () => navigate(button.dataset.nav));
+    document.querySelectorAll('[data-guide]').forEach(button => button.onclick = () => { const target=getGuideTarget(button.dataset.guide); if(target){Object.assign(state,target);navigate(target.page);} });
+    return;
+  }
   if (state.page === 'guide') {
     document.body.dataset.mode = 'guide';
     document.body.dataset.theme = state.theme;
