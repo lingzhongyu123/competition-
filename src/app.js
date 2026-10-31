@@ -1,3 +1,4 @@
+import { renderRunWorkspace } from './run-workspace.js';
 function safeReplaceState(...args) { if (location.protocol === 'http:' || location.protocol === 'https:') history.replaceState(...args); }
 import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
@@ -19,7 +20,7 @@ const pages = [
   ['memories', '记忆总览', 'grid'], ['graph', '关系图谱', 'graph'], ['timeline', '演化时间线', 'clock'],
   ['traces', '检索与使用', 'search'], ['experience', '任务经验', 'layers'], ['manage', '更新与管理', 'shield'], ['evaluation', '数据与评测', 'chart']
 ];
-const state = { page: 'guide', guideStep: 0, day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' };
+const state = { dataMode:'real', page: 'guide', guideStep: 0, day: 14, query: '', kind: 'all', status: 'all', selected: 'mem-sort-v2', trace: null, graph: 'fact', theme: 'kylin', sample: 'e47becba', phase: 1, sourceQuery: '', story: 'formation', storyView: 'sources', storyStep: 0, storyScenario: 'injected' };
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
 const paths = {
@@ -43,13 +44,13 @@ function memoryButton(memory, label) { return `<button class="text-button" data-
 function navigate(page, day = state.day) {
   state.page = page; state.day = day; state.query = ''; state.kind = 'all'; state.status = 'all';
   if (page === 'traces') state.trace = null;
-  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'guide' ? `#guide?step=${state.guideStep}` : page === 'import' ? '#import' : `#${page}?day=${day}`); render(); window.scrollTo(0,0);
+  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'guide' ? `#guide?step=${state.guideStep}` : page === 'import' ? '#import' : `#${page}?day=${day}${state.dataMode==='mock'?'&mode=mock':''}`); render(); window.scrollTo(0,0);
 }
 function storyRoute() { return `#osworld?story=${state.story}&view=${state.storyView}&step=${state.storyStep}&scenario=${state.storyScenario}`; }
 function readRoute() {
   const [page, query] = location.hash.slice(1).split('?');
   if (pages.some(([id]) => id === page)) state.page = page;
-  const params = new URLSearchParams(query);
+  const params = new URLSearchParams(query);state.dataMode=params.get('mode')==='mock'?'mock':'real';
   if (state.page === 'guide') state.guideStep = Math.min(7,Math.max(0,Math.floor(Number(params.get('step'))||0)));
   if (state.page === 'sources') { const view = getSourceView(params.get('sample') || state.sample, params.get('phase') ?? 1); state.sample = view.sample.id; state.phase = view.phase; }
   if (state.page === 'osworld') { state.story = params.get('story') === 'reuse' ? 'reuse' : 'formation'; state.storyView = params.get('view') === 'mock' ? 'mock' : 'sources'; state.storyStep = Math.min(3, Math.max(0, Number(params.get('step')) || 0)); state.storyStep = Math.floor(state.storyStep); state.storyScenario = ['injected','adopted','checked','blocked'].includes(params.get('scenario')) ? params.get('scenario') : 'injected'; }
@@ -152,9 +153,10 @@ function bind(snapshot) {
 let disposeGuide = null;
 function render() {
   if (disposeGuide) { disposeGuide(); disposeGuide = null; }
+  if (['memories','graph','timeline','traces','evaluation'].includes(state.page) && state.dataMode!=='mock') {document.body.dataset.mode='runs';document.body.dataset.theme=state.theme;renderRunWorkspace($('#app'),state.page);return;}
   if (state.page === 'checks') {
     document.body.dataset.mode = 'checks';
-    $('#app').innerHTML = `${renderPresentationHeader('checks')}<main id="main" class="checks-page" tabindex="-1"><h1>数据检查</h1><nav class="check-modebar" aria-label="检查数据来源"><button aria-current="page" disabled>离线运行数据</button><button data-nav="memories">MOCK 演示数据</button></nav><p>已载入 LongMemEval 运行档案公开副本：7 个案例、85 个记忆节点、63 个问答记录。也可选择本机目录替换当前数据，所选文件不会上传。</p><iframe class="checks-frame" title="LongMemEval 离线运行数据检查" src="./longmemeval-public.html"></iframe><p class="checks-fallback">如内嵌页面无法打开，可<a href="./longmemeval-public.html" target="_blank" rel="noopener">单独打开运行档案</a>。离线记录不代表在线服务，评分仍为档案声明。</p></main>`;
+    $('#app').innerHTML = `${renderPresentationHeader('checks')}<main id="main" class="checks-page" tabindex="-1"><h1>数据检查</h1><nav class="check-modebar" aria-label="检查数据来源"><button aria-current="page" disabled>离线运行数据</button><a href="#memories?mode=mock">MOCK 演示数据</a></nav><p>已载入 LongMemEval 运行档案公开副本：7 个案例、85 个记忆节点、63 个问答记录。也可选择本机目录替换当前数据，所选文件不会上传。</p><iframe class="checks-frame" title="LongMemEval 离线运行数据检查" src="./longmemeval-public.html"></iframe><p class="checks-fallback">如内嵌页面无法打开，可<a href="./longmemeval-public.html" target="_blank" rel="noopener">单独打开运行档案</a>。离线记录不代表在线服务，评分仍为档案声明。</p></main>`;
     document.querySelectorAll('[data-nav]').forEach(button => button.onclick = () => navigate(button.dataset.nav));
     document.querySelectorAll('[data-guide]').forEach(button => button.onclick = () => { const target=getGuideTarget(button.dataset.guide); if(target){Object.assign(state,target);navigate(target.page);} });
     return;
