@@ -269,5 +269,31 @@ body[data-mode="sandbox"] blockquote{white-space:pre-wrap;max-height:280px;overf
 #sandbox-message:not(:empty){padding:12px;background:#edf5ff;border-left:3px solid #1768ac}
 @media(max-width:760px){body[data-mode="sandbox"] .metrics,body[data-mode="mock"] .metrics{grid-template-columns:1fr}.sandbox-relation,.sandbox-diff{grid-template-columns:1fr}.sandbox-arrow{font-size:0}.sandbox-arrow small{font-size:12px}.sandbox-arrow:before{content:'↓';font-size:26px}.sandbox-search{flex-wrap:wrap}body[data-mode="sandbox"] .filters select{max-width:100%}}
 
+/* A case tree opens into actual source references and temporary memory copies. */
+.mindmap{padding:20px}
+.mindmap-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.mindmap-toolbar strong{font-size:17px}.mindmap-toolbar p,.mindmap-key{font-size:13px;line-height:1.7;color:#5d6877;margin:6px 0 12px}
+.mindmap-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mindmap-controls button{min-width:44px;min-height:44px}.mindmap-controls output{font-size:13px;min-width:40px}
+.mindmap-viewport{height:600px;overflow:auto;overscroll-behavior:contain;border:1px solid #dce1e6;border-radius:6px;background:#f8fafc;padding:12px}
+.mindmap-viewport:focus-visible{outline:2px solid #1768ac;outline-offset:2px}
+.mindmap-size{position:relative;margin:auto}.mindmap-canvas{position:relative;transform-origin:top left}.mindmap-canvas svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.mindmap-edge{stroke:#b3bfcd;stroke-width:2;fill:none}.mindmap-edge.mindmap-source{stroke:#1768ac;stroke-width:3}.mindmap-edge.mindmap-group.is-selected{stroke:#6b94bc;stroke-width:3}.mindmap-edge.mindmap-update{stroke:#b88027;stroke-dasharray:7 6;stroke-width:3}.mindmap-edge.is-hit{stroke:#24846c;stroke-width:3}
+.mindmap-node{position:absolute;font-size:17px;line-height:1.35}
+.mindmap-node>button,.mindmap-node>div{width:100%;height:100%;padding:14px 18px;border:1px solid #b8c7d7;border-radius:8px;background:white;color:#243343;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;box-sizing:border-box}
+.mindmap-node>button{cursor:pointer;font:inherit}.mindmap-node strong{font-size:17px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%}
+.mindmap-node span{display:block;font-size:14px;line-height:1.5;margin-top:6px;color:#5d6877}.mindmap-node small{font-size:13px;color:#1768ac;margin-top:4px}
+.mindmap-node.mindmap-root>div{background:#1768ac;color:white;border-color:#1768ac}.mindmap-node.mindmap-root span{color:#e0edfa}
+.mindmap-node.is-selected>button{border:3px solid #1768ac;background:#edf5ff;padding:12px 16px}
+.mindmap-node.is-hit>button{box-shadow:0 0 0 3px #5aab91}.mindmap-node.is-withdrawn>button{border-style:dashed;color:#687586;background:#eef0f3}
+.mindmap-node.mindmap-updated>button,.mindmap-node.mindmap-update>div{border-color:#b88027}.mindmap-node.mindmap-update>div{border-style:dashed;background:#fff9ee}
+.mindmap-node.mindmap-source>button{border-left:4px solid #1768ac}.mindmap-node>button:hover{border-color:#1768ac;background:#f0f6fc}.mindmap-node>button:focus-visible{outline:3px solid #243343;outline-offset:4px}
+@media(prefers-reduced-motion:no-preference){.mindmap-node.is-selected{animation:mindmap-select .3s ease-out}.mindmap-edge.mindmap-source{animation:mindmap-link .35s ease-out}@keyframes mindmap-select{from{filter:brightness(.92)}to{filter:brightness(1)}}@keyframes mindmap-link{from{stroke-opacity:.25}to{stroke-opacity:1}}}
+@media(max-width:760px){.mindmap{padding:12px}.mindmap-viewport{height:500px}.mindmap-controls{gap:6px}.mindmap-toolbar{gap:8px}}
+
+.mindmap-node.mindmap-memory>button{padding:10px 14px}
+.mindmap-node.mindmap-memory.is-selected>button{padding:8px 12px}
+.mindmap-node strong,.mindmap-node span,.mindmap-node small{flex-shrink:0}
+body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .metrics,body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .sandbox-note{display:none}
+
 /* Native offline runs share the console shell and inspector. */
 body[data-mode=runs] .run-relations{padding:24px}body[data-mode=runs] .run-relation{display:grid;grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr);gap:16px;align-items:center;margin-bottom:24px}body[data-mode=runs] .run-source,body[data-mode=runs] .run-node{border:1px solid #d3e0f1;border-radius:9px;padding:20px;background:#f8fbff;overflow-wrap:anywhere}body[data-mode=runs] .run-arrow{text-align:center;font-size:28px;color:#6c9bd0}body[data-mode=runs] .run-arrow small{display:block;font-size:12px}body[data-mode=runs] .run-qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}body[data-mode=runs] .run-qa article{padding:16px;background:#f2f6fc;border-radius:8px}body[data-mode=runs] .inspector blockquote{white-space:pre-wrap;overflow-wrap:anywhere;max-height:450px;overflow:auto}body[data-mode=runs] .nav-item{text-decoration:none}body[data-mode=runs] .metrics strong small{display:block}body[data-mode=runs] .filters select{max-width:260px}body[data-mode=runs] .table-wrap td:first-child{min-width:260px}body[data-mode=runs] .inspector,body[data-mode=runs] .run-qa p{overflow-wrap:anywhere}@media(max-width:760px){body[data-mode=runs] .run-relation,body[data-mode=runs] .run-qa{grid-template-columns:1fr}body[data-mode=runs] .run-arrow{transform:rotate(90deg)}body[data-mode=runs] .run-arrow small{display:none}}

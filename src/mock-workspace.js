@@ -1,4 +1,5 @@
 import { runData } from './run-data.js';
+import { buildSandboxMindMap, renderSandboxMindMap, bindSandboxMindMap } from './sandbox-mindmap.js';
 
 // Only this copy changes. Archive status, evidence and model results remain read-only.
 export function createArchiveSandbox(dataset = runData) {
@@ -31,25 +32,29 @@ export function createArchiveSandbox(dataset = runData) {
 }
 
 let archiveSandbox = null;
-const sandboxView = { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '', hitKeys: null, retrieval: '' };
+const sandboxView = { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '', hitKeys: null, retrieval: '', sourceIndex: null };
 const sandboxEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sandboxTypeNames = { fact: '事实', preference: '偏好', constraint: '约束' };
 
 export function renderArchiveSandbox(root, page = 'memories') {
+  root.dataset.sandboxPage = page;
   archiveSandbox ??= createArchiveSandbox();
   const h = sandboxEscape, rows = archiveSandbox.rows(), events = archiveSandbox.events();
-  const names = { memories: '记忆总览', graph: '来源关系', manage: '模拟更新', traces: '模拟检索', timeline: '操作记录', experience: '任务经验', evaluation: '操作记录' };
+  const names = { memories: '记忆总览', graph: '思维导图', manage: '模拟更新', traces: '模拟检索', timeline: '操作记录', experience: '任务经验', evaluation: '操作记录' };
   const filtered = rows.filter(n => (sandboxView.caseId === 'all' || n.caseId === sandboxView.caseId) && (sandboxView.type === 'all' || n.type === sandboxView.type) && `${n.label} ${n.summary} ${n.caseId} ${n.question}`.toLowerCase().includes(sandboxView.query.toLowerCase()));
-  const pages = Math.max(1, Math.ceil(filtered.length / 15)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
-  const visible = filtered.slice(sandboxView.page * 15, sandboxView.page * 15 + 15);
-  const selected = filtered.find(n => n.key === sandboxView.selected) ?? visible[0];
+  const pageSize = page === 'graph' ? 8 : 15;
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
+  const visible = filtered.slice(sandboxView.page * pageSize, sandboxView.page * pageSize + pageSize);
+  let selected = filtered.find(n => n.key === sandboxView.selected) ?? visible[0];
   const status = n => ({ unchanged: '未改动', updated: '已模拟更新', withdrawn: '已模拟撤回' }[n.demoStatus]);
   const selectNode = n => `<button class="text-button" data-sandbox-node="${h(n.key)}">${h(n.label)}</button>`;
-  const sources = n => n.sources.map(s => `<details class="evidence"><summary>${h(s.date)} · ${h(s.role)}</summary><blockquote>${h(s.textOriginal)}</blockquote><small>${h(s.sessionId)} · 消息 ${h(s.turnIndex)}</small></details>`).join('') || '<p>未提供来源引用。</p>';
+  const sources = n => n.sources.map((s, i) => `<details class="evidence" data-sandbox-source="${i}" ${sandboxView.sourceIndex === i ? 'open' : ''}><summary>${h(s.date)} · ${h(s.role)}</summary><blockquote>${h(s.textOriginal)}</blockquote><small>${h(s.sessionId)} · 消息 ${h(s.turnIndex)}</small></details>`).join('') || '<p>未提供来源引用。</p>';
   const options = (items, value) => items.map(([key, label]) => `<option value="${h(key)}" ${key === value ? 'selected' : ''}>${h(label)}</option>`).join('');
   const filters = `<form class="filters" id="sandbox-filters"><label class="search-field"><input id="sandbox-query" aria-label="搜索演练记忆" placeholder="搜索记忆或内容" value="${h(sandboxView.query)}"></label><select id="sandbox-case" aria-label="演练案例">${options([['all', '全部案例'], ...runData.map(c => [c.qid, c.qid + ' · ' + c.type])], sandboxView.caseId)}</select><select id="sandbox-type" aria-label="演练类型">${options([['all', '全部类型'], ...Object.entries(sandboxTypeNames)], sandboxView.type)}</select><button class="secondary">筛选</button></form>`;
   const table = `<div class="table-wrap"><table><thead><tr><th>记忆 / 内容</th><th>类型</th><th>演练状态</th><th>来源</th><th>版本</th></tr></thead><tbody>${visible.map(n => `<tr class="${selected?.key === n.key ? 'selected-row' : ''}"><td>${selectNode(n)}<div class="cell-sub">${h(n.summary)}</div><small>${h(n.caseId)}</small></td><td>${h(sandboxTypeNames[n.type] ?? n.type)}</td><td><span class="tag ${n.demoStatus === 'withdrawn' ? 'amber' : n.demoStatus === 'updated' ? 'green' : ''}">${status(n)}</span></td><td>${n.sources.length} 条引用</td><td>v${n.version}</td></tr>`).join('')}</tbody></table></div>`;
-  const graph = `<div class="sandbox-relations">${visible.map(n => `<article class="sandbox-relation"><div><small>档案来源 · ${h(n.caseId)}</small>${sources(n)}</div><div class="sandbox-arrow">→<small>原文引用</small></div><div>${selectNode(n)}<p>${h(n.summary)}</p><span class="tag">${status(n)} · v${n.version}</span></div></article>`).join('')}</div>`;
+  const mapModel = page === 'graph' ? buildSandboxMindMap(filtered, { caseId: sandboxView.caseId, selectedKey: selected?.key, hitKeys: sandboxView.hitKeys, page: sandboxView.page }) : null;
+  if (mapModel?.selectedKey) selected = filtered.find(n => n.key === mapModel.selectedKey);
+  const graph = mapModel ? renderSandboxMindMap(mapModel) : '';
   const updateForm = selected ? `<section class="sandbox-operation"><h2>更新这条演练副本</h2><p>修改内容后，列表和右侧版本一起变化。来源仍指向原始陈述，不作为新内容的证明。</p><form id="sandbox-update"><label for="sandbox-summary">模拟的新内容</label><textarea id="sandbox-summary" maxlength="4000" required>${h(selected.summary)}</textarea><button class="primary">应用模拟更新</button><button class="secondary" type="button" id="sandbox-withdraw" ${selected.demoStatus === 'withdrawn' ? 'disabled' : ''}>模拟撤回</button></form></section>` : '';
   const retrieval = `<section class="sandbox-operation"><h2>用关键词找记忆</h2><p>仅在当前案例范围内匹配标题与内容；已模拟撤回的副本不参与。不是语义检索或模型调用。</p><form id="sandbox-retrieve"><label for="sandbox-term">检索词</label><div class="sandbox-search"><input id="sandbox-term" value="${h(sandboxView.retrieval)}" placeholder="输入记忆标题中的词" required><button class="primary">模拟检索</button></div></form>${sandboxView.hitKeys === null ? '<p>输入关键词后显示匹配结果。</p>' : `<h3>命中 ${sandboxView.hitKeys.length} 条</h3>${sandboxView.hitKeys.map(key => rows.find(n => n.key === key)).filter(Boolean).map(n => `<div class="sandbox-hit">${selectNode(n)}<p>${h(n.summary)}</p></div>`).join('') || '<p>没有匹配；可以尝试其他关键词。</p>'}`}</section>`;
   const log = `<section class="sandbox-operation"><h2>本次演练的变化</h2>${events.length ? [...events].reverse().map((e, i) => `<article class="sandbox-event"><small>操作 ${events.length - i} · MOCK</small><h3>${e.type === 'search' ? '关键词检索：' + h(e.query) : e.type === 'update' ? '更新：' + h(e.label) : '撤回：' + h(e.label)}</h3>${e.type === 'update' ? `<div class="sandbox-diff"><div><small>更新前</small><p>${h(e.before)}</p></div><div><small>更新后 · 模拟</small><p>${h(e.after)}</p></div></div>` : e.type === 'search' ? `<p>命中 ${e.keys.length} 条，未调用模型。</p>` : '<p>仅从当前演练的检索范围移除，原始档案仍保留。</p>'}</article>`).join('') : '<p>还没有模拟操作。选择一条记忆，在右侧修改或撤回，也可以进行关键词检索。</p>'}</section>`;
@@ -59,11 +64,20 @@ export function renderArchiveSandbox(root, page = 'memories') {
   root.querySelectorAll('[data-sandbox-node]').forEach(b => b.onclick = () => { sandboxView.selected = b.dataset.sandboxNode; sandboxView.message = ''; rerender(); if (innerWidth < 1200) $s('.inspector')?.scrollIntoView({ block: 'start' }); });
   $s('#sandbox-filters').onsubmit = e => { e.preventDefault(); sandboxView.query = $s('#sandbox-query').value; sandboxView.caseId = $s('#sandbox-case').value; sandboxView.type = $s('#sandbox-type').value; sandboxView.page = 0; sandboxView.hitKeys = null; rerender(); };
   for (const id of ['#sandbox-case', '#sandbox-type']) $s(id).onchange = () => $s('#sandbox-filters').requestSubmit();
-  $s('#sandbox-prev').onclick = () => { sandboxView.page--; rerender(); };
-  $s('#sandbox-next').onclick = () => { sandboxView.page++; rerender(); };
+  $s('#sandbox-prev').onclick = () => { sandboxView.page--; sandboxView.selected = null; sandboxView.sourceIndex = null; rerender(); };
+  $s('#sandbox-next').onclick = () => { sandboxView.page++; sandboxView.selected = null; sandboxView.sourceIndex = null; rerender(); };
   const action = fn => { try { fn(); } catch (e) { sandboxView.message = e.message; } rerender(); };
   if ($s('#sandbox-update')) $s('#sandbox-update').onsubmit = e => { e.preventDefault(); const value = $s('#sandbox-summary').value; action(() => { archiveSandbox.update(selected.key, value); sandboxView.hitKeys = null; sandboxView.message = '已更新演练副本，原始档案未改动。'; }); };
   if ($s('#sandbox-withdraw')) $s('#sandbox-withdraw').onclick = () => action(() => { archiveSandbox.withdraw(selected.key); sandboxView.hitKeys = null; sandboxView.message = '已模拟撤回，下次关键词检索将排除这条副本。'; });
   if ($s('#sandbox-retrieve')) $s('#sandbox-retrieve').onsubmit = e => { e.preventDefault(); sandboxView.retrieval = $s('#sandbox-term').value; action(() => { sandboxView.hitKeys = archiveSandbox.search(sandboxView.retrieval, sandboxView.caseId).map(n => n.key); sandboxView.message = '关键词匹配完成，未调用模型。'; }); };
   $s('#sandbox-reset').onclick = () => { archiveSandbox.reset(); Object.assign(sandboxView, { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '已恢复全部演练副本。', hitKeys: null, retrieval: '' }); rerender(); };
+  if (page === 'graph') {
+    $s('.panel-heading h2').textContent = '案例、来源与记忆';
+    if (sandboxView.caseId === 'all') { $s('#sandbox-prev').disabled = true; $s('#sandbox-next').disabled = true; $s('.panel-footer span').textContent = `${filtered.length} 个演练副本 · 点击案例展开`; }
+    bindSandboxMindMap(root, mapModel, {
+      onCase: caseId => { Object.assign(sandboxView, { caseId, page: 0, selected: null, sourceIndex: null }); rerender(); root.querySelector('[data-map-memory], [data-map-case]')?.focus({ preventScroll: true }); },
+      onMemory: key => { sandboxView.selected = key; sandboxView.sourceIndex = null; rerender(); [...root.querySelectorAll('[data-map-memory]')].find(b => b.dataset.mapMemory === key)?.focus({ preventScroll: true }); },
+      onSource: index => { sandboxView.sourceIndex = index; rerender(); const detail = $s(`[data-sandbox-source="${index}"]`); detail?.querySelector('summary')?.focus({ preventScroll: true }); detail?.scrollIntoView({ block: 'nearest' }); }
+    });
+  }
 }

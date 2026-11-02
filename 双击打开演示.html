@@ -494,6 +494,32 @@ body[data-mode="sandbox"] blockquote{white-space:pre-wrap;max-height:280px;overf
 #sandbox-message:not(:empty){padding:12px;background:#edf5ff;border-left:3px solid #1768ac}
 @media(max-width:760px){body[data-mode="sandbox"] .metrics,body[data-mode="mock"] .metrics{grid-template-columns:1fr}.sandbox-relation,.sandbox-diff{grid-template-columns:1fr}.sandbox-arrow{font-size:0}.sandbox-arrow small{font-size:12px}.sandbox-arrow:before{content:'↓';font-size:26px}.sandbox-search{flex-wrap:wrap}body[data-mode="sandbox"] .filters select{max-width:100%}}
 
+/* A case tree opens into actual source references and temporary memory copies. */
+.mindmap{padding:20px}
+.mindmap-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.mindmap-toolbar strong{font-size:17px}.mindmap-toolbar p,.mindmap-key{font-size:13px;line-height:1.7;color:#5d6877;margin:6px 0 12px}
+.mindmap-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mindmap-controls button{min-width:44px;min-height:44px}.mindmap-controls output{font-size:13px;min-width:40px}
+.mindmap-viewport{height:600px;overflow:auto;overscroll-behavior:contain;border:1px solid #dce1e6;border-radius:6px;background:#f8fafc;padding:12px}
+.mindmap-viewport:focus-visible{outline:2px solid #1768ac;outline-offset:2px}
+.mindmap-size{position:relative;margin:auto}.mindmap-canvas{position:relative;transform-origin:top left}.mindmap-canvas svg{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.mindmap-edge{stroke:#b3bfcd;stroke-width:2;fill:none}.mindmap-edge.mindmap-source{stroke:#1768ac;stroke-width:3}.mindmap-edge.mindmap-group.is-selected{stroke:#6b94bc;stroke-width:3}.mindmap-edge.mindmap-update{stroke:#b88027;stroke-dasharray:7 6;stroke-width:3}.mindmap-edge.is-hit{stroke:#24846c;stroke-width:3}
+.mindmap-node{position:absolute;font-size:17px;line-height:1.35}
+.mindmap-node>button,.mindmap-node>div{width:100%;height:100%;padding:14px 18px;border:1px solid #b8c7d7;border-radius:8px;background:white;color:#243343;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;box-sizing:border-box}
+.mindmap-node>button{cursor:pointer;font:inherit}.mindmap-node strong{font-size:17px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:100%}
+.mindmap-node span{display:block;font-size:14px;line-height:1.5;margin-top:6px;color:#5d6877}.mindmap-node small{font-size:13px;color:#1768ac;margin-top:4px}
+.mindmap-node.mindmap-root>div{background:#1768ac;color:white;border-color:#1768ac}.mindmap-node.mindmap-root span{color:#e0edfa}
+.mindmap-node.is-selected>button{border:3px solid #1768ac;background:#edf5ff;padding:12px 16px}
+.mindmap-node.is-hit>button{box-shadow:0 0 0 3px #5aab91}.mindmap-node.is-withdrawn>button{border-style:dashed;color:#687586;background:#eef0f3}
+.mindmap-node.mindmap-updated>button,.mindmap-node.mindmap-update>div{border-color:#b88027}.mindmap-node.mindmap-update>div{border-style:dashed;background:#fff9ee}
+.mindmap-node.mindmap-source>button{border-left:4px solid #1768ac}.mindmap-node>button:hover{border-color:#1768ac;background:#f0f6fc}.mindmap-node>button:focus-visible{outline:3px solid #243343;outline-offset:4px}
+@media(prefers-reduced-motion:no-preference){.mindmap-node.is-selected{animation:mindmap-select .3s ease-out}.mindmap-edge.mindmap-source{animation:mindmap-link .35s ease-out}@keyframes mindmap-select{from{filter:brightness(.92)}to{filter:brightness(1)}}@keyframes mindmap-link{from{stroke-opacity:.25}to{stroke-opacity:1}}}
+@media(max-width:760px){.mindmap{padding:12px}.mindmap-viewport{height:500px}.mindmap-controls{gap:6px}.mindmap-toolbar{gap:8px}}
+
+.mindmap-node.mindmap-memory>button{padding:10px 14px}
+.mindmap-node.mindmap-memory.is-selected>button{padding:8px 12px}
+.mindmap-node strong,.mindmap-node span,.mindmap-node small{flex-shrink:0}
+body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .metrics,body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .sandbox-note{display:none}
+
 /* Native offline runs share the console shell and inspector. */
 body[data-mode=runs] .run-relations{padding:24px}body[data-mode=runs] .run-relation{display:grid;grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr);gap:16px;align-items:center;margin-bottom:24px}body[data-mode=runs] .run-source,body[data-mode=runs] .run-node{border:1px solid #d3e0f1;border-radius:9px;padding:20px;background:#f8fbff;overflow-wrap:anywhere}body[data-mode=runs] .run-arrow{text-align:center;font-size:28px;color:#6c9bd0}body[data-mode=runs] .run-arrow small{display:block;font-size:12px}body[data-mode=runs] .run-qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}body[data-mode=runs] .run-qa article{padding:16px;background:#f2f6fc;border-radius:8px}body[data-mode=runs] .inspector blockquote{white-space:pre-wrap;overflow-wrap:anywhere;max-height:450px;overflow:auto}body[data-mode=runs] .nav-item{text-decoration:none}body[data-mode=runs] .metrics strong small{display:block}body[data-mode=runs] .filters select{max-width:260px}body[data-mode=runs] .table-wrap td:first-child{min-width:260px}body[data-mode=runs] .inspector,body[data-mode=runs] .run-qa p{overflow-wrap:anywhere}@media(max-width:760px){body[data-mode=runs] .run-relation,body[data-mode=runs] .run-qa{grid-template-columns:1fr}body[data-mode=runs] .run-arrow{transform:rotate(90deg)}body[data-mode=runs] .run-arrow small{display:none}}
 </style>
@@ -543,6 +569,71 @@ function renderRunWorkspace(root,page){
  root.querySelectorAll('[data-run-node]').forEach(b=>b.onclick=()=>{runState.selected=b.dataset.runNode;rerender()});root.querySelector('#run-prev').onclick=()=>{runState.page--;rerender()};root.querySelector('#run-next').onclick=()=>{runState.page++;rerender()};
 }
 
+// The tree groups copies by case. Only source edges assert document references.
+const sandboxCaseNames = { '0100672e': '咖啡杯花费', '07741c44': '旧运动鞋的位置', gpt4_1a1dc16d: '见面与游行的先后', '0ddfec37_abs': '签名橄榄球收藏', '07b6f563': '手机配件偏好', '1e043500': 'Spotify 歌单', '6222b6eb': '大气校正算法' };
+function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, hitKeys = null, page = 0, pageSize = 8 } = {}) {
+  const hitSet = new Set(hitKeys ?? []), width = 1080;
+  if (caseId === 'all') {
+    const groups = [...new Set(rows.map(n => n.caseId))];
+    const spots = [[20,30],[20,225],[20,420],[800,30],[800,225],[800,420],[410,530]];
+    const nodes = [{ id: 'root', kind: 'root', x: 410, y: 260, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
+    groups.forEach((id, i) => {
+      const copies = rows.filter(n => n.caseId === id), [x, y] = spots[i] ?? [410, 530 + (i - 6) * 140];
+      nodes.push({ id: 'case-' + i, kind: 'case', caseId: id, x, y, w: 260, h: 105, title: sandboxCaseNames[id] ?? `案例 ${id}`, text: `${copies.length} 个记忆 · ${copies.filter(n => n.demoStatus === 'updated').length} 个已更新`, hit: copies.some(n => hitSet.has(n.key)), hint: id + ' · ' + (copies[0]?.question ?? '') });
+    });
+    return { width, height: Math.max(665, ...nodes.map(n => n.y + n.h + 30)), nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, pages: 1, page: 0 };
+  }
+  const scoped = rows.filter(n => n.caseId === caseId), pages = Math.max(1, Math.ceil(scoped.length / pageSize));
+  const currentPage = Math.max(0, Math.min(page, pages - 1)), visible = scoped.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+  const selected = visible.find(n => n.key === selectedKey) ?? visible[0];
+  const sources = selected?.sources ?? [], height = Math.max(560, visible.length * 112 + 60, sources.length * 110 + 60);
+  const nodes = [{ id: 'root', kind: 'root', x: 390, y: height / 2 - 55, w: 260, h: 110, title: sandboxCaseNames[caseId] ?? `案例 ${caseId}`, text: `${caseId} · ${scoped.length} 个演练记忆`, hint: selected?.question ?? '' }], edges = [];
+  visible.forEach((n, i) => {
+    const node = { id: 'memory-' + i, kind: 'memory', key: n.key, x: 770, y: 30 + i * 112, w: 290, h: 96, title: n.label, text: `${n.demoStatus === 'updated' ? '已模拟更新' : n.demoStatus === 'withdrawn' ? '已模拟撤回' : '演练副本'} · v${n.version}`, selected: n.key === selected?.key, hit: hitSet.has(n.key), status: n.demoStatus, hint: n.summary };
+    nodes.push(node); edges.push({ from: 'root', to: node.id, kind: 'group', selected: node.selected, hit: node.hit });
+  });
+  sources.forEach((s, i) => {
+    const node = { id: 'source-' + i, kind: 'source', index: i, x: 20, y: (height - sources.length * 110) / 2 + i * 110, w: 265, h: 88, title: `${s.role === 'user' ? '用户' : s.role === 'assistant' ? '助手' : s.role}原文 ${i + 1}`, text: s.date ?? '日期未保存', hint: s.textOriginal };
+    nodes.push(node); edges.push({ from: node.id, to: nodes.find(n => n.kind === 'memory' && n.selected).id, kind: 'source', selected: true });
+  });
+  if (selected?.version > 1) {
+    nodes.push({ id: 'update', kind: 'update', x: 390, y: height / 2 + 95, w: 260, h: 90, title: `模拟更新 · v${selected.version}`, text: '原始来源不证明新内容', hint: selected.summary });
+    edges.push({ from: 'update', to: nodes.find(n => n.kind === 'memory' && n.selected).id, kind: 'update', selected: true });
+  }
+  return { width, height, nodes, edges, total: scoped.length, pages, page: currentPage, selectedKey: selected?.key };
+}
+
+const mindMapEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function renderSandboxMindMap(model) {
+  const h = mindMapEscape, byId = new Map(model.nodes.map(n => [n.id, n]));
+  const curves = model.edges.map(edge => {
+    const a = byId.get(edge.from), b = byId.get(edge.to), fromRight = b.x > a.x;
+    const x1 = a.x + (fromRight ? a.w : 0), x2 = b.x + (fromRight ? 0 : b.w), y1 = a.y + a.h / 2, y2 = b.y + b.h / 2;
+    const middle = (x1 + x2) / 2;
+    return `<path class="mindmap-edge mindmap-${edge.kind} ${edge.selected ? 'is-selected' : ''} ${edge.hit ? 'is-hit' : ''}" d="M ${x1} ${y1} C ${middle} ${y1}, ${middle} ${y2}, ${x2} ${y2}"/>`;
+  }).join('');
+  const nodes = model.nodes.map(n => `<div class="mindmap-node mindmap-${n.kind} ${n.selected ? 'is-selected' : ''} ${n.hit ? 'is-hit' : ''} ${n.status ? 'is-' + n.status : ''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px">${n.kind === 'root' || n.kind === 'update' ? '<div' : '<button type="button"'} ${n.kind === 'memory' ? `data-map-memory="${h(n.key)}" aria-pressed="${Boolean(n.selected)}"` : n.kind === 'case' ? `data-map-case="${h(n.caseId)}"` : n.kind === 'source' ? `data-map-source="${n.index}"` : ''} title="${h(n.hint ?? n.title)}"><strong>${h(n.title)}</strong><span>${h(n.text)}${n.hit ? ' · 检索命中' : ''}</span>${n.kind === 'case' ? '<small>点击展开</small>' : ''}${n.kind === 'root' || n.kind === 'update' ? '</div>' : '</button>'}</div>`).join('');
+  return `<section class="mindmap" aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应窗口</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
+}
+
+function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) {
+  const viewport = root.querySelector('.mindmap-viewport'); if (!viewport) return;
+  const canvas = root.querySelector('.mindmap-canvas'), size = root.querySelector('.mindmap-size');
+  let scale = 1;
+  const apply = value => {
+    scale = Math.min(1.6, Math.max(.35, value));
+    canvas.style.transform = `scale(${scale})`; size.style.width = model.width * scale + 'px'; size.style.height = model.height * scale + 'px';
+    root.querySelector('#mindmap-scale').textContent = Math.round(scale * 100) + '%';
+  };
+  const fit = () => apply(Math.min(1, (viewport.clientWidth - 24) / model.width, (viewport.clientHeight - 24) / model.height));
+  fit();
+  root.querySelectorAll('[data-map-zoom]').forEach(b => b.onclick = () => b.dataset.mapZoom === 'fit' ? fit() : apply(scale * (b.dataset.mapZoom === 'in' ? 1.25 : .8)));
+  root.querySelector('[data-map-all]').onclick = () => onCase('all');
+  root.querySelectorAll('[data-map-case]').forEach(b => b.onclick = () => onCase(b.dataset.mapCase));
+  root.querySelectorAll('[data-map-memory]').forEach(b => b.onclick = () => onMemory(b.dataset.mapMemory));
+  root.querySelectorAll('[data-map-source]').forEach(b => b.onclick = () => onSource(Number(b.dataset.mapSource)));
+}
+
 
 // Only this copy changes. Archive status, evidence and model results remain read-only.
 function createArchiveSandbox(dataset = runData) {
@@ -575,25 +666,29 @@ function createArchiveSandbox(dataset = runData) {
 }
 
 let archiveSandbox = null;
-const sandboxView = { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '', hitKeys: null, retrieval: '' };
+const sandboxView = { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '', hitKeys: null, retrieval: '', sourceIndex: null };
 const sandboxEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sandboxTypeNames = { fact: '事实', preference: '偏好', constraint: '约束' };
 
 function renderArchiveSandbox(root, page = 'memories') {
+  root.dataset.sandboxPage = page;
   archiveSandbox ??= createArchiveSandbox();
   const h = sandboxEscape, rows = archiveSandbox.rows(), events = archiveSandbox.events();
-  const names = { memories: '记忆总览', graph: '来源关系', manage: '模拟更新', traces: '模拟检索', timeline: '操作记录', experience: '任务经验', evaluation: '操作记录' };
+  const names = { memories: '记忆总览', graph: '思维导图', manage: '模拟更新', traces: '模拟检索', timeline: '操作记录', experience: '任务经验', evaluation: '操作记录' };
   const filtered = rows.filter(n => (sandboxView.caseId === 'all' || n.caseId === sandboxView.caseId) && (sandboxView.type === 'all' || n.type === sandboxView.type) && `${n.label} ${n.summary} ${n.caseId} ${n.question}`.toLowerCase().includes(sandboxView.query.toLowerCase()));
-  const pages = Math.max(1, Math.ceil(filtered.length / 15)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
-  const visible = filtered.slice(sandboxView.page * 15, sandboxView.page * 15 + 15);
-  const selected = filtered.find(n => n.key === sandboxView.selected) ?? visible[0];
+  const pageSize = page === 'graph' ? 8 : 15;
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
+  const visible = filtered.slice(sandboxView.page * pageSize, sandboxView.page * pageSize + pageSize);
+  let selected = filtered.find(n => n.key === sandboxView.selected) ?? visible[0];
   const status = n => ({ unchanged: '未改动', updated: '已模拟更新', withdrawn: '已模拟撤回' }[n.demoStatus]);
   const selectNode = n => `<button class="text-button" data-sandbox-node="${h(n.key)}">${h(n.label)}</button>`;
-  const sources = n => n.sources.map(s => `<details class="evidence"><summary>${h(s.date)} · ${h(s.role)}</summary><blockquote>${h(s.textOriginal)}</blockquote><small>${h(s.sessionId)} · 消息 ${h(s.turnIndex)}</small></details>`).join('') || '<p>未提供来源引用。</p>';
+  const sources = n => n.sources.map((s, i) => `<details class="evidence" data-sandbox-source="${i}" ${sandboxView.sourceIndex === i ? 'open' : ''}><summary>${h(s.date)} · ${h(s.role)}</summary><blockquote>${h(s.textOriginal)}</blockquote><small>${h(s.sessionId)} · 消息 ${h(s.turnIndex)}</small></details>`).join('') || '<p>未提供来源引用。</p>';
   const options = (items, value) => items.map(([key, label]) => `<option value="${h(key)}" ${key === value ? 'selected' : ''}>${h(label)}</option>`).join('');
   const filters = `<form class="filters" id="sandbox-filters"><label class="search-field"><input id="sandbox-query" aria-label="搜索演练记忆" placeholder="搜索记忆或内容" value="${h(sandboxView.query)}"></label><select id="sandbox-case" aria-label="演练案例">${options([['all', '全部案例'], ...runData.map(c => [c.qid, c.qid + ' · ' + c.type])], sandboxView.caseId)}</select><select id="sandbox-type" aria-label="演练类型">${options([['all', '全部类型'], ...Object.entries(sandboxTypeNames)], sandboxView.type)}</select><button class="secondary">筛选</button></form>`;
   const table = `<div class="table-wrap"><table><thead><tr><th>记忆 / 内容</th><th>类型</th><th>演练状态</th><th>来源</th><th>版本</th></tr></thead><tbody>${visible.map(n => `<tr class="${selected?.key === n.key ? 'selected-row' : ''}"><td>${selectNode(n)}<div class="cell-sub">${h(n.summary)}</div><small>${h(n.caseId)}</small></td><td>${h(sandboxTypeNames[n.type] ?? n.type)}</td><td><span class="tag ${n.demoStatus === 'withdrawn' ? 'amber' : n.demoStatus === 'updated' ? 'green' : ''}">${status(n)}</span></td><td>${n.sources.length} 条引用</td><td>v${n.version}</td></tr>`).join('')}</tbody></table></div>`;
-  const graph = `<div class="sandbox-relations">${visible.map(n => `<article class="sandbox-relation"><div><small>档案来源 · ${h(n.caseId)}</small>${sources(n)}</div><div class="sandbox-arrow">→<small>原文引用</small></div><div>${selectNode(n)}<p>${h(n.summary)}</p><span class="tag">${status(n)} · v${n.version}</span></div></article>`).join('')}</div>`;
+  const mapModel = page === 'graph' ? buildSandboxMindMap(filtered, { caseId: sandboxView.caseId, selectedKey: selected?.key, hitKeys: sandboxView.hitKeys, page: sandboxView.page }) : null;
+  if (mapModel?.selectedKey) selected = filtered.find(n => n.key === mapModel.selectedKey);
+  const graph = mapModel ? renderSandboxMindMap(mapModel) : '';
   const updateForm = selected ? `<section class="sandbox-operation"><h2>更新这条演练副本</h2><p>修改内容后，列表和右侧版本一起变化。来源仍指向原始陈述，不作为新内容的证明。</p><form id="sandbox-update"><label for="sandbox-summary">模拟的新内容</label><textarea id="sandbox-summary" maxlength="4000" required>${h(selected.summary)}</textarea><button class="primary">应用模拟更新</button><button class="secondary" type="button" id="sandbox-withdraw" ${selected.demoStatus === 'withdrawn' ? 'disabled' : ''}>模拟撤回</button></form></section>` : '';
   const retrieval = `<section class="sandbox-operation"><h2>用关键词找记忆</h2><p>仅在当前案例范围内匹配标题与内容；已模拟撤回的副本不参与。不是语义检索或模型调用。</p><form id="sandbox-retrieve"><label for="sandbox-term">检索词</label><div class="sandbox-search"><input id="sandbox-term" value="${h(sandboxView.retrieval)}" placeholder="输入记忆标题中的词" required><button class="primary">模拟检索</button></div></form>${sandboxView.hitKeys === null ? '<p>输入关键词后显示匹配结果。</p>' : `<h3>命中 ${sandboxView.hitKeys.length} 条</h3>${sandboxView.hitKeys.map(key => rows.find(n => n.key === key)).filter(Boolean).map(n => `<div class="sandbox-hit">${selectNode(n)}<p>${h(n.summary)}</p></div>`).join('') || '<p>没有匹配；可以尝试其他关键词。</p>'}`}</section>`;
   const log = `<section class="sandbox-operation"><h2>本次演练的变化</h2>${events.length ? [...events].reverse().map((e, i) => `<article class="sandbox-event"><small>操作 ${events.length - i} · MOCK</small><h3>${e.type === 'search' ? '关键词检索：' + h(e.query) : e.type === 'update' ? '更新：' + h(e.label) : '撤回：' + h(e.label)}</h3>${e.type === 'update' ? `<div class="sandbox-diff"><div><small>更新前</small><p>${h(e.before)}</p></div><div><small>更新后 · 模拟</small><p>${h(e.after)}</p></div></div>` : e.type === 'search' ? `<p>命中 ${e.keys.length} 条，未调用模型。</p>` : '<p>仅从当前演练的检索范围移除，原始档案仍保留。</p>'}</article>`).join('') : '<p>还没有模拟操作。选择一条记忆，在右侧修改或撤回，也可以进行关键词检索。</p>'}</section>`;
@@ -603,13 +698,22 @@ function renderArchiveSandbox(root, page = 'memories') {
   root.querySelectorAll('[data-sandbox-node]').forEach(b => b.onclick = () => { sandboxView.selected = b.dataset.sandboxNode; sandboxView.message = ''; rerender(); if (innerWidth < 1200) $s('.inspector')?.scrollIntoView({ block: 'start' }); });
   $s('#sandbox-filters').onsubmit = e => { e.preventDefault(); sandboxView.query = $s('#sandbox-query').value; sandboxView.caseId = $s('#sandbox-case').value; sandboxView.type = $s('#sandbox-type').value; sandboxView.page = 0; sandboxView.hitKeys = null; rerender(); };
   for (const id of ['#sandbox-case', '#sandbox-type']) $s(id).onchange = () => $s('#sandbox-filters').requestSubmit();
-  $s('#sandbox-prev').onclick = () => { sandboxView.page--; rerender(); };
-  $s('#sandbox-next').onclick = () => { sandboxView.page++; rerender(); };
+  $s('#sandbox-prev').onclick = () => { sandboxView.page--; sandboxView.selected = null; sandboxView.sourceIndex = null; rerender(); };
+  $s('#sandbox-next').onclick = () => { sandboxView.page++; sandboxView.selected = null; sandboxView.sourceIndex = null; rerender(); };
   const action = fn => { try { fn(); } catch (e) { sandboxView.message = e.message; } rerender(); };
   if ($s('#sandbox-update')) $s('#sandbox-update').onsubmit = e => { e.preventDefault(); const value = $s('#sandbox-summary').value; action(() => { archiveSandbox.update(selected.key, value); sandboxView.hitKeys = null; sandboxView.message = '已更新演练副本，原始档案未改动。'; }); };
   if ($s('#sandbox-withdraw')) $s('#sandbox-withdraw').onclick = () => action(() => { archiveSandbox.withdraw(selected.key); sandboxView.hitKeys = null; sandboxView.message = '已模拟撤回，下次关键词检索将排除这条副本。'; });
   if ($s('#sandbox-retrieve')) $s('#sandbox-retrieve').onsubmit = e => { e.preventDefault(); sandboxView.retrieval = $s('#sandbox-term').value; action(() => { sandboxView.hitKeys = archiveSandbox.search(sandboxView.retrieval, sandboxView.caseId).map(n => n.key); sandboxView.message = '关键词匹配完成，未调用模型。'; }); };
   $s('#sandbox-reset').onclick = () => { archiveSandbox.reset(); Object.assign(sandboxView, { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '已恢复全部演练副本。', hitKeys: null, retrieval: '' }); rerender(); };
+  if (page === 'graph') {
+    $s('.panel-heading h2').textContent = '案例、来源与记忆';
+    if (sandboxView.caseId === 'all') { $s('#sandbox-prev').disabled = true; $s('#sandbox-next').disabled = true; $s('.panel-footer span').textContent = `${filtered.length} 个演练副本 · 点击案例展开`; }
+    bindSandboxMindMap(root, mapModel, {
+      onCase: caseId => { Object.assign(sandboxView, { caseId, page: 0, selected: null, sourceIndex: null }); rerender(); root.querySelector('[data-map-memory], [data-map-case]')?.focus({ preventScroll: true }); },
+      onMemory: key => { sandboxView.selected = key; sandboxView.sourceIndex = null; rerender(); [...root.querySelectorAll('[data-map-memory]')].find(b => b.dataset.mapMemory === key)?.focus({ preventScroll: true }); },
+      onSource: index => { sandboxView.sourceIndex = index; rerender(); const detail = $s(`[data-sandbox-source="${index}"]`); detail?.querySelector('summary')?.focus({ preventScroll: true }); detail?.scrollIntoView({ block: 'nearest' }); }
+    });
+  }
 }
 
 const workspace = { id: 'mock-demo', name: '两周记忆演示', provenance: 'mock', description: '合成用户与模拟时间，不是实际使用记录' };
