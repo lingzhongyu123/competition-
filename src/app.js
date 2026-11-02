@@ -1,4 +1,5 @@
 import { renderRunWorkspace } from './run-workspace.js';
+import { renderArchiveSandbox } from './mock-workspace.js';
 function safeReplaceState(...args) { if (location.protocol === 'http:' || location.protocol === 'https:') history.replaceState(...args); }
 import { days, stages } from './data.js';
 import { createMockProvider, filterMemories, kindLabels, statusLabels } from './model.js';
@@ -44,13 +45,13 @@ function memoryButton(memory, label) { return `<button class="text-button" data-
 function navigate(page, day = state.day) {
   state.page = page; state.day = day; state.query = ''; state.kind = 'all'; state.status = 'all';
   if (page === 'traces') state.trace = null;
-  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'guide' ? `#guide?step=${state.guideStep}` : page === 'import' ? '#import' : `#${page}?day=${day}${state.dataMode==='mock'?'&mode=mock':''}`); render(); window.scrollTo(0,0);
+  safeReplaceState(null, '', page === 'sources' ? `#sources?sample=${state.sample}&phase=${state.phase}` : page === 'osworld' ? storyRoute() : page === 'guide' ? `#guide?step=${state.guideStep}` : page === 'import' ? '#import' : `#${page}?day=${day}${state.dataMode!=='real'?'&mode='+state.dataMode:''}`); render(); window.scrollTo(0,0);
 }
 function storyRoute() { return `#osworld?story=${state.story}&view=${state.storyView}&step=${state.storyStep}&scenario=${state.storyScenario}`; }
 function readRoute() {
   const [page, query] = location.hash.slice(1).split('?');
   if (pages.some(([id]) => id === page)) state.page = page;
-  const params = new URLSearchParams(query);state.dataMode=params.get('mode')==='mock'?'mock':'real';
+  const params = new URLSearchParams(query);state.dataMode=['mock','legacy'].includes(params.get('mode'))?params.get('mode'):'real';
   if (state.page === 'guide') state.guideStep = Math.min(7,Math.max(0,Math.floor(Number(params.get('step'))||0)));
   if (state.page === 'sources') { const view = getSourceView(params.get('sample') || state.sample, params.get('phase') ?? 1); state.sample = view.sample.id; state.phase = view.phase; }
   if (state.page === 'osworld') { state.story = params.get('story') === 'reuse' ? 'reuse' : 'formation'; state.storyView = params.get('view') === 'mock' ? 'mock' : 'sources'; state.storyStep = Math.min(3, Math.max(0, Number(params.get('step')) || 0)); state.storyStep = Math.floor(state.storyStep); state.storyScenario = ['injected','adopted','checked','blocked'].includes(params.get('scenario')) ? params.get('scenario') : 'injected'; }
@@ -64,7 +65,7 @@ function top(snapshot) {
   const evidenceCount = new Set(snapshot.memories.flatMap(memory => memory.evidenceIds)).size;
   return `<nav class="check-modebar" aria-label="检查数据来源"><button data-nav="checks">离线运行数据</button><button data-nav="memories" aria-current="page">MOCK 演示数据</button></nav><div class="heading"><div><div class="eyebrow">WORKSPACE / 两周记忆演示</div><h1>${pages.find(([id]) => id === state.page)[1]}</h1><p class="subtitle">看见记忆的来源、变化与使用过程。</p></div><button class="secondary" data-export>${icon('download')} 导出当前证据包</button></div>
   <section class="story-card" aria-label="模拟时间回放"><div class="story-copy"><div class="eyebrow">MEMORY IN MOTION <span>合成故事</span></div><h2>${stages[state.day].title}</h2><p>${stages[state.day].text}</p></div><div class="time-controls">${days.map(day => `<button data-day="${day}" class="day ${day === state.day ? 'active' : ''}" aria-pressed="${day === state.day}"><span>DAY ${String(day).padStart(2, '0')}</span><strong>${stages[day].label}</strong></button>`).join('')}</div></section>
-  <div class="metrics"><div class="metric"><span class="metric-icon blue-bg">${icon('layers')}</span><div><span>当前有效记忆</span><strong>${active.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon teal-bg">${icon('link')}</span><div><span>来源证据</span><strong>${evidenceCount}<small> 条 · 合成记录</small></strong></div></div><div class="metric"><span class="metric-icon purple-bg">${icon('search')}</span><div><span>检索轨迹</span><strong>${snapshot.traces.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon gray-bg">${icon('chart')}</span><div><span>正式评测</span><strong class="small-value">未运行</strong></div></div></div>`;
+  <div class="metrics"><div class="metric"><span class="metric-icon blue-bg">${icon('layers')}</span><div><span>当前有效记忆</span><strong>${active.length}<small> 条 · MOCK</small></strong></div></div><div class="metric"><span class="metric-icon teal-bg">${icon('link')}</span><div><span>来源证据</span><strong>${evidenceCount}<small> 条 · 合成记录</small></strong></div></div><div class="metric"><span class="metric-icon purple-bg">${icon('search')}</span><div><span>检索轨迹</span><strong>${snapshot.traces.length}<small> 条 · MOCK</small></strong></div></div></div>`;
 }
 function renderList(snapshot) {
   const records = filterMemories(snapshot, state);
@@ -153,7 +154,8 @@ function bind(snapshot) {
 let disposeGuide = null;
 function render() {
   if (disposeGuide) { disposeGuide(); disposeGuide = null; }
-  if (['memories','graph','timeline','traces','evaluation'].includes(state.page) && state.dataMode!=='mock') {document.body.dataset.mode='runs';document.body.dataset.theme=state.theme;renderRunWorkspace($('#app'),state.page);return;}
+  if (['memories','graph','timeline','traces','evaluation','experience','manage'].includes(state.page) && state.dataMode==='mock') {document.body.dataset.mode='sandbox';document.body.dataset.theme=state.theme;renderArchiveSandbox($('#app'),state.page);return;}
+  if (['memories','graph','timeline','traces','evaluation'].includes(state.page) && state.dataMode==='real') {document.body.dataset.mode='runs';document.body.dataset.theme=state.theme;renderRunWorkspace($('#app'),state.page);return;}
   if (state.page === 'checks') {
     document.body.dataset.mode = 'checks';
     $('#app').innerHTML = `${renderPresentationHeader('checks')}<main id="main" class="checks-page" tabindex="-1"><h1>数据检查</h1><nav class="check-modebar" aria-label="检查数据来源"><button aria-current="page" disabled>离线运行数据</button><a href="#memories?mode=mock">MOCK 演示数据</a></nav><p>已载入 LongMemEval 运行档案公开副本：7 个案例、85 个记忆节点、63 个问答记录。也可选择本机目录替换当前数据，所选文件不会上传。</p><iframe class="checks-frame" title="LongMemEval 离线运行数据检查" src="./longmemeval-public.html"></iframe><p class="checks-fallback">如内嵌页面无法打开，可<a href="./longmemeval-public.html" target="_blank" rel="noopener">单独打开运行档案</a>。离线记录不代表在线服务，评分仍为档案声明。</p></main>`;
