@@ -295,5 +295,61 @@ body[data-mode="sandbox"] blockquote{white-space:pre-wrap;max-height:280px;overf
 .mindmap-node strong,.mindmap-node span,.mindmap-node small{flex-shrink:0}
 body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .metrics,body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .sandbox-note{display:none}
 
+/* The sandbox is a reading surface with an optional edit area. */
+body[data-mode="sandbox"]{font-family:"Segoe UI","Microsoft YaHei",sans-serif;font-size:15px;color:#243343}
+body[data-mode="sandbox"] .heading h1{font-size:28px;font-weight:650;margin:0 0 6px}
+body[data-mode="sandbox"] .subtitle{font-size:14px;color:#5d6877}
+body[data-mode="sandbox"] .content-shell{grid-template-columns:minmax(0,1fr) 330px;gap:24px;padding:24px 28px}
+body[data-mode="sandbox"] .content-shell main{padding:0;min-width:0}
+body[data-mode="sandbox"] .inspector{align-self:start;position:sticky;top:76px;max-height:calc(100vh - 100px);overflow:auto;padding:22px;background:#fff;border:1px solid #dce1e6;border-radius:8px;font-size:14px}
+body[data-mode="sandbox"] .inspector>h2{font-size:19px;line-height:1.5;margin:16px 0 10px}
+body[data-mode="sandbox"] .inspector>p{font-size:14px;line-height:1.8}
+body[data-mode="sandbox"] .metrics{margin:18px 0;gap:0;border:1px solid #dce1e6;background:#fff;border-radius:6px;padding:16px}
+body[data-mode="sandbox"] .metric{box-shadow:none;background:none;border:0;padding:0 20px;min-width:0}
+body[data-mode="sandbox"] .metric strong{font-size:26px}body[data-mode="sandbox"] .metric span,body[data-mode="sandbox"] .metric small{font-size:12px;color:#5d6877}
+body[data-mode="sandbox"] .panel{box-shadow:none;border:1px solid #dce1e6;border-radius:8px}
+body[data-mode="sandbox"] .panel-heading{padding:18px 20px}body[data-mode="sandbox"] .panel-heading h2{font-size:18px}
+body[data-mode="sandbox"] .filters{padding:0 20px 18px;gap:10px;flex-wrap:wrap}
+body[data-mode="sandbox"] input,body[data-mode="sandbox"] select{font-size:14px;min-height:44px}
+body[data-mode="sandbox"] .filters .search-field{min-width:180px;flex:1}
+body[data-mode="sandbox"] .filters select{max-width:190px}
+body[data-mode="sandbox"] th{font-size:13px}body[data-mode="sandbox"] td{font-size:14px;padding:18px 20px}
+body[data-mode="sandbox"] td .text-button{font-size:15px;font-weight:600;line-height:1.5}
+body[data-mode="sandbox"] .cell-sub{font-size:13px;line-height:1.65;margin-top:6px;color:#5d6877}
+body[data-mode="sandbox"] .cell-sub{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+body[data-mode="sandbox"] .panel-footer{gap:10px;flex-wrap:wrap;padding:14px 20px;font-size:13px}
+.sandbox-detail-heading{display:flex;justify-content:space-between;align-items:center;color:#5d6877;font-size:13px;padding-bottom:14px;border-bottom:1px solid #dce1e6}
+.sandbox-detail-heading button,.sandbox-detail-trigger,.sandbox-mobile-reset{display:none}
+.sandbox-boundary{margin:12px 0 18px;font-size:13px;color:#5d6877}.sandbox-boundary summary{cursor:pointer;padding:8px 0}.sandbox-boundary .sandbox-note{padding:12px;background:#edf5ff}
+.sandbox-editor{margin-top:24px;border-top:1px solid #dce1e6}.sandbox-editor>summary{font-size:14px;font-weight:600;padding:16px 0;color:#1768ac;cursor:pointer}.sandbox-editor .sandbox-operation{border:0;padding:0;margin:0}.sandbox-editor h2{display:none}.sandbox-editor .sandbox-operation p{font-size:13px}
+.sandbox-view-switch{display:flex;gap:6px;margin:16px 0}.sandbox-view-switch a{padding:10px 18px;border-radius:5px;font-size:14px;color:#5d6877}.sandbox-view-switch a[aria-current="page"]{background:#e7effa;color:#1768ac;font-weight:600}
+body[data-mode="sandbox"] .mindmap-viewport{height:clamp(440px,65vh,720px)}
+body[data-mode="sandbox"] .mindmap-toolbar p{margin-top:8px}
+@media(max-width:1000px){
+body[data-mode="sandbox"] .content-shell{display:block;padding:18px}
+body[data-mode="sandbox"] .shell{margin-left:0;padding-top:0}
+body[data-mode="sandbox"] .topbar{position:static;margin:0;width:100%;height:auto;min-height:56px;padding:10px 16px;gap:10px;flex-wrap:wrap}
+body[data-mode="sandbox"] .sidebar{position:static;width:auto;height:auto;background:#fff;border:0;border-bottom:1px solid #dce1e6;padding:8px 12px}
+body[data-mode="sandbox"] .sidebar .brand,body[data-mode="sandbox"] .workspace-switch,body[data-mode="sandbox"] .sidebar-bottom{display:none}
+body[data-mode="sandbox"] .sidebar nav{display:flex;overflow:auto;gap:6px;white-space:nowrap}
+body[data-mode="sandbox"] .nav-item{flex:none;min-height:44px;padding:10px 14px;font-size:14px;width:auto;margin:0}
+body[data-mode="sandbox"] .heading{gap:10px;flex-wrap:wrap}body[data-mode="sandbox"] .heading h1{font-size:25px}
+.sandbox-detail-trigger,.sandbox-mobile-reset{display:inline-flex;min-height:44px}
+body[data-mode="sandbox"] .inspector{display:none}
+body[data-mode="sandbox"] .sandbox-detail-open .inspector{display:block;position:fixed;inset:0 0 0 auto;width:min(100%,460px);max-height:none;height:100dvh;z-index:1000;border-radius:0;box-shadow:-30px 0 0 100vmax #182e4055;padding:20px}
+.sandbox-detail-heading button{display:inline-flex;min-height:44px}
+body[data-mode="sandbox"]:has(.sandbox-detail-open){overflow:hidden}
+body[data-mode="sandbox"] .metrics{grid-template-columns:repeat(3,minmax(0,1fr));padding:14px 0}
+body[data-mode="sandbox"] .metric{padding:0 12px}body[data-mode="sandbox"] .metric strong{font-size:23px}
+body[data-mode="sandbox"] .metric small{line-height:1.6;font-size:11px}
+body[data-mode="sandbox"] .filters .search-field{flex-basis:100%}
+body[data-mode="sandbox"] .filters select{flex:1;max-width:none;min-width:0}
+body[data-mode="sandbox"] .check-modebar{margin-bottom:16px;gap:20px}
+.sandbox-view-switch{margin:12px 0}
+body[data-mode="sandbox"] .heading{display:flex;align-items:flex-start}
+body[data-mode="sandbox"] .heading>div{min-width:0;flex:1 1 220px}
+body[data-mode="sandbox"] .sandbox-detail-trigger{flex:0 0 auto;min-width:125px;white-space:nowrap;justify-content:center;font-size:14px}
+}
+
 /* Native offline runs share the console shell and inspector. */
 body[data-mode=runs] .run-relations{padding:24px}body[data-mode=runs] .run-relation{display:grid;grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr);gap:16px;align-items:center;margin-bottom:24px}body[data-mode=runs] .run-source,body[data-mode=runs] .run-node{border:1px solid #d3e0f1;border-radius:9px;padding:20px;background:#f8fbff;overflow-wrap:anywhere}body[data-mode=runs] .run-arrow{text-align:center;font-size:28px;color:#6c9bd0}body[data-mode=runs] .run-arrow small{display:block;font-size:12px}body[data-mode=runs] .run-qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}body[data-mode=runs] .run-qa article{padding:16px;background:#f2f6fc;border-radius:8px}body[data-mode=runs] .inspector blockquote{white-space:pre-wrap;overflow-wrap:anywhere;max-height:450px;overflow:auto}body[data-mode=runs] .nav-item{text-decoration:none}body[data-mode=runs] .metrics strong small{display:block}body[data-mode=runs] .filters select{max-width:260px}body[data-mode=runs] .table-wrap td:first-child{min-width:260px}body[data-mode=runs] .inspector,body[data-mode=runs] .run-qa p{overflow-wrap:anywhere}@media(max-width:760px){body[data-mode=runs] .run-relation,body[data-mode=runs] .run-qa{grid-template-columns:1fr}body[data-mode=runs] .run-arrow{transform:rotate(90deg)}body[data-mode=runs] .run-arrow small{display:none}}

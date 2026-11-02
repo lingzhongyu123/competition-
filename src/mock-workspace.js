@@ -1,5 +1,5 @@
 import { runData } from './run-data.js';
-import { buildSandboxMindMap, renderSandboxMindMap, bindSandboxMindMap } from './sandbox-mindmap.js';
+import { buildSandboxMindMap, renderSandboxMindMap, bindSandboxMindMap, sandboxCaseTitle } from './sandbox-mindmap.js';
 
 // Only this copy changes. Archive status, evidence and model results remain read-only.
 export function createArchiveSandbox(dataset = runData) {
@@ -37,6 +37,7 @@ const sandboxEscape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '
 const sandboxTypeNames = { fact: '事实', preference: '偏好', constraint: '约束' };
 
 export function renderArchiveSandbox(root, page = 'memories') {
+  const editorWasOpen = root.querySelector('.sandbox-editor')?.open ?? false;
   root.dataset.sandboxPage = page;
   archiveSandbox ??= createArchiveSandbox();
   const h = sandboxEscape, rows = archiveSandbox.rows(), events = archiveSandbox.events();
@@ -61,8 +62,34 @@ export function renderArchiveSandbox(root, page = 'memories') {
   const unsupported = `<section class="sandbox-operation"><h2>这批素材没有任务经验记录</h2><p>85 个节点来自对话记忆档案，未提供工具执行或任务复用证据。</p><a class="secondary" href="#osworld?view=mock">查看独立的任务经验 MOCK 示例</a></section>`;
   root.innerHTML = `<aside class="sidebar"><div class="brand"><div><strong>记忆演练</strong><small>MOCK</small></div></div><div class="workspace-switch"><div><strong>LongMemEval 素材</strong><small>真实来源，模拟操作</small></div></div><nav aria-label="主导航"><a class="nav-item" href="#guide">首页演示</a>${Object.entries(names).filter(([id]) => id !== 'evaluation').map(([id, title]) => `<a class="nav-item ${id === page ? 'active' : ''}" href="#${id}?mode=mock" ${id === page ? 'aria-current="page"' : ''}>${title}</a>`).join('')}</nav><div class="sidebar-bottom"><a href="#memories">查看只读原始档案</a><p><a href="#memories?mode=legacy">报名表合成示例</a></p><button class="secondary" id="sandbox-reset">重置本次演练</button></div></aside><div class="shell"><header class="topbar"><div class="app-identity">记忆控制台</div><span class="tag amber">MOCK 演练</span></header><div class="content-shell"><main id="main"><nav class="check-modebar"><a href="#memories">离线运行数据</a><a href="#memories?mode=mock" aria-current="page">MOCK 演示数据</a></nav><div class="heading"><div><h1>${names[page] ?? names.memories}</h1><p class="subtitle">用已有记忆演练更新与检索，变化就在当前页面。</p></div></div><div class="metrics">${[['演练副本', rows.length, '个 · 来自公开档案'], ['来源案例', runData.length, '个 · 原文可追溯'], ['本次模拟操作', events.length, '次 · 刷新重置']].map(([label, count, unit]) => `<div class="metric"><div><span>${label}</span><strong>${count}<small>${unit}</small></strong></div></div>`).join('')}</div><p class="sandbox-note">素材是实际离线记录；更新、撤回和检索只作用于内存副本，不写回档案。演练版本 v1 从打开页面开始，不代表原始记忆版本。</p><p id="sandbox-message" role="status">${h(sandboxView.message)}</p>${page === 'traces' ? retrieval : ['timeline', 'evaluation'].includes(page) ? log : page === 'experience' ? unsupported : page === 'manage' ? updateForm : ''}<section class="panel"><div class="panel-heading"><h2>${page === 'graph' ? '来源与演练副本' : '记忆库'}</h2><span class="tag amber">MOCK 副本</span></div>${filters}${page === 'graph' ? graph : table}${!filtered.length ? '<div class="empty">没有匹配的记忆，请调整筛选。</div>' : ''}<div class="panel-footer"><span>${filtered.length} 条匹配 · 第 ${sandboxView.page + 1} / ${pages} 页</span><button class="secondary" id="sandbox-prev" ${sandboxView.page === 0 ? 'disabled' : ''}>上一页</button><button class="secondary" id="sandbox-next" ${sandboxView.page + 1 >= pages ? 'disabled' : ''}>下一页</button></div></section></main><aside class="inspector" aria-label="演练记忆详情">${selected ? `<span class="tag amber">演练副本 · v${selected.version}</span><h2>${h(selected.label)}</h2><p>${h(selected.summary)}</p><p>${status(selected)}</p>${selected.version > 1 ? `<details open><summary>对照档案原文</summary><p>${h(selected.originalSummary)}</p><p>当前内容是用户输入的 MOCK，不是模型输出。</p></details>` : ''}${page !== 'manage' ? updateForm : ''}<h3>原始来源 · ${selected.sources.length}</h3>${sources(selected)}` : '<p>当前筛选没有记忆，调整后再演练。</p>'}</aside></div></div>`;
   const $s = selector => root.querySelector(selector), rerender = () => renderArchiveSandbox(root, page);
-  root.querySelectorAll('[data-sandbox-node]').forEach(b => b.onclick = () => { sandboxView.selected = b.dataset.sandboxNode; sandboxView.message = ''; rerender(); if (innerWidth < 1200) $s('.inspector')?.scrollIntoView({ block: 'start' }); });
-  $s('#sandbox-filters').onsubmit = e => { e.preventDefault(); sandboxView.query = $s('#sandbox-query').value; sandboxView.caseId = $s('#sandbox-case').value; sandboxView.type = $s('#sandbox-type').value; sandboxView.page = 0; sandboxView.hitKeys = null; rerender(); };
+  const inspector = $s('.inspector');
+  const setModal = open => { const target = $s('.inspector'); target.toggleAttribute('aria-modal', open); if (open) { target.setAttribute('role','dialog'); target.setAttribute('aria-modal','true'); } else target.removeAttribute('role'); root.querySelectorAll('.sidebar,.topbar,main').forEach(el => { el.inert = open; }); };
+  const closeDetail = () => { root.classList.remove('sandbox-detail-open'); setModal(false); $s('[data-detail-open]')?.focus({ preventScroll: true }); };
+  const showDetail = () => { if (innerWidth <= 1000) { root.classList.add('sandbox-detail-open'); setModal(true); $s('[data-detail-close]')?.focus(); } };
+  inspector.insertAdjacentHTML('afterbegin', '<div class="sandbox-detail-heading"><strong>记忆详情</strong><button type="button" class="secondary" data-detail-close aria-label="关闭记忆详情">关闭</button></div>');
+  $s('[data-detail-close]').onclick = closeDetail;
+  root.onkeydown = e => { if (innerWidth > 1000 || !root.classList.contains('sandbox-detail-open')) return; if (e.key === 'Escape') { e.preventDefault(); closeDetail(); } if (e.key === 'Tab') { const controls = [...inspector.querySelectorAll('button,input,textarea,select,summary,a[href]')].filter(el => !el.disabled && el.getClientRects().length); const first = controls[0], last = controls.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } } };
+  $s('.heading').insertAdjacentHTML('beforeend', '<button class="secondary sandbox-detail-trigger" data-detail-open>查看所选记忆</button>');
+  $s('[data-detail-open]').onclick = showDetail;
+  if (root.classList.contains('sandbox-detail-open') && innerWidth <= 1000) { setModal(true); $s('[data-detail-close]').focus({preventScroll:true}); }
+  const editor = $s('#sandbox-update')?.closest('.sandbox-operation');
+  if (editor && page !== 'manage') {
+    const disclosure = document.createElement('details'); disclosure.className = 'sandbox-editor';
+    disclosure.innerHTML = '<summary>模拟修改这条记忆</summary>'; disclosure.append(editor); inspector.append(disclosure);
+    disclosure.open = editorWasOpen;
+  }
+  const note = $s('.sandbox-note');
+  if (note) { const disclosure = document.createElement('details'); disclosure.className = 'sandbox-boundary'; disclosure.innerHTML = '<summary>MOCK 演练 · 修改仅在本次页面生效</summary>'; note.replaceWith(disclosure); disclosure.append(note); }
+  if (['memories','graph'].includes(page)) $s('.heading').insertAdjacentHTML('afterend', `<nav class="sandbox-view-switch" aria-label="记忆查看方式"><a href="#memories?mode=mock" ${page === 'memories' ? 'aria-current="page"' : ''}>记忆列表</a><a href="#graph?mode=mock" ${page === 'graph' ? 'aria-current="page"' : ''}>思维导图</a></nav>`);
+  for (const option of $s('#sandbox-case').options) if (option.value !== 'all') option.textContent = sandboxCaseTitle(option.value);
+  const clearFilters = () => { Object.assign(sandboxView, { query: '', caseId: 'all', type: 'all', page: 0, selected: null, sourceIndex: null }); rerender(); $s('#sandbox-query').focus(); };
+  $s('#sandbox-filters').insertAdjacentHTML('beforeend', '<button type="button" class="text-button" id="sandbox-clear">清除筛选</button>');
+  $s('#sandbox-clear').onclick = clearFilters;
+  $s('#sandbox-clear').disabled = !sandboxView.query && sandboxView.caseId === 'all' && sandboxView.type === 'all';
+  $s('.topbar').insertAdjacentHTML('beforeend','<button class="secondary sandbox-mobile-reset" type="button">重置演练</button>');
+  $s('.sandbox-mobile-reset').onclick = () => $s('#sandbox-reset').click();
+  root.querySelectorAll('[data-sandbox-node]').forEach(b => b.onclick = () => { sandboxView.selected = b.dataset.sandboxNode; sandboxView.sourceIndex = null; sandboxView.message = ''; rerender(); showDetail(); });
+  $s('#sandbox-filters').onsubmit = e => { e.preventDefault(); sandboxView.query = $s('#sandbox-query').value.trim(); sandboxView.caseId = $s('#sandbox-case').value; sandboxView.type = $s('#sandbox-type').value; sandboxView.page = 0; sandboxView.selected = null; sandboxView.sourceIndex = null; sandboxView.hitKeys = null; rerender(); };
   for (const id of ['#sandbox-case', '#sandbox-type']) $s(id).onchange = () => $s('#sandbox-filters').requestSubmit();
   $s('#sandbox-prev').onclick = () => { sandboxView.page--; sandboxView.selected = null; sandboxView.sourceIndex = null; rerender(); };
   $s('#sandbox-next').onclick = () => { sandboxView.page++; sandboxView.selected = null; sandboxView.sourceIndex = null; rerender(); };
@@ -76,8 +103,8 @@ export function renderArchiveSandbox(root, page = 'memories') {
     if (sandboxView.caseId === 'all') { $s('#sandbox-prev').disabled = true; $s('#sandbox-next').disabled = true; $s('.panel-footer span').textContent = `${filtered.length} 个演练副本 · 点击案例展开`; }
     bindSandboxMindMap(root, mapModel, {
       onCase: caseId => { Object.assign(sandboxView, { caseId, page: 0, selected: null, sourceIndex: null }); rerender(); root.querySelector('[data-map-memory], [data-map-case]')?.focus({ preventScroll: true }); },
-      onMemory: key => { sandboxView.selected = key; sandboxView.sourceIndex = null; rerender(); [...root.querySelectorAll('[data-map-memory]')].find(b => b.dataset.mapMemory === key)?.focus({ preventScroll: true }); },
-      onSource: index => { sandboxView.sourceIndex = index; rerender(); const detail = $s(`[data-sandbox-source="${index}"]`); detail?.querySelector('summary')?.focus({ preventScroll: true }); detail?.scrollIntoView({ block: 'nearest' }); }
+      onMemory: key => { sandboxView.selected = key; sandboxView.sourceIndex = null; rerender(); if (innerWidth <= 1000) showDetail(); else [...root.querySelectorAll('[data-map-memory]')].find(b => b.dataset.mapMemory === key)?.focus({ preventScroll: true }); },
+      onSource: index => { sandboxView.sourceIndex = index; rerender(); showDetail(); const detail = $s(`[data-sandbox-source="${index}"]`); detail?.querySelector('summary')?.focus({ preventScroll: true }); detail?.scrollIntoView({ block: 'nearest' }); }
     });
   }
 }

@@ -1,5 +1,6 @@
 // The tree groups copies by case. Only source edges assert document references.
 const sandboxCaseNames = { '0100672e': '咖啡杯花费', '07741c44': '旧运动鞋的位置', gpt4_1a1dc16d: '见面与游行的先后', '0ddfec37_abs': '签名橄榄球收藏', '07b6f563': '手机配件偏好', '1e043500': 'Spotify 歌单', '6222b6eb': '大气校正算法' };
+export const sandboxCaseTitle = id => sandboxCaseNames[id] ?? id;
 export function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, hitKeys = null, page = 0, pageSize = 8 } = {}) {
   const hitSet = new Set(hitKeys ?? []), width = 1080;
   if (caseId === 'all') {
@@ -45,17 +46,23 @@ export function renderSandboxMindMap(model) {
   return `<section class="mindmap" aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应窗口</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
 }
 
+const mindMapViewportState = new Map();
 export function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) {
   const viewport = root.querySelector('.mindmap-viewport'); if (!viewport) return;
   const canvas = root.querySelector('.mindmap-canvas'), size = root.querySelector('.mindmap-size');
   let scale = 1;
+  const contextKey = model.nodes.filter(n => n.kind === 'memory' || n.kind === 'case').map(n => n.key ?? n.caseId).join('|') + '/' + viewport.clientWidth;
+  const saved = mindMapViewportState.get(contextKey);
+  const remember = () => mindMapViewportState.set(contextKey, { scale, left: viewport.scrollLeft, top: viewport.scrollTop });
   const apply = value => {
     scale = Math.min(1.6, Math.max(.35, value));
     canvas.style.transform = `scale(${scale})`; size.style.width = model.width * scale + 'px'; size.style.height = model.height * scale + 'px';
     root.querySelector('#mindmap-scale').textContent = Math.round(scale * 100) + '%';
+    remember();
   };
   const fit = () => apply(Math.min(1, (viewport.clientWidth - 24) / model.width, (viewport.clientHeight - 24) / model.height));
-  fit();
+  if (saved) { apply(saved.scale); viewport.scrollLeft = saved.left; viewport.scrollTop = saved.top; } else fit();
+  viewport.onscroll = remember;
   root.querySelectorAll('[data-map-zoom]').forEach(b => b.onclick = () => b.dataset.mapZoom === 'fit' ? fit() : apply(scale * (b.dataset.mapZoom === 'in' ? 1.25 : .8)));
   root.querySelector('[data-map-all]').onclick = () => onCase('all');
   root.querySelectorAll('[data-map-case]').forEach(b => b.onclick = () => onCase(b.dataset.mapCase));
