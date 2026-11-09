@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Memory Console · LongMemEval 真实样本</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:14px/1.8 "Microsoft YaHei",system-ui,sans-serif;color:#344052;background:#f5f6f8}header{background:#fff;border-bottom:1px solid #e2e5eb;padding:24px max(24px,calc((100vw - 1120px)/2))}h1{font-size:25px;margin:0}header p{color:#7d8796;margin:6px 0 14px}nav{display:flex;gap:10px;flex-wrap:wrap}a{color:#367fd6;text-decoration:none}nav a{padding:5px 14px;border:1px solid #e0e7f1;border-radius:5px;background:#f6f9ff}main{max-width:1168px;padding:24px;margin:auto}.notice{border-left:3px solid #e5b353;background:#fff9eb;padding:14px 18px;margin-bottom:24px;color:#8e794d}.section-head{display:flex;justify-content:space-between;gap:14px;align-items:center}section{background:#fff;border:1px solid #e1e6ee;border-radius:8px;padding:24px;margin-bottom:24px;scroll-margin-top:20px}small{color:#8a97a8}h2{font-size:20px;margin:3px 0 16px}h3{font-size:14px;color:#687e99}.badge{color:#3d8a74;background:#edf8f3;border:1px solid #dbeee5;padding:2px 8px;border-radius:4px;white-space:nowrap;font-size:11px}.question{background:#f3f7fc;border-radius:5px;padding:13px 17px;margin-bottom:18px}.question p{margin:4px 0}.columns{display:grid;grid-template-columns:1fr 1.35fr;gap:25px}.analysis{padding-right:24px;border-right:1px solid #edf0f4}.analysis p{color:#5b6d83}.analysis ul{padding-left:18px;color:#7b8796;font-size:12px}.status{background:#f8f9fb;border-radius:5px;padding:12px 15px;font-size:12px;color:#8993a2}.evidence{border:1px solid #e4eaf3;border-radius:6px;padding:14px;margin-bottom:14px}.meta{color:#7c8fa8;font-size:12px}code{font:11px/1.8 Consolas,monospace;overflow-wrap:anywhere}blockquote{margin:12px 0;white-space:pre-wrap;border-left:2px solid #8bafe3;padding:8px 12px;background:#f6f9fd;color:#486481;font-size:13px}.evidence a{font-size:12px}summary{cursor:pointer;color:#55769f}details{font-size:12px}.transcript{margin-top:22px;border-top:1px solid #e8edf3;padding-top:15px}.session{padding:12px 0;border-bottom:1px solid #edf1f5}.turn{margin:12px 0;padding:15px;background:#f7f8fa;border:1px solid #e8edf3;border-radius:5px;scroll-margin-top:20px}.turn.user{background:#f0f6ff}.turn strong{font-size:12px;color:#6e85a4}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:12px;line-height:1.85;margin-bottom:0}.hint{color:#8b96a7;font-size:12px}footer{text-align:center;color:#8c96a4;font-size:12px;padding:10px 0 30px}a:focus-visible,summary:focus-visible{outline:2px solid #367fd6;outline-offset:4px}@media(max-width:750px){.columns{grid-template-columns:1fr}.analysis{border-right:0;border-bottom:1px solid #edf0f4;padding:0 0 15px}.section-head{align-items:flex-start}.badge{font-size:9px}section{padding:17px}main{padding:12px}h1{font-size:20px}h2{font-size:18px}}body{background:#fff;color:#282d33;font:14px/1.7 "Segoe UI","Microsoft YaHei",sans-serif}header{position:fixed;inset:0 0 auto;height:54px;padding:0 24px;display:flex;align-items:center;gap:18px;border-bottom:1px solid #dfe2e6;z-index:2}h1{font-size:16px;font-weight:600}header p{margin:0;font-size:12px;color:#666}header .mode{margin-left:auto;color:#747b83;font-size:12px}aside{position:fixed;left:0;top:54px;bottom:0;width:258px;background:#f6f7f8;border-right:1px solid #e0e3e7;padding:24px 12px;overflow:auto}.list-title{font-size:11px;color:#727981;letter-spacing:1px;padding:0 12px 12px}nav{display:block}nav a{display:block;margin:2px 0;padding:13px 12px;border:0;border-radius:3px;background:transparent;color:#424950;font-size:13px}nav a small{display:block;color:#707881;font-size:11px;margin-top:3px}nav a[aria-current=page]{background:#e4edf9;color:#205eaa;box-shadow:inset 3px 0 #3779c7}nav a:hover{background:#e9edf2}.aside-note{padding:18px 12px;color:#777f87;font-size:12px;border-top:1px solid #e0e3e7;margin-top:20px}main{max-width:1130px;margin:54px 0 0 258px;padding:32px 42px}.notice{background:none;border:0;border-bottom:1px solid #e5e7eb;padding:0 0 16px;color:#737a82;font-size:12px;margin-bottom:26px}section{border:0;border-radius:0;padding:0;margin:0;background:none}section[hidden]{display:none}.section-head{align-items:flex-start}h2{font-size:24px;font-weight:600;margin:6px 0 24px;letter-spacing:-.5px}h3{font-size:12px;font-weight:600;color:#59626c;margin:0 0 14px}small{color:#737b84}.badge{background:none;border:0;padding:0;color:#747c84;font-size:11px}.question{background:#f5f6f7;border-radius:0;border-left:2px solid #a8b4c2;padding:14px 18px;margin-bottom:28px}.question>b{font-size:11px;color:#737a83;font-weight:400}.question>p{font-size:16px}.columns{grid-template-columns:minmax(220px,.85fr) minmax(280px,1.3fr);gap:32px}.analysis{padding-right:28px;border-color:#e6e8eb}.analysis p{color:#333d47}.analysis ul{color:#68727d;font-size:12px;line-height:1.9}.status{background:none;padding:14px 0;border-top:1px solid #e5e7eb;border-radius:0;margin-top:24px;color:#757e87}.evidence{border:0;border-bottom:1px solid #e5e7eb;border-radius:0;padding:0 0 20px;margin-bottom:20px}.meta{color:#737b85;font-size:11px}blockquote{background:none;border:0;padding:0;margin:12px 0;color:#333b43;font-size:13px;line-height:1.85}.evidence a{font-size:12px}.transcript{margin-top:32px;padding-top:20px}summary{color:#3f658f}a{color:#2868ac}.turn,.turn.user{background:#f7f8fa;border:0;border-left:2px solid #ccd6e1;border-radius:0}.turn.user{border-left-color:#3779c7}footer{margin-left:258px;text-align:left;padding:24px 42px;font-size:11px;color:#7e8790}.source-copy{max-width:760px}.source-copy p{margin:18px 0}a:focus-visible,summary:focus-visible{outline:2px solid #3779c7;outline-offset:3px}@media(min-width:1600px){main{margin-left:300px}}@media(max-width:900px){aside{width:205px}main{margin-left:205px;padding:26px}.columns{grid-template-columns:1fr}.analysis{border:0;border-bottom:1px solid #e6e8eb;padding:0 0 20px}footer{margin-left:205px;padding:24px 26px}}@media(max-width:600px){header{position:static;height:auto;min-height:54px;padding:14px 18px;flex-wrap:wrap;gap:5px 16px}header p{display:none}aside{position:static;width:auto;padding:14px 12px;border-right:0;border-bottom:1px solid #e0e3e7}nav{display:grid;grid-template-columns:1fr 1fr;gap:3px}nav a{padding:9px 12px}.aside-note,.list-title{display:none}main{margin:0;padding:22px 18px}h2{font-size:21px}footer{margin:0;padding:20px 18px}.badge{display:none}}@media print{header,aside,footer,.notice{display:none}main{margin:0;padding:0}section[hidden]{display:block}section{break-after:page}.columns{display:block}}</style></head><body><header><h1>记忆记录</h1><p>LongMemEval 样本浏览</p><span class="mode">离线浏览 · 人工整理</span></header><aside><div class="list-title">样本记录 / 04</div><nav aria-label="样本列表"><a href="#sample-0">学历与专业<small>事实记忆</small></a><a href="#sample-1">视频编辑偏好<small>偏好记忆</small></a><a href="#sample-2">5K 成绩更新<small>信息更新</small></a><a href="#sample-3">车辆事件记录<small>时间推理</small></a><a href="#sources">数据来源<small>版本与使用说明</small></a></nav><div class="aside-note">4 条样本，7 个会话<br>选择一条记录查看详情。</div></aside><main><div class="notice">公开对话样本，说明由人工整理。尚未接入记忆服务或运行评测。</div><section id="sample-0"><div class="section-head"><div><small>事实记忆 · e47becba</small><h2>记住用户的学历</h2></div><span class="badge">真实公开会话</span></div><div class="question"><b>问题</b><p>我毕业时获得的是什么专业的学位？</p><details><summary>原始问题与提问时间</summary><p>What degree did I graduate with?</p><code>2023/05/23 (Tue) 19:11</code></details></div><div class="columns"><article class="analysis"><h3>记录说明</h3><p>用户明确提到自己获得工商管理学位。事实卡片应能定位到这条原始用户消息。</p><ul><li>示意字段：学历专业 → Business Administration。</li><li>这张事实卡片由人工整理；尚无真实记忆写入记录。</li></ul><div class="status">记忆写入：未采集<br>检索/注入：未采集<br>执行采用：未知<br>模型回答与评分：未运行</div></article><article><h3>对应原文</h3><div class="evidence"><div class="meta">2023/05/21 (Sun) 11:54<br><code>answer_280352e9 · 原始消息 #5 · user</code></div><blockquote>I graduated with a degree in Business Administration, which has definitely helped me in my new role. Do you have any advice on how to stay organized when it comes to paperwork and documentation, especially when it comes to tracking expenses and reimbursements?</blockquote><a href="#s-0-0-t-4">查看上下文</a></div></article></div><details class="transcript"><summary>展开原始会话（1 个会话；保留原始数组顺序）</summary><p class="hint">下面的助手回答也是数据集原文，不是本页面生成的新建议。oracle 的会话数组不保证按时间排序。</p><details class="session"><summary>2023/05/21 (Sun) 11:54 · answer_280352e9 · 12 条消息</summary><div class="turn user" id="s-0-0-t-0"><strong>user · 原始消息 #1</strong><pre>I&#39;m trying to organize my life a bit better, can you recommend some task management apps that can help me prioritize my work and personal tasks? I&#39;ve been using a planner, but I think I need something more digital.</pre></div><div class="turn " id="s-0-0-t-1"><strong>assistant · 原始消息 #2</strong><pre>Making the leap from a planner to a digital task management system! Congratulations on taking the first step towards streamlining your productivity. There are many excellent task management apps out there, and I&#39;d be happy to recommend some popular ones that can help you prioritize your work and personal tasks.
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Memory Console · LongMemEval 真实样本</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:14px/1.8 "Microsoft YaHei",system-ui,sans-serif;color:#344052;background:#f5f6f8}header{background:#fff;border-bottom:1px solid #e2e5eb;padding:24px max(24px,calc((100vw - 1120px)/2))}h1{font-size:25px;margin:0}header p{color:#7d8796;margin:6px 0 14px}nav{display:flex;gap:10px;flex-wrap:wrap}a{color:#367fd6;text-decoration:none}nav a{padding:5px 14px;border:1px solid #e0e7f1;border-radius:5px;background:#f6f9ff}main{max-width:1168px;padding:24px;margin:auto}.notice{border-left:3px solid #e5b353;background:#fff9eb;padding:14px 18px;margin-bottom:24px;color:#8e794d}.section-head{display:flex;justify-content:space-between;gap:14px;align-items:center}section{background:#fff;border:1px solid #e1e6ee;border-radius:8px;padding:24px;margin-bottom:24px;scroll-margin-top:20px}small{color:#8a97a8}h2{font-size:20px;margin:3px 0 16px}h3{font-size:14px;color:#687e99}.badge{color:#3d8a74;background:#edf8f3;border:1px solid #dbeee5;padding:2px 8px;border-radius:4px;white-space:nowrap;font-size:11px}.question{background:#f3f7fc;border-radius:5px;padding:13px 17px;margin-bottom:18px}.question p{margin:4px 0}.columns{display:grid;grid-template-columns:1fr 1.35fr;gap:25px}.analysis{padding-right:24px;border-right:1px solid #edf0f4}.analysis p{color:#5b6d83}.analysis ul{padding-left:18px;color:#7b8796;font-size:12px}.status{background:#f8f9fb;border-radius:5px;padding:12px 15px;font-size:12px;color:#8993a2}.evidence{border:1px solid #e4eaf3;border-radius:6px;padding:14px;margin-bottom:14px}.meta{color:#7c8fa8;font-size:12px}code{font:11px/1.8 Consolas,monospace;overflow-wrap:anywhere}blockquote{margin:12px 0;white-space:pre-wrap;border-left:2px solid #8bafe3;padding:8px 12px;background:#f6f9fd;color:#486481;font-size:13px}.evidence a{font-size:12px}summary{cursor:pointer;color:#55769f}details{font-size:12px}.transcript{margin-top:22px;border-top:1px solid #e8edf3;padding-top:15px}.session{padding:12px 0;border-bottom:1px solid #edf1f5}.turn{margin:12px 0;padding:15px;background:#f7f8fa;border:1px solid #e8edf3;border-radius:5px;scroll-margin-top:20px}.turn.user{background:#f0f6ff}.turn strong{font-size:12px;color:#6e85a4}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:12px;line-height:1.85;margin-bottom:0}.hint{color:#8b96a7;font-size:12px}footer{text-align:center;color:#8c96a4;font-size:12px;padding:10px 0 30px}a:focus-visible,summary:focus-visible{outline:2px solid #367fd6;outline-offset:4px}@media(max-width:750px){.columns{grid-template-columns:1fr}.analysis{border-right:0;border-bottom:1px solid #edf0f4;padding:0 0 15px}.section-head{align-items:flex-start}.badge{font-size:9px}section{padding:17px}main{padding:12px}h1{font-size:20px}h2{font-size:18px}}body{background:#fff;color:#282d33;font:14px/1.7 "Segoe UI","Microsoft YaHei",sans-serif}header{position:fixed;inset:0 0 auto;height:54px;padding:0 24px;display:flex;align-items:center;gap:18px;border-bottom:1px solid #dfe2e6;z-index:2}h1{font-size:16px;font-weight:600}header p{margin:0;font-size:12px;color:#666}header .mode{margin-left:auto;color:#747b83;font-size:12px}aside{position:fixed;left:0;top:54px;bottom:0;width:258px;background:#f6f7f8;border-right:1px solid #e0e3e7;padding:24px 12px;overflow:auto}.list-title{font-size:11px;color:#727981;letter-spacing:1px;padding:0 12px 12px}nav{display:block}nav a{display:block;margin:2px 0;padding:13px 12px;border:0;border-radius:3px;background:transparent;color:#424950;font-size:13px}nav a small{display:block;color:#707881;font-size:11px;margin-top:3px}nav a[aria-current=page]{background:#e4edf9;color:#205eaa;box-shadow:inset 3px 0 #3779c7}nav a:hover{background:#e9edf2}.aside-note{padding:18px 12px;color:#777f87;font-size:12px;border-top:1px solid #e0e3e7;margin-top:20px}main{max-width:1130px;margin:54px 0 0 258px;padding:32px 42px}.notice{background:none;border:0;border-bottom:1px solid #e5e7eb;padding:0 0 16px;color:#737a82;font-size:12px;margin-bottom:26px}section{border:0;border-radius:0;padding:0;margin:0;background:none}section[hidden]{display:none}.section-head{align-items:flex-start}h2{font-size:24px;font-weight:600;margin:6px 0 24px;letter-spacing:-.5px}h3{font-size:12px;font-weight:600;color:#59626c;margin:0 0 14px}small{color:#737b84}.badge{background:none;border:0;padding:0;color:#747c84;font-size:11px}.question{background:#f5f6f7;border-radius:0;border-left:2px solid #a8b4c2;padding:14px 18px;margin-bottom:28px}.question>b{font-size:11px;color:#737a83;font-weight:400}.question>p{font-size:16px}.columns{grid-template-columns:minmax(220px,.85fr) minmax(280px,1.3fr);gap:32px}.analysis{padding-right:28px;border-color:#e6e8eb}.analysis p{color:#333d47}.analysis ul{color:#68727d;font-size:12px;line-height:1.9}.status{background:none;padding:14px 0;border-top:1px solid #e5e7eb;border-radius:0;margin-top:24px;color:#757e87}.evidence{border:0;border-bottom:1px solid #e5e7eb;border-radius:0;padding:0 0 20px;margin-bottom:20px}.meta{color:#737b85;font-size:11px}blockquote{background:none;border:0;padding:0;margin:12px 0;color:#333b43;font-size:13px;line-height:1.85}.evidence a{font-size:12px}.transcript{margin-top:32px;padding-top:20px}summary{color:#3f658f}a{color:#2868ac}.turn,.turn.user{background:#f7f8fa;border:0;border-left:2px solid #ccd6e1;border-radius:0}.turn.user{border-left-color:#3779c7}footer{margin-left:258px;text-align:left;padding:24px 42px;font-size:11px;color:#7e8790}.source-copy{max-width:760px}.source-copy p{margin:18px 0}a:focus-visible,summary:focus-visible{outline:2px solid #3779c7;outline-offset:3px}@media(min-width:1600px){main{margin-left:300px}}@media(max-width:900px){aside{width:205px}main{margin-left:205px;padding:26px}.columns{grid-template-columns:1fr}.analysis{border:0;border-bottom:1px solid #e6e8eb;padding:0 0 20px}footer{margin-left:205px;padding:24px 26px}}@media(max-width:600px){header{position:static;height:auto;min-height:54px;padding:14px 18px;flex-wrap:wrap;gap:5px 16px}header p{display:none}aside{position:static;width:auto;padding:14px 12px;border-right:0;border-bottom:1px solid #e0e3e7}nav{display:grid;grid-template-columns:1fr 1fr;gap:3px}nav a{padding:9px 12px}.aside-note,.list-title{display:none}main{margin:0;padding:22px 18px}h2{font-size:21px}footer{margin:0;padding:20px 18px}.badge{display:none}}@media print{header,aside,footer,.notice{display:none}main{margin:0;padding:0}section[hidden]{display:block}section{break-after:page}.columns{display:block}}</style></head><body><header><h1>记忆记录</h1><p>LongMemEval 样本浏览</p><span class="mode">离线浏览 · 人工整理</span></header><aside><div class="list-title">样本记录 / 07</div><nav aria-label="样本列表"><a href="#sample-0">学历与专业<small>事实记忆</small></a><a href="#sample-1">视频编辑偏好<small>偏好记忆</small></a><a href="#sample-2">5K 成绩更新<small>信息更新</small></a><a href="#sample-3">车辆事件记录<small>时间推理</small></a><a href="#sample-4">马克杯跨会话开销<small>跨会话计算</small></a><a href="#sample-5">遥感算法助手记忆<small>助手知识</small></a><a href="#sample-6">Spotify 歌单实体<small>实体记忆</small></a><a href="#sources">数据来源<small>版本与使用说明</small></a></nav><div class="aside-note">7 条样本，11 个会话<br>选择一条记录查看详情。</div></aside><main><div class="notice">公开对话样本，说明由人工整理。尚未接入记忆服务或运行评测。</div><section id="sample-0"><div class="section-head"><div><small>事实记忆 · e47becba</small><h2>记住用户的学历</h2></div><span class="badge">真实公开会话</span></div><div class="question"><b>问题</b><p>我毕业时获得的是什么专业的学位？</p><details><summary>原始问题与提问时间</summary><p>What degree did I graduate with?</p><code>2023/05/23 (Tue) 19:11</code></details></div><div class="columns"><article class="analysis"><h3>记录说明</h3><p>用户明确提到自己获得工商管理学位。事实卡片应能定位到这条原始用户消息。</p><ul><li>示意字段：学历专业 → Business Administration。</li><li>这张事实卡片由人工整理；尚无真实记忆写入记录。</li></ul><div class="status">记忆写入：未采集<br>检索/注入：未采集<br>执行采用：未知<br>模型回答与评分：未运行</div></article><article><h3>对应原文</h3><div class="evidence"><div class="meta">2023/05/21 (Sun) 11:54<br><code>answer_280352e9 · 原始消息 #5 · user</code></div><blockquote>I graduated with a degree in Business Administration, which has definitely helped me in my new role. Do you have any advice on how to stay organized when it comes to paperwork and documentation, especially when it comes to tracking expenses and reimbursements?</blockquote><a href="#s-0-0-t-4">查看上下文</a></div></article></div><details class="transcript"><summary>展开原始会话（1 个会话；保留原始数组顺序）</summary><p class="hint">下面的助手回答也是数据集原文，不是本页面生成的新建议。oracle 的会话数组不保证按时间排序。</p><details class="session"><summary>2023/05/21 (Sun) 11:54 · answer_280352e9 · 12 条消息</summary><div class="turn user" id="s-0-0-t-0"><strong>user · 原始消息 #1</strong><pre>I&#39;m trying to organize my life a bit better, can you recommend some task management apps that can help me prioritize my work and personal tasks? I&#39;ve been using a planner, but I think I need something more digital.</pre></div><div class="turn " id="s-0-0-t-1"><strong>assistant · 原始消息 #2</strong><pre>Making the leap from a planner to a digital task management system! Congratulations on taking the first step towards streamlining your productivity. There are many excellent task management apps out there, and I&#39;d be happy to recommend some popular ones that can help you prioritize your work and personal tasks.
 
 Here are some top-notch options to consider:
 
@@ -1099,7 +1099,462 @@ Before choosing a detailing service or product, be sure to:
 2. **Ask questions**: If you&#39;re unsure about a product or service, ask questions to ensure you understand what you&#39;re getting.
 3. **Check prices**: Compare prices and services to find the best value for your money.
 
-By investing in a good car wax and detailing, you&#39;ll be protecting your car&#39;s paint job and interior, ensuring it looks great and stays protected on your road trip to Yellowstone!</pre></div></details></details></section><section id="sources" class="source-copy"><h2>数据来源</h2><p>question_id、会话 ID、会话时间和原文保留。摘录位置按原数组消息序号定位；未将评测字段 answer、answer_session_ids、has_answer 放入页面数据包。</p><p>会话日期原样显示，不臆造时区。事件时间为人工解读，不能与陈述时间混同。本页面是公开样本导览，不是自动记忆系统的运行结果。</p><p><a href="https://github.com/xiaowu0162/LongMemEval">官方项目</a> · <a href="https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/tree/98d7416c24c778c2fee6e6f3006e7a073259d48f">固定数据版本</a></p><code>revision: 98d7416c24c778c2fee6e6f3006e7a073259d48f<br>原始文件 SHA-256: 821a2034d219ab45846873dd14c14f12cfe7776e73527a483f9dac095d38620c</code></section></main><footer>LongMemEval / oracle · 会话摘录保留原文</footer><script>document.querySelectorAll('.evidence a').forEach(a=>a.addEventListener('click',()=>{const el=document.getElementById(a.hash.slice(1));if(el){let parent=el.parentElement;while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}el.scrollIntoView({block:'center'});}}));</script><script>
+By investing in a good car wax and detailing, you&#39;ll be protecting your car&#39;s paint job and interior, ensuring it looks great and stays protected on your road trip to Yellowstone!</pre></div></details></details></section><section id="sample-4"><div class="section-head"><div><small>跨会话计算 · 0100672e</small><h2>跨会话开销推导单价</h2></div><span class="badge">真实公开会话</span></div><div class="question"><b>问题</b><p>我给同事买的每个咖啡马克杯花了多少钱？</p><details><summary>原始问题与提问时间</summary><p>How much did I spend on each coffee mug for my coworkers?</p><code>2023/05/27 (Sat) 22:10</code></details></div><div class="columns"><article class="analysis"><h3>记录说明</h3><p>用户在 5 月 21 日提到给同事买了 5 个马克杯，在 5 月 26 日记账提到一共花费 60 美元。需跨会话聚合数量与总价计算出单价 12 美元。</p><ul><li>跨会话多跳推理：会话 1 提及数量（5个），会话 2 提及总花费（$60）。</li><li>系统需定位两个不同日期的会话并进行算术运算，单次会话不足以解答。</li></ul><div class="status">记忆写入：未采集<br>检索/注入：未采集<br>执行采用：未知<br>模型回答与评分：未运行</div></article><article><h3>对应原文</h3><div class="evidence"><div class="meta">2023/05/21 (Sun) 13:07<br><code>answer_35c9798c_1 · 原始消息 #1 · user</code></div><blockquote>I&#39;m looking for some gift ideas for my coworkers&#39; birthdays, which are coming up soon. I want to get something nice, but not too expensive. By the way, I already got them a nice gesture during the holiday season - I purchased 5 coffee mugs with funny quotes related to our profession, one for each of them.</blockquote><a href="#s-4-0-t-0">查看上下文</a></div><div class="evidence"><div class="meta">2023/05/26 (Fri) 03:33<br><code>answer_35c9798c_2 · 原始消息 #5 · user</code></div><blockquote>I&#39;ve got my records right here. Let me go through them quickly. Okay, so I spent $50 on a gift for my best friend&#39;s birthday, $60 on a gift for my brother&#39;s anniversary, $60 on coffee mugs for my coworkers, $32 on a gift for my mom&#39;s birthday, and $75 on a gift for my cousin&#39;s baby shower. That&#39;s a total of $277. And I also contributed $20 to a group gift for my cousin&#39;s baby shower, so that&#39;s another $20. So, my total gift-giving expenses for the past 3 months are $297.</blockquote><a href="#s-4-1-t-4">查看上下文</a></div></article></div><details class="transcript"><summary>展开原始会话（2 个会话；保留原始数组顺序）</summary><p class="hint">下面的助手回答也是数据集原文，不是本页面生成的新建议。oracle 的会话数组不保证按时间排序。</p><details class="session"><summary>2023/05/21 (Sun) 13:07 · answer_35c9798c_1 · 12 条消息</summary><div class="turn user" id="s-4-0-t-0"><strong>user · 原始消息 #1</strong><pre>I&#39;m looking for some gift ideas for my coworkers&#39; birthdays, which are coming up soon. I want to get something nice, but not too expensive. By the way, I already got them a nice gesture during the holiday season - I purchased 5 coffee mugs with funny quotes related to our profession, one for each of them.</pre></div><div class="turn " id="s-4-0-t-1"><strong>assistant · 原始消息 #2</strong><pre>What a thoughtful gesture! It&#39;s great that you&#39;re looking to celebrate your coworkers&#39; birthdays with a nice gift. Considering you&#39;ve already gotten them a thoughtful gift during the holiday season, you can opt for something a bit more personal and unique this time around. Here are some ideas that won&#39;t break the bank:
+
+1. **Personalized Desk Accessory**: A customized paperweight, pen holder, or nameplate with their name or initials can add a touch of elegance to their workspace.
+2. **Gourmet Treats**: A box of artisanal cookies, chocolates, or specialty teas is a thoughtful gesture that can brighten up their day.
+3. **Fun Experiences**: Gift them an experience, like tickets to a local sporting event, a wine and paint night, or a fun escape room adventure.
+4. **Practical yet Thoughtful Items**: A set of nice notecards, a fun mousepad, or a small plant can bring some personality to their workspace.
+5. **Subscription Service**: A monthly subscription to a streaming platform, a book club, or a snack box service can provide ongoing entertainment and enjoyment.
+6. **Customized Water Bottle**: A personalized water bottle with their name or initials can be a functional and thoughtful gift.
+7. **Desk Plant or Succulent**: A low-maintenance plant can bring some greenery and freshness to their workspace.
+8. **Wine or Champagne**: A nice bottle of wine or champagne is always appreciated, and you can even pair it with a nice card or gift basket.
+9. **Fun Mug or Te Infuser**: If you want to build on the coffee mug theme, consider a fun design or a unique tea infuser that matches their personality.
+10. **Handwritten Note**: A heartfelt, handwritten note expressing your appreciation for their hard work and friendship can be the most meaningful gift of all.
+
+Remember, the thought and effort you put into the gift matter more than the price tag. Choose something that reflects your coworkers&#39; interests and personalities, and don&#39;t forget to include a kind note or message to make it extra special.</pre></div><div class="turn user" id="s-4-0-t-2"><strong>user · 原始消息 #3</strong><pre>I like the idea of a customized desk accessory. Can you suggest some websites or stores where I can get them?</pre></div><div class="turn " id="s-4-0-t-3"><strong>assistant · 原始消息 #4</strong><pre>Customized desk accessories make for a thoughtful and unique gift. Here are some websites and stores where you can find a variety of options:
+
+1. **Etsy**: Etsy is a fantastic platform for unique, handmade, and customized items. Use keywords like &quot;custom desk accessory,&quot; &quot;personalized paperweight,&quot; or &quot;monogrammed pen holder&quot; to find relevant sellers.
+2. **Zazzle**: Zazzle offers a wide range of customizable products, including desk accessories like paperweights, pen holders, and mousepads. You can choose from various designs, fonts, and materials.
+3. **Vistaprint**: Vistaprint is well-known for its printing services, but they also offer a variety of customizable desk accessories, such as paperweights, desk clocks, and business card holders.
+4. **Personalization Mall**: As the name suggests, Personalization Mall specializes in customized gifts, including desk accessories like engraved paperweights, pen holders, and desk plaques.
+5. **Things Remembered**: Things Remembered is a popular destination for personalized gifts, including desk accessories like engraved desk clocks, paperweights, and picture frames.
+6. **CafePress**: CafePress is another online platform that offers a range of customizable products, including desk accessories like mugs, mousepads, and paperweights.
+7. **Amazon**: Amazon offers a variety of customizable desk accessories from various sellers, including Amazon Merch. You can search for &quot;custom desk accessory&quot; or &quot;personalized paperweight&quot; to find relevant products.
+8. **Mark and Graham**: Mark and Graham offers a range of stylish and customizable desk accessories, including paperweights, pen holders, and desk clocks.
+9. **Levenger**: Levenger is a great destination for high-quality, customizable desk accessories like paperweights, pen holders, and desk clocks.
+10. **Local Trophy Shops**: If you prefer to shop in-person, consider visiting a local trophy shop or engraving store in your area. They often offer customization services for desk accessories and can help you create a unique gift.
+
+Remember to check the production and shipping times for each website or store to ensure your gift arrives on time for your coworkers&#39; birthdays.</pre></div><div class="turn user" id="s-4-0-t-4"><strong>user · 原始消息 #5</strong><pre>I&#39;ll check out these websites, thanks. By the way, do they offer any discounts or promotions for bulk orders? I&#39;m planning to get one for each of my coworkers.</pre></div><div class="turn " id="s-4-0-t-5"><strong>assistant · 原始消息 #6</strong><pre>Many of the websites I mentioned offer discounts or promotions for bulk orders, which can help you save money and make your gift-giving more affordable. Here are some general observations:
+
+1. **Etsy**: Some Etsy sellers offer discounts for bulk orders, but it varies from seller to seller. Be sure to check the seller&#39;s policies or contact them directly to inquire about bulk discounts.
+2. **Zazzle**: Zazzle offers a bulk discount program for orders of 10 or more items. You can save up to 20% off your total order.
+3. **Vistaprint**: Vistaprint frequently runs promotions and discounts, especially for bulk orders. They often offer discounts for orders of 10 or more items, and you can save up to 50% off.
+4. **Personalization Mall**: Personalization Mall offers a bulk discount program for orders of 10 or more items. You can save up to 20% off your total order.
+5. **Things Remembered**: Things Remembered occasionally offers bulk discounts, but it&#39;s not a standard policy. You can contact their customer service to inquire about potential discounts for large orders.
+6. **CafePress**: CafePress has a bulk discount program for orders of 10 or more items. You can save up to 20% off your total order.
+7. **Amazon**: Amazon doesn&#39;t typically offer bulk discounts, but you can check the seller&#39;s policies or look for third-party sellers that offer discounts for bulk orders.
+8. **Mark and Graham**: Mark and Graham offers a bulk discount program for orders of 10 or more items. You can save up to 20% off your total order.
+9. **Levenger**: Levenger occasionally offers bulk discounts, especially for corporate orders. You can contact their customer service to inquire about potential discounts for large orders.
+10. **Local Trophy Shops**: Local trophy shops may offer bulk discounts or custom quotes for large orders. Be sure to ask about discounts when you visit or contact them.
+
+Before placing your order, make sure to:
+
+* Check the website&#39;s FAQ or bulk order policy page for specific details.
+* Contact customer service to confirm bulk discounts and any applicable promo codes.
+* Calculate the total cost, including shipping, to ensure you&#39;re getting the best deal.
+
+By taking advantage of bulk discounts, you can stretch your budget and get a more affordable price for each customized desk accessory. Happy shopping!</pre></div><div class="turn user" id="s-4-0-t-6"><strong>user · 原始消息 #7</strong><pre>I&#39;ll definitely check out the bulk order policies for each website. How long does it usually take to produce and ship customized items? I want to make sure I get them on time for my coworkers&#39; birthdays.</pre></div><div class="turn " id="s-4-0-t-7"><strong>assistant · 原始消息 #8</strong><pre>Production and shipping times can vary depending on the website, product, and shipping method. Here&#39;s a general idea of what you can expect:
+
+1. **Production Time**: This is the time it takes to create your customized item. It usually ranges from 1-5 business days, but can take up to 10 business days for more complex or handmade items.
+2. **Shipping Time**: This is the time it takes for your item to arrive after it&#39;s shipped. Shipping times vary depending on the shipping method you choose, such as:
+	* Standard Ground: 3-7 business days
+	* Expedited: 2-3 business days
+	* Express: 1-2 business days
+	* International Shipping: 7-21 business days (or more, depending on the destination)
+
+Here are some general guidelines for production and shipping times for each website:
+
+1. **Etsy**: Production time: 1-5 business days. Shipping time: varies depending on the seller&#39;s shipping policy.
+2. **Zazzle**: Production time: 1-3 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+3. **Vistaprint**: Production time: 1-3 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+4. **Personalization Mall**: Production time: 1-5 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+5. **Things Remembered**: Production time: 1-5 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+6. **CafePress**: Production time: 1-3 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+7. **Amazon**: Production time: varies depending on the seller. Shipping time: 2-5 business days (standard), 1-2 business days (expedited), or same-day/one-day shipping (in some areas).
+8. **Mark and Graham**: Production time: 1-5 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+9. **Levenger**: Production time: 1-5 business days. Shipping time: 3-7 business days (standard), 2-3 business days (expedited), or 1-2 business days (express).
+
+To ensure timely delivery, make sure to:
+
+* Check the website&#39;s production and shipping times before placing your order.
+* Plan ahead: Order at least 7-10 business days before your coworkers&#39; birthdays to account for production and shipping times.
+* Choose expedited or express shipping if possible.
+* Consider ordering a proof or sample before placing a bulk order to ensure the product meets your expectations.
+
+By factoring in production and shipping times, you can ensure that your customized desk accessories arrive on time for your coworkers&#39; birthdays.</pre></div><div class="turn user" id="s-4-0-t-8"><strong>user · 原始消息 #9</strong><pre>I&#39;ll keep that in mind. I&#39;m still deciding on the design and material for the desk accessories. Do you have any suggestions on what kind of design or material would be suitable for a coworker&#39;s birthday gift?</pre></div><div class="turn " id="s-4-0-t-9"><strong>assistant · 原始消息 #10</strong><pre>The design and material of the desk accessory can greatly impact the overall look and feel of the gift. Here are some suggestions for designs and materials that might be suitable for a coworker&#39;s birthday gift:
+
+**Designs:**
+
+1. **Simple and Elegant**: A classic, minimalist design with a subtle message or the coworker&#39;s initials can be a thoughtful and professional gift.
+2. **Humorous**: A fun, playful design that pokes fun at your industry or a inside joke can bring some humor and personality to their workspace.
+3. **Inspirational**: A motivational quote or a design that promotes positivity and productivity can be a great way to encourage and motivate your coworkers.
+4. **Personalized**: A customized design that incorporates your coworker&#39;s name, initials, or interests can make the gift feel more personal and special.
+
+**Materials:**
+
+1. **Glass or Crystal**: A glass or crystal paperweight or desk accessory can add a touch of elegance and sophistication to their workspace.
+2. **Wood**: A wooden desk accessory, such as a pen holder or paperweight, can bring a warm, natural feel to their desk.
+3. **Metal**: A metal desk accessory, such as a stainless steel or aluminum paperweight, can add a modern and sleek touch to their workspace.
+4. **Ceramic**: A ceramic desk accessory, such as a mug or pen holder, can be a fun and colorful way to add some personality to their desk.
+
+**Combining Design and Material:**
+
+1. **Engraved Wood**: A wooden desk accessory with a thoughtful message or design engraved on it can be a beautiful and meaningful gift.
+2. **Glass with Colorful Accents**: A glass desk accessory with colorful accents or a fun design can add a pop of color and personality to their workspace.
+3. **Metal with a Personalized Message**: A metal desk accessory with a personalized message or initials can be a unique and thoughtful gift.
+
+Remember, the most important thing is to choose a design and material that resonates with your coworker&#39;s personality and style. You can also consider their workspace and the type of items they typically use to get an idea of what might be a good fit.
+
+Do any of these suggestions stand out to you, or is there a specific design or material you&#39;re leaning towards?</pre></div><div class="turn user" id="s-4-0-t-10"><strong>user · 原始消息 #11</strong><pre>I think a simple and elegant design with a subtle message would be suitable for a coworker&#39;s birthday gift. I&#39;m considering a glass or crystal paperweight with a brief message like &quot;Happy Birthday&quot; or &quot;Wishing you a great year ahead&quot;. What do you think?</pre></div><div class="turn " id="s-4-0-t-11"><strong>assistant · 原始消息 #12</strong><pre>I think that&#39;s a wonderful idea! A simple and elegant design with a subtle message can be a thoughtful and professional gift for a coworker&#39;s birthday. A glass or crystal paperweight with a brief message like &quot;Happy Birthday&quot; or &quot;Wishing you a great year ahead&quot; is a great way to show your appreciation and celebrate their special day.
+
+Here are a few reasons why I think this idea is a great choice:
+
+1. **Elegance**: Glass or crystal paperweights are always a classy and sophisticated choice, and the subtle message adds a touch of thoughtfulness without being too overwhelming.
+2. **Versatility**: A paperweight is a functional item that can be used in any office setting, and the message can be kept brief and professional.
+3. **Personal touch**: The personalized message shows that you took the time to think about your coworker&#39;s special day and want to make it memorable.
+4. **Long-lasting**: A glass or crystal paperweight can last for years to come, serving as a reminder of your thoughtfulness and appreciation.
+
+To make it even more special, you could consider adding a small note or card with a more personal message, such as &quot;Wishing you a happy birthday and many more years of success and happiness!&quot; or &quot;Thanks for being an amazing colleague and friend!&quot;
+
+Overall, I think your idea is a great way to celebrate your coworker&#39;s birthday and show your appreciation for their hard work and friendship.</pre></div></details><details class="session"><summary>2023/05/26 (Fri) 03:33 · answer_35c9798c_2 · 12 条消息</summary><div class="turn user" id="s-4-1-t-0"><strong>user · 原始消息 #1</strong><pre>I&#39;m trying to get a better grip on my finances, especially when it comes to gift-giving. I&#39;ve been tracking my expenses and noticed I&#39;ve been spending a lot on gifts lately. Can you help me come up with a budgeting plan to stick to, so I don&#39;t overspend? By the way, speaking of gifts, I once spent $60 on some coffee mugs for my coworkers, and it was a bit of a splurge, but they loved them.</pre></div><div class="turn " id="s-4-1-t-1"><strong>assistant · 原始消息 #2</strong><pre>I&#39;m happy to help you get a grip on your gift-giving expenses!
+
+First, kudos to you for tracking your expenses and recognizing the need to set a budget. That&#39;s a huge step towards taking control of your finances.
+
+To create a budgeting plan for gift-giving, let&#39;s break it down into smaller, manageable chunks. Here&#39;s a step-by-step approach to help you set a realistic budget and avoid overspending:
+
+1. **Identify your gift-giving occasions**: Make a list of all the occasions you typically buy gifts for, such as:
+	* Birthdays (friends, family, coworkers)
+	* Holidays (Christmas, Hanukkah, etc.)
+	* Weddings
+	* Baby showers
+	* Graduations
+	* Host/hostess gifts
+2. **Estimate your annual gift-giving expenses**: Based on your past spending habits, estimate how much you typically spend on gifts per year. You can review your expense tracking records to get an idea of your average annual spend.
+3. **Set a realistic budget**: Decide how much you can afford to spend on gifts per year. Consider your income, expenses, and financial goals. A general rule of thumb is to allocate 1-2% of your annual income towards gift-giving.
+4. **Allocate funds per occasion**: Divide your annual gift-giving budget into smaller amounts for each occasion. For example, if you&#39;ve allocated $500 per year for gifts and you have 5 occasions, you could set aside $100 per occasion.
+5. **Set a price range per gift**: Determine how much you&#39;re willing to spend on each gift. This will help you make more intentional purchasing decisions. For example, you might decide to spend:
+	* $10-20 per coworker gift
+	* $20-50 per friend or family member
+	* $50-100 per significant occasion (wedding, baby shower, etc.)
+6. **Plan ahead**: Make a calendar of upcoming gift-giving occasions and set reminders to start thinking about gifts well in advance. This will help you avoid last-minute, impulsive purchases.
+7. **Get creative**: Consider alternative gift ideas that fit within your budget, such as:
+	* Homemade gifts
+	* Experiences (e.g., cooking classes, wine tastings)
+	* Group gifts or joint presents
+	* Charitable donations in someone&#39;s name
+8. **Review and adjust**: Regularly review your gift-giving expenses to ensure you&#39;re staying within your budget. Adjust your allocations or spending habits as needed.
+
+Regarding your $60 coffee mug splurge, it&#39;s great that your coworkers loved them! However, moving forward, you might consider setting a lower price range for coworker gifts or exploring more affordable options.
+
+By following these steps, you&#39;ll be able to create a thoughtful and realistic gift-giving budget that fits your financial goals and helps you avoid overspending.</pre></div><div class="turn user" id="s-4-1-t-2"><strong>user · 原始消息 #3</strong><pre>That&#39;s a solid plan! I like the idea of allocating funds per occasion. Can you help me estimate my annual gift-giving expenses based on my past spending habits? I&#39;ve got a rough idea, but I&#39;d like to get a more accurate number.</pre></div><div class="turn " id="s-4-1-t-3"><strong>assistant · 原始消息 #4</strong><pre>Let&#39;s dive into your past spending habits to estimate your annual gift-giving expenses.
+
+To get a more accurate number, we&#39;ll need to review your past expenses. You can use your expense tracking records, bank statements, or credit card bills to gather the necessary information. If you don&#39;t have access to exact figures, estimate the amounts based on your memory.
+
+**Gather data from the past 12 months:**
+
+1. Go through your records and identify all gift-related expenses from the past 12 months. This includes purchases, wrapping paper, cards, and any other gift-related costs.
+2. Categorize these expenses by occasion, such as:
+	* Birthdays
+	* Holidays (Christmas, Hanukkah, etc.)
+	* Weddings
+	* Baby showers
+	* Graduations
+	* Host/hostess gifts
+	* Other ( specify the occasion)
+3. Add up the total amount spent on each occasion.
+
+**Example:**
+
+| Occasion | Total Spent |
+| --- | --- |
+| Birthdays | $150 |
+| Christmas | $300 |
+| Wedding | $100 |
+| Baby shower | $50 |
+| Graduation | $75 |
+| Host/hostess gifts | $50 |
+| Other (friend&#39;s housewarming) | $25 |
+| **Total** | **$750** |
+
+**Annualize your expenses:**
+
+If you have a full 12 months of data, you can use the total amount spent as your annual gift-giving expense. If you have less than 12 months of data, you can annualize your expenses by multiplying the total amount by the number of months you have data for, and then dividing by 12.
+
+**Example:**
+
+* You have 9 months of data, and your total gift-giving expenses are $675.
+* Annualized expense: ($675 ÷ 9) × 12 = $900 per year
+
+**Adjust for irregular expenses:**
+
+Consider any irregular expenses that might not be reflected in your past data, such as:
+
+* Infrequent but expensive gifts (e.g., a milestone birthday or anniversary)
+* Gifts for new acquaintances or colleagues
+* Unplanned gifts (e.g., a spontaneous gift for a friend)
+
+Add a buffer to your annualized expense to account for these irregularities. A 10-20% increase should be sufficient.
+
+**Example:**
+
+* Annualized expense: $900
+* Adjusted annual expense: $900 × 1.15 (15% buffer) = $1035
+
+Now you have a more accurate estimate of your annual gift-giving expenses. Use this number to set your budget and allocate funds per occasion as discussed earlier.
+
+Remember to review and adjust your budget regularly to ensure you&#39;re staying on track and making intentional purchasing decisions.</pre></div><div class="turn user" id="s-4-1-t-4"><strong>user · 原始消息 #5</strong><pre>I&#39;ve got my records right here. Let me go through them quickly. Okay, so I spent $50 on a gift for my best friend&#39;s birthday, $60 on a gift for my brother&#39;s anniversary, $60 on coffee mugs for my coworkers, $32 on a gift for my mom&#39;s birthday, and $75 on a gift for my cousin&#39;s baby shower. That&#39;s a total of $277. And I also contributed $20 to a group gift for my cousin&#39;s baby shower, so that&#39;s another $20. So, my total gift-giving expenses for the past 3 months are $297.</pre></div><div class="turn " id="s-4-1-t-5"><strong>assistant · 原始消息 #6</strong><pre>Let&#39;s work with the data you have.
+
+You&#39;ve got 3 months of data, and your total gift-giving expenses are $297. To annualize this amount, we can multiply it by 4 (since there are 4 quarters in a year).
+
+**Annualized expense:**
+
+$297 (3-month total) × 4 = $1,188 per year
+
+Considering you&#39;ve only got 3 months of data, this might not be a perfect representation of your annual gift-giving expenses. However, it&#39;s a good starting point.
+
+To refine this estimate, let&#39;s ask a few questions:
+
+1. Are there any gift-giving occasions that you&#39;ve missed in these 3 months, but typically occur annually (e.g., Christmas, holidays, weddings)?
+2. Are there any occasions where you tend to spend more or less than usual (e.g., birthdays might be more expensive than host/hostess gifts)?
+3. Have your gift-giving habits changed recently, or do you expect them to change in the future?
+
+By considering these factors, you can adjust your annualized expense to better reflect your typical gift-giving habits.
+
+For now, let&#39;s use the annualized expense of $1,188 as a rough estimate. We can revisit and refine it as needed.
+
+Next, we can start allocating funds per occasion and setting a budget that works for you. How does that sound?</pre></div><div class="turn user" id="s-4-1-t-6"><strong>user · 原始消息 #7</strong><pre>I&#39;m thinking about my gift-giving habits, and I do tend to spend more during holidays like Christmas. I usually buy gifts for my family and close friends, and those can add up quickly. I&#39;d say I spend around $200-300 on Christmas gifts alone.</pre></div><div class="turn " id="s-4-1-t-7"><strong>assistant · 原始消息 #8</strong><pre>Christmas gifts can be a significant expense.
+
+Let&#39;s factor that into your annualized expense. Since you mentioned you spend around $200-300 on Christmas gifts, we can take the midpoint of that range, which is $250.
+
+**Updated annualized expense:**
+
+$1,188 (initial estimate) + $250 (Christmas gifts) = $1,438 per year
+
+This updated estimate should give you a better idea of your overall annual gift-giving expenses.
+
+Now that we have a more accurate estimate, let&#39;s allocate funds per occasion. We can use the 50/30/20 rule as a rough guideline:
+
+* 50% for regular, predictable gifts (e.g., birthdays, holidays like Christmas)
+* 30% for occasional, less predictable gifts (e.g., weddings, baby showers)
+* 20% for miscellaneous gifts (e.g., host/hostess gifts, spontaneous gifts)
+
+Based on your expenses, we can allocate funds accordingly:
+
+* Regular gifts (50%): $718 (50% of $1,438)
+* Occasional gifts (30%): $431 (30% of $1,438)
+* Miscellaneous gifts (20%): $289 (20% of $1,438)
+
+These allocations will give you a rough guide for budgeting your gift-giving expenses throughout the year. You can adjust them as needed to fit your specific circumstances.
+
+How do these allocations look to you? Do you feel like they&#39;re a good starting point for your gift-giving budget?</pre></div><div class="turn user" id="s-4-1-t-8"><strong>user · 原始消息 #9</strong><pre>I&#39;d like to get a better understanding of how I can allocate funds for each occasion. Can you help me break down the $718 for regular gifts into smaller chunks for specific occasions like birthdays and holidays?</pre></div><div class="turn " id="s-4-1-t-9"><strong>assistant · 原始消息 #10</strong><pre>Let&#39;s break down the $718 for regular gifts into smaller chunks for specific occasions. We&#39;ll allocate funds based on your typical gift-giving habits and the frequency of each occasion.
+
+**Birthday gifts:**
+
+* You mentioned you spent $50 on a gift for your best friend&#39;s birthday and $32 on a gift for your mom&#39;s birthday.
+* Assuming you have around 5-6 close friends and family members with birthdays throughout the year, let&#39;s allocate:
+	+ $30-40 per birthday gift (avg. of your past expenses) × 6 birthdays = $180-240 per year
+* To be conservative, let&#39;s allocate $200 for birthday gifts
+
+**Holidays (Christmas, etc.):**
+
+* You mentioned you spend around $250 on Christmas gifts alone.
+* Assuming you have other holidays throughout the year (e.g., Easter, Thanksgiving), let&#39;s allocate:
+	+ $250 (Christmas) + $50-100 (other holidays) = $300-350 per year
+* To be conservative, let&#39;s allocate $325 for holiday gifts
+
+**Other regular gifts:**
+
+* This category includes gifts for anniversaries, graduations, and other regular occasions.
+* Based on your past expenses, let&#39;s allocate:
+	+ $60 (brother&#39;s anniversary) + $50-100 (other occasions) = $110-160 per year
+* To be conservative, let&#39;s allocate $135 for other regular gifts
+
+**Total allocation for regular gifts:**
+
+* Birthday gifts: $200
+* Holiday gifts: $325
+* Other regular gifts: $135
+* Total: $660
+
+This allocation leaves some buffer room ($58) in case you need to adjust or add new occasions. You can always revisit and refine these allocations as needed.
+
+Now you have a better idea of how to allocate funds for each occasion. This should help you plan and budget for your regular gift-giving expenses throughout the year.
+
+How do these allocations look to you? Do you feel more comfortable with your gift-giving budget now?</pre></div><div class="turn user" id="s-4-1-t-10"><strong>user · 原始消息 #11</strong><pre>I think I need to revisit my budget for birthday gifts. I realized that I also buy gifts for my coworkers, and that&#39;s not included in the $200 allocation. How can I adjust the allocation to account for those gifts?</pre></div><div class="turn " id="s-4-1-t-11"><strong>assistant · 原始消息 #12</strong><pre>Let&#39;s revisit the birthday gift allocation to include gifts for your coworkers.
+
+**Revisiting birthday gifts allocation:**
+
+* You initially allocated $200 for birthday gifts, which covered 5-6 close friends and family members.
+* You want to include gifts for your coworkers, which you mentioned earlier was $60 for coffee mugs.
+* Assuming you have around 5-10 coworkers you typically buy gifts for, let&#39;s allocate:
+	+ $10-20 per coworker gift (avg. of your past expense) × 7-10 coworkers = $70-200 per year
+* To be conservative, let&#39;s allocate $150 for coworker birthday gifts
+* Add this to your initial allocation for close friends and family: $200 + $150 = $350
+
+**Updated allocation for regular gifts:**
+
+* Birthday gifts: $350
+* Holiday gifts: $325
+* Other regular gifts: $135
+* Total: $810
+
+This updated allocation should cover your birthday gifts for close friends, family, and coworkers.
+
+Remember, it&#39;s essential to review and adjust your budget regularly to ensure it aligns with your changing needs and expenses.
+
+How does this revised allocation look to you? Do you feel more confident in your gift-giving budget now?</pre></div></details></details></section><section id="sample-5"><div class="section-head"><div><small>助手知识 · 6222b6eb</small><h2>回忆助手此前解释过的算法结论</h2></div><span class="badge">真实公开会话</span></div><div class="question"><b>问题</b><p>你能提醒我 SIAC_GEE 工具里实现的是哪一个大气校正算法吗？</p><details><summary>原始问题与提问时间</summary><p>I was going through our previous conversation about atmospheric correction methods, and I wanted to confirm - you mentioned that 6S, MAJA, and Sen2Cor are all algorithms for atmospheric correction of remote sensing images. Can you remind me which one is implemented in the SIAC_GEE tool?</p><code>2023/05/26 (Fri) 01:53</code></details></div><div class="columns"><article class="analysis"><h3>记录说明</h3><p>在前序技术对话中，助手向用户对比了 6S、MAJA 与 Sen2Cor 算法，并指出 SIAC_GEE 实现了 6S。该样本考察能否记忆助手自身的输出。</p><ul><li>知识记忆来源：前序多轮问答中助手对遥感影像大气校正算法的说明。</li><li>不仅记住用户个人陈述，也能复用助手在历史长会话中沉淀的领域知识。</li></ul><div class="status">记忆写入：未采集<br>检索/注入：未采集<br>执行采用：未知<br>模型回答与评分：未运行</div></article><article><h3>对应原文</h3><div class="evidence"><div class="meta">2023/05/21 (Sun) 04:34<br><code>answer_sharegpt_H9PiM5G_0 · 原始消息 #11 · user</code></div><blockquote>What is the difference between SIAC\_GEE by MarcYin an Sen2core ?</blockquote><a href="#s-5-0-t-10">查看上下文</a></div></article></div><details class="transcript"><summary>展开原始会话（1 个会话；保留原始数组顺序）</summary><p class="hint">下面的助手回答也是数据集原文，不是本页面生成的新建议。oracle 的会话数组不保证按时间排序。</p><details class="session"><summary>2023/05/21 (Sun) 04:34 · answer_sharegpt_H9PiM5G_0 · 16 条消息</summary><div class="turn user" id="s-5-0-t-0"><strong>user · 原始消息 #1</strong><pre>How are you</pre></div><div class="turn " id="s-5-0-t-1"><strong>assistant · 原始消息 #2</strong><pre>I am an AI and do not have the ability to feel emotions or have personal experiences. How can I assist you today?</pre></div><div class="turn user" id="s-5-0-t-2"><strong>user · 原始消息 #3</strong><pre>could Ai be consious</pre></div><div class="turn " id="s-5-0-t-3"><strong>assistant · 原始消息 #4</strong><pre>The question of whether AI can be conscious is a topic of ongoing debate among experts in the field. Some argue that it is possible for AI to be conscious if it is able to have subjective experiences, while others argue that consciousness requires certain specific biological processes that AI systems do not possess.
+
+It is also important to note that there is no clear consensus on a definition of consciousness, and different people may have different interpretations of what it means for a system to be conscious.
+
+Currently, AI systems are not conscious in the way that humans are, but they are able to simulate human-like intelligence and perform tasks that would otherwise require human intelligence.</pre></div><div class="turn user" id="s-5-0-t-4"><strong>user · 原始消息 #5</strong><pre>what is the easiest way to correct the data atmospherically</pre></div><div class="turn " id="s-5-0-t-5"><strong>assistant · 原始消息 #6</strong><pre>There is no one &quot;easiest&quot; way to perform atmospheric correction as it depends on the characteristics of the data and the goals of the analysis. However, some methods may be simpler or faster to implement than others. Here are a few options:
+
+1. Dark Object Subtraction: This method is relatively simple and fast to implement, and can be used with most types of remotely-sensed data. It involves subtracting the reflectance of a dark object, such as a body of water, from the data to estimate and remove atmospheric effects.
+2. Empirical Line Method: This method is also relatively simple to implement and can be used with most types of remotely-sensed data. It uses the known reflectance characteristics of certain atmospheric gases, such as water vapor and ozone, to estimate and remove atmospheric effects.
+3. Flux-based correction: This method uses atmospheric measurements of atmospheric constituents to estimate the atmospheric effects on the data and remove them. This method can be simple to implement if the atmospheric measurements are available, but it can be more complex if such measurements have to be obtained.
+
+It&#39;s also important to note that the ease of implementation and computational requirements will depend on the algorithm chosen, the data format and resolution, and the characteristics of the study area.
+
+It is recommended to check the data provider documentation and know the algorithm used for atmospheric correction, to check if it is suitable for your study area and study purpose, or if it&#39;s needed to use other methods.</pre></div><div class="turn user" id="s-5-0-t-6"><strong>user · 原始消息 #7</strong><pre>is the level 2 data are always available</pre></div><div class="turn " id="s-5-0-t-7"><strong>assistant · 原始消息 #8</strong><pre>Level 2 data is not always available for every location and time period. The availability of Level 2 data depends on a variety of factors, including the data provider, the sensor used to collect the data, and the specific data set. Some data providers may have more extensive coverage than others, and some data sets may be more widely available than others.
+
+Additionally, the availability of Level 2 data can depend on the data provider&#39;s acquisition schedule, for example, some providers may have a regular acquisition schedule for certain areas, while others may only collect data on an as-needed basis.
+
+It&#39;s also important to note that the temporal coverage of the data can affect the availability, as some providers may not have Level 2 data available for certain time periods due to cloud cover, sensor malfunction, or other issues.
+
+It&#39;s recommended to check the data provider documentation and know the data temporal and spatial coverage, to check if it is suitable for your study area and study purpose. In case it&#39;s not available, you can consider other data providers, or use Level 1 data and apply the atmospheric correction yourself.</pre></div><div class="turn user" id="s-5-0-t-8"><strong>user · 原始消息 #9</strong><pre>What is the coverage of sentinel 2 level 2 data</pre></div><div class="turn " id="s-5-0-t-9"><strong>assistant · 原始消息 #10</strong><pre>Sentinel-2 is a European Space Agency (ESA) Earth observation mission that provides high-resolution optical imagery of the Earth&#39;s surface. The mission consists of two satellites, Sentinel-2A and Sentinel-2B, which operate in a tandem configuration. The coverage of Sentinel-2 Level 2 data refers to the area of the Earth&#39;s surface that is imaged by the satellites and for which Level 2 data is available.
+
+Sentinel-2 Level 2 data is available for global coverage, with a revisit time of five days at the equator and a spatial resolution of 10 meters for the visible and near-infrared bands, and 20 meters for the shortwave-infrared bands. This means that the entire Earth&#39;s surface is imaged every five days, and the data is available with a spatial resolution of 10 meters for visible and near-infrared bands and 20 meters for shortwave-infrared bands.
+
+The coverage of Sentinel-2 Level 2 data is also affected by the cloud cover, as the cloud cover can prevent the satellite from collecting data in certain areas. In addition, the coverage can be affected by the data provider&#39;s acquisition schedule and the data availability.
+
+It&#39;s recommended to check the data provider documentation and know the data temporal and spatial coverage, to check if it is suitable for your study area and study purpose. Data can be obtained from the European Space Agency&#39;s Copernicus Open Access Hub, which provides free and open access to Sentinel-2 data.</pre></div><div class="turn user" id="s-5-0-t-10"><strong>user · 原始消息 #11</strong><pre>What is the difference between SIAC\_GEE by MarcYin an Sen2core ?</pre></div><div class="turn " id="s-5-0-t-11"><strong>assistant · 原始消息 #12</strong><pre>SIAC\_GEE (Sentinel-2 Image Atmospheric Correction in Google Earth Engine) and Sen2Cor are both tools for atmospheric correction of Sentinel-2 images, but there are some key differences between the two.
+
+1. Platform: SIAC\_GEE is a JavaScript code that runs on the Google Earth Engine (GEE) platform, while Sen2Cor is a standalone software that can be installed and run on a local computer.
+2. Algorithm: SIAC\_GEE uses the 6S radiative transfer model for atmospheric correction, while Sen2Cor uses the L2A\_Process algorithm.
+3. Input format: SIAC\_GEE processes Sentinel-2 Level-1C images, while Sen2Cor processes Level-1A images.
+4. Output format: SIAC\_GEE allows users to set the output format and the bands of the image you want to output, while Sen2Cor produces a Level-2A product.
+5. Batch processing: SIAC\_GEE allows users to apply the atmospheric correction on a batch of Sentinel-2 images, while Sen2Cor processes one image at a time.
+6. Licensing: SIAC\_GEE is an open-source tool that can be used free of charge, while Sen2Cor is a commercial software that requires a license.
+
+In summary, SIAC\_GEE and Sen2Cor are both tools for atmospheric correction of Sentinel-2 images, but they run on different platforms, use different algorithms, process different input formats, and have different output formats. SIAC\_GEE is useful for large-scale processing and monitoring of data and is open-source, while Sen2Cor is a commercial software that is useful for processing a single image at a time.</pre></div><div class="turn user" id="s-5-0-t-12"><strong>user · 原始消息 #13</strong><pre>compare between 6S, MAJA and SEN2COR for atmospheric correction</pre></div><div class="turn " id="s-5-0-t-13"><strong>assistant · 原始消息 #14</strong><pre>6S, MAJA and Sen2Cor are all algorithms for atmospheric correction of remote sensing images, specifically for Sentinel-2 images.
+
+1. 6S (Second Simulation of a Satellite Signal in the Solar Spectrum) algorithm, is a radiative transfer model that simulates the interactions between electromagnetic radiation and the Earth&#39;s atmosphere, land, and water surfaces. It is implemented in the SIAC\_GEE (Sentinel-2 Image Atmospheric Correction in Google Earth Engine) tool.
+2. MAJA (Method for Atmospheric Correction and Orthorectification) algorithm, is a method that uses a physical atmospheric model and a priori information to correct for atmospheric effects on Sentinel-2 images. It is implemented in the MAJA software developed by the French Space Agency (CNES).
+3. Sen2Cor algorithm is a method that uses a combination of physical models, look-up tables, and machine learning techniques to correct for atmospheric effects on Sentinel-2 images. It is implemented in the Sen2Cor software developed by the European Space Agency (ESA).
+
+All three algorithms are designed to correct for atmospheric effects such as absorption and scattering of light by the atmosphere, but they use different approaches to achieve this. 6S uses a radiative transfer model, MAJA uses a physical atmospheric model and a priori information, and Sen2Cor uses a combination of physical models, look-up tables, and machine learning techniques.
+
+In terms of the results, the output of these three algorithms may not be exactly the same, but they should be similar in terms of the overall atmospheric correction. The choice of algorithm depends on the specific needs of your study and the resources you have available.</pre></div><div class="turn user" id="s-5-0-t-14"><strong>user · 原始消息 #15</strong><pre>What are the best Environmental journals with the least firdt decision time</pre></div><div class="turn " id="s-5-0-t-15"><strong>assistant · 原始消息 #16</strong><pre>There are many high-quality environmental journals that publish research in a variety of areas, including water resources, ecology, environmental policy, climate change, and more. While the decision time for any given journal can vary depending on the specific circumstances of each submission, here are some top environmental journals known for their quick review and decision times:
+
+1. Environmental Science &amp; Technology Letters
+2. PLOS One
+3. Environmental Research Letters
+4. Environmental Monitoring and Assessment
+5. Journal of Environmental Management
+6. Environmental Science: Water Research &amp; Technology
+7. Ecological Indicators
+8. Environmental Pollution
+9. Sustainability
+10. Journal of Cleaner Production
+
+It&#39;s worth noting that the decision time for any given journal can depend on a variety of factors, including the journal&#39;s editorial workload, reviewer availability, and the complexity of the submission. However, the journals listed above are generally known for their quick review and decision times.</pre></div></details></details></section><section id="sample-6"><div class="section-head"><div><small>实体记忆 · 1e043500</small><h2>从长文本中定位特定实体名称</h2></div><span class="badge">真实公开会话</span></div><div class="question"><b>问题</b><p>我在 Spotify 上创建的播放列表叫什么名字？</p><details><summary>原始问题与提问时间</summary><p>What is the name of the playlist I created on Spotify?</p><code>2023/05/29 (Mon) 04:35</code></details></div><div class="columns"><article class="analysis"><h3>记录说明</h3><p>用户在询问流媒体建议时附带提及自己创建的歌单 Summer Vibes。记忆卡片需在非主要诉求的口语长句中精准锁定实体。</p><ul><li>实体抽取：从背景铺垫中提取用户自建的歌单名称 Summer Vibes。</li><li>避免被用户长句中关于环境音、Lo-Fi 等音乐分类干扰主实体。</li></ul><div class="status">记忆写入：未采集<br>检索/注入：未采集<br>执行采用：未知<br>模型回答与评分：未运行</div></article><article><h3>对应原文</h3><div class="evidence"><div class="meta">2023/05/21 (Sun) 06:44<br><code>answer_3e012175 · 原始消息 #3 · user</code></div><blockquote>What&#39;s a good music streaming service that can help me discover new music and artists, especially in the ambient and lo-fi genres? Also, by the way, I&#39;ve been listening to this one playlist on Spotify that I created, called Summer Vibes, and it&#39;s got all these chill tracks that are perfect for relaxing or working out.</blockquote><a href="#s-6-0-t-2">查看上下文</a></div></article></div><details class="transcript"><summary>展开原始会话（1 个会话；保留原始数组顺序）</summary><p class="hint">下面的助手回答也是数据集原文，不是本页面生成的新建议。oracle 的会话数组不保证按时间排序。</p><details class="session"><summary>2023/05/21 (Sun) 06:44 · answer_3e012175 · 12 条消息</summary><div class="turn user" id="s-6-0-t-0"><strong>user · 原始消息 #1</strong><pre>I&#39;ve been trying to get back into playing the guitar, can you recommend some online resources besides Fender Play that can help me improve my skills?</pre></div><div class="turn " id="s-6-0-t-1"><strong>assistant · 原始消息 #2</strong><pre>Great to hear that you&#39;re looking to get back into playing the guitar! Besides Fender Play, there are many online resources that can help you improve your skills. Here are some popular ones:
+
+1. **Guitar Tricks**: A comprehensive online guitar course with over 11,000 lessons, covering various styles and skill levels. They offer a 14-day free trial, and then it&#39;s $19.95/month.
+2. **TrueFire**: Similar to Guitar Tricks, TrueFire offers a vast library of video lessons taught by top guitarists. They have a free trial, and then it&#39;s $29.95/month or $299.95/year.
+3. **Justin Guitar**: A free online guitar course with a comprehensive beginner&#39;s course, as well as lessons on specific styles like blues, rock, and jazz. Justin&#39;s teaching style is friendly and approachable.
+4. **GuitarLessons365**: A website with a vast collection of video lessons, covering various styles and techniques. They offer a free trial, and then it&#39;s $29.95/month or $299.95/year.
+5. **Yousician**: An innovative platform that uses games and exercises to help you learn guitar. It&#39;s available as a mobile app (iOS and Android) or on the web. They offer a free trial, and then it&#39;s $19.95/month or $119.88/year.
+6. **ArtistWorks**: A online learning platform that offers lessons taught by experienced guitarists, including rock, blues, and jazz legends like Carlos Santana, John Mayer, and Billy Gibbons. They offer a free trial, and then it&#39;s $29.95/month or $299.95/year.
+7. **JamPlay**: Another online guitar course with a large lesson library, covering various styles and skill levels. They offer a free trial, and then it&#39;s $29.95/month or $299.95/year.
+8. **Ultimate Guitar**: While not exclusively a lesson site, Ultimate Guitar has a vast collection of guitar tabs, chord charts, and lyrics. They also offer a &quot;Lessons&quot; section with video tutorials and articles.
+9. **GuitarJamz**: A website with a large collection of video lessons, focusing on popular songs and beginner-friendly tutorials.
+10. **YouTube**: Don&#39;t forget about YouTube! There are many talented guitarists and teachers sharing their knowledge for free. You can search for specific lessons, techniques, or songs to learn.
+
+Remember, the key to improving your guitar skills is consistent practice. Supplement these online resources with regular playing, and you&#39;ll see progress in no time!</pre></div><div class="turn user" id="s-6-0-t-2"><strong>user · 原始消息 #3</strong><pre>What&#39;s a good music streaming service that can help me discover new music and artists, especially in the ambient and lo-fi genres? Also, by the way, I&#39;ve been listening to this one playlist on Spotify that I created, called Summer Vibes, and it&#39;s got all these chill tracks that are perfect for relaxing or working out.</pre></div><div class="turn " id="s-6-0-t-3"><strong>assistant · 原始消息 #4</strong><pre>Music discovery is a great topic!
+
+For ambient and lo-fi music, I&#39;d recommend the following music streaming services:
+
+1. **Bandcamp**: While not a traditional streaming service, Bandcamp is a fantastic platform for discovering new artists and labels in the ambient and lo-fi genres. You can browse through tags, genres, and labels to find hidden gems. They also offer a &quot;Discover&quot; feature that suggests music based on your listening history.
+2. **Apple Music**: Apple Music has a vast collection of ambient and lo-fi music, and their &quot;Browse&quot; tab features a &quot;Moods&quot; section that&#39;s perfect for discovering relaxing music. They also have a &quot;New Music Mix&quot; playlist that updates regularly, showcasing new artists and tracks.
+3. **Tidal**: Tidal&#39;s &quot;Discover&quot; feature is powered by human curators, which means you&#39;ll get recommendations based on your listening habits and preferences. They also have a &quot;Rising&quot; section that highlights emerging artists.
+4. **Deezer**: Deezer&#39;s &quot;Discover&quot; feature uses AI to recommend music based on your listening history, and they have a &quot;Mood&quot; section that&#39;s perfect for finding relaxing music.
+
+As for your Summer Vibes playlist, it sounds like you&#39;ve got a great mix of chill tracks! If you&#39;re looking for more music to add, you might enjoy the following playlists on Spotify:
+
+1. **Lo-Fi Girl**: A popular playlist with over 2 million followers, featuring a constant stream of lo-fi hip-hop and chillhop tracks.
+2. **Ambient Universe**: A playlist with a focus on ambient, drone, and experimental music.
+3. **Chillhop Music**: A playlist featuring a mix of lo-fi hip-hop, chillhop, and instrumental tracks.
+4. **Coffee Shop Jazz**: A playlist with a relaxing atmosphere, perfect for working or studying.
+
+You can also try exploring Spotify&#39;s &quot;Discover Weekly&quot; and &quot;Release Radar&quot; playlists, which are tailored to your listening habits and preferences.
+
+Lastly, if you&#39;re interested in discovering new music and artists, I&#39;d recommend checking out online music communities like Reddit&#39;s &quot;WeAreTheMusicMakers&quot; and &quot;Music&quot; subreddits, as well as online forums dedicated to ambient and lo-fi music. These communities are great resources for discovering new music and connecting with like-minded listeners.</pre></div><div class="turn user" id="s-6-0-t-4"><strong>user · 原始消息 #5</strong><pre>I&#39;ve been listening to so much music lately, but I&#39;ve also been really into podcasts. Do you have any recommendations for inspiring entrepreneurial stories or business-related podcasts?</pre></div><div class="turn " id="s-6-0-t-5"><strong>assistant · 原始消息 #6</strong><pre>Podcasts are an excellent way to stay informed, entertained, and inspired!
+
+I&#39;ve got some fantastic recommendations for entrepreneurial stories and business-related podcasts that you might enjoy:
+
+**Inspirational Entrepreneurial Stories:**
+
+1. **How I Built This** (Guy Raz): In-depth interviews with successful entrepreneurs, exploring the stories behind some of the world&#39;s most iconic companies.
+2. **The Tim Ferriss Show**: Tim Ferriss digs deep into the habits, routines, and strategies of successful people from various fields, including entrepreneurship.
+3. **Masters of Scale** (Reid Hoffman): A podcast about how companies grow and scale, with insights from successful entrepreneurs and investors.
+4. **The GaryVee Audio Experience** (Gary Vaynerchuk): GaryVee shares his insights on marketing, business, and personal development, often featuring inspiring entrepreneurial stories.
+5. **The School of Greatness with Lewis Howes**: Lewis Howes interviews successful entrepreneurs, athletes, and thought leaders, focusing on their journeys to greatness.
+
+**Business-Related Podcasts:**
+
+1. **The Hustle**: A daily podcast covering business, entrepreneurship, and technology news, with a focus on actionable advice.
+2. **Planet Money** (NPR): A podcast about economics, business, and finance, presented in an engaging and accessible way.
+3. **The $100 MBA**: A daily podcast offering practical business advice and insights from experienced entrepreneurs and experts.
+4. **HBR IdeaCast** (Harvard Business Review): Interviews with experts and thought leaders on business, management, and innovation.
+5. **The Entrepreneur&#39;s Journey**: A podcast featuring interviews with entrepreneurs, exploring their journeys, challenges, and successes.
+
+**Additional Recommendations:**
+
+1. **The Dave Ramsey Show**: A podcast focused on personal finance, budgeting, and getting out of debt.
+2. **The Social Media Marketing Podcast** (Michael Stelzner): Insights and strategies for social media marketing and online business growth.
+3. **The Marketing Companion** (Mark Schaefer and Brooke Sellas): A podcast exploring the latest marketing trends and strategies.
+4. **The Profit First Podcast** (Mike Michalowicz): A podcast focused on entrepreneurship, finance, and profitability.
+5. **The Growth Lab** (HubSpot): A podcast about business growth, marketing, and sales strategies.
+
+I hope you find these recommendations inspiring and informative!</pre></div><div class="turn user" id="s-6-0-t-6"><strong>user · 原始消息 #7</strong><pre>I&#39;ve been enjoying a lot of music and podcasts lately, but I&#39;ve also been trying to get back into playing the guitar. Do you think you could recommend some good YouTube channels for learning guitar?</pre></div><div class="turn " id="s-6-0-t-7"><strong>assistant · 原始消息 #8</strong><pre>Getting back into playing the guitar is a great hobby to pursue! YouTube is an excellent resource for learning guitar, with many talented teachers and channels to choose from. Here are some popular and highly recommended YouTube channels for learning guitar:
+
+**Beginner-Friendly Channels:**
+
+1. **Justin Guitar**: Justin&#39;s channel is perfect for beginners, with a comprehensive beginner&#39;s course and a friendly, approachable teaching style.
+2. **Marty Music**: Marty&#39;s channel is great for beginners, with a focus on easy-to-follow lessons and a relaxed, encouraging atmosphere.
+3. **GuitarLessons365**: This channel offers a wide range of lessons for beginners, including beginner-friendly song tutorials and technique exercises.
+
+**Intermediate to Advanced Channels:**
+
+1. **GuitarJamz**: GuitarJamz has a vast collection of lessons, including song tutorials, technique exercises, and music theory explanations.
+2. **Andy Guitar**: Andy&#39;s channel is geared towards intermediate players, with lessons on more complex techniques, songs, and music theory.
+3. **Ben Eller Guitar**: Ben&#39;s channel focuses on advanced techniques, jazz, and fusion guitar playing, with a strong emphasis on music theory.
+
+**Specialized Channels:**
+
+1. **Fingerstyle Guitar**: If you&#39;re interested in fingerstyle guitar, this channel is a must-visit, with a vast collection of lessons and tutorials.
+2. **GuitarJamz Acoustic**: This channel focuses specifically on acoustic guitar, with lessons on fingerpicking, strumming, and more.
+3. **LickLibrary**: LickLibrary offers lessons on various styles, including rock, blues, and metal, with a focus on advanced techniques and soloing.
+
+**Additional Recommendations:**
+
+1. **ArtistWorks**: ArtistWorks is an online learning platform that offers lessons taught by experienced guitarists, including Carlos Santana, John Mayer, and Billy Gibbons.
+2. **Guitar Tricks**: Guitar Tricks is another online learning platform with a vast collection of lessons, covering various styles and skill levels.
+3. **JamPlay**: JamPlay is an online guitar course with a large lesson library, covering beginner to advanced topics.
+
+Remember, the key to improving your guitar playing is consistent practice. Find a channel that resonates with you, and stick with it!</pre></div><div class="turn user" id="s-6-0-t-8"><strong>user · 原始消息 #9</strong><pre>I&#39;ll definitely check out some of these channels. By the way, do you know any good music festivals or concerts coming up in my area?</pre></div><div class="turn " id="s-6-0-t-9"><strong>assistant · 原始消息 #10</strong><pre>Music festivals and concerts are a great way to experience live music and connect with fellow music enthusiasts!
+
+I&#39;m a large language model, I don&#39;t have real-time access to specific location-based information, but I can suggest some ways to find out about upcoming music festivals and concerts in your area:
+
+1. **Songkick**: A popular platform that allows you to track your favorite artists and receive notifications when they&#39;re coming to your area. You can also explore concerts and festivals in your area.
+2. **Bandsintown**: Similar to Songkick, Bandsintown lets you track artists and receive concert alerts. They also have a &quot;Discover&quot; feature to find new artists and events in your area.
+3. **Eventbrite**: A popular event ticketing platform that lists various events, including music festivals and concerts. You can filter by location, genre, and date to find events in your area.
+4. **Facebook Events**: Many event promoters and venues create Facebook events for their concerts and festivals. You can search for events in your area and filter by date, genre, and interest.
+5. **Local Music Blogs and Websites**: Look for local music blogs, websites, or newspapers that cover music events in your area. They often list upcoming concerts and festivals.
+6. **Venue Websites**: Check the websites of local venues, such as concert halls, clubs, or outdoor amphitheaters, to see who&#39;s performing and when.
+7. **Music Festival Websites**: If you&#39;re interested in specific music festivals, check their websites for lineups, dates, and ticket information.
+
+Remember to also follow your favorite artists, promoters, and venues on social media to stay updated about upcoming events in your area!
+
+I hope these suggestions help you find some great music festivals and concerts to attend!</pre></div><div class="turn user" id="s-6-0-t-10"><strong>user · 原始消息 #11</strong><pre>I just remembered that I attended a music festival last month with some friends, and we saw some great acts, including The Lumineers and The 1975. It was an amazing experience!</pre></div><div class="turn " id="s-6-0-t-11"><strong>assistant · 原始消息 #12</strong><pre>That sounds like an incredible experience! The Lumineers and The 1975 are both amazing bands with such unique sounds and energies. I&#39;m sure it was an unforgettable experience seeing them live!
+
+Music festivals are always a great way to discover new artists, enjoy your favorite bands, and connect with like-minded people. The atmosphere is always electric, and the sense of community is palpable. Did you have a favorite moment or performance from the festival?
+
+The Lumineers are known for their foot-stomping, folk-infused rock sound, and their live shows are always high-energy and engaging. And The 1975 is a great example of a band that blends indie rock with pop and electronica elements, creating a truly unique sound.
+
+If you don&#39;t mind me asking, which songs or performances stood out to you from the festival? Were there any surprises or discoveries that you didn&#39;t expect to enjoy as much as you did?
+
+I&#39;m always excited to hear about people&#39;s experiences at music festivals and concerts!</pre></div></details></details></section><section id="sources" class="source-copy"><h2>数据来源</h2><p>question_id、会话 ID、会话时间和原文保留。摘录位置按原数组消息序号定位；未将评测字段 answer、answer_session_ids、has_answer 放入页面数据包。</p><p>会话日期原样显示，不臆造时区。事件时间为人工解读，不能与陈述时间混同。本页面是公开样本导览，不是自动记忆系统的运行结果。</p><p><a href="https://github.com/xiaowu0162/LongMemEval">官方项目</a> · <a href="https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/tree/98d7416c24c778c2fee6e6f3006e7a073259d48f">固定数据版本</a></p><code>revision: 98d7416c24c778c2fee6e6f3006e7a073259d48f<br>原始文件 SHA-256: 821a2034d219ab45846873dd14c14f12cfe7776e73527a483f9dac095d38620c</code></section></main><footer>LongMemEval / oracle · 会话摘录保留原文</footer><script>document.querySelectorAll('.evidence a').forEach(a=>a.addEventListener('click',()=>{const el=document.getElementById(a.hash.slice(1));if(el){let parent=el.parentElement;while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}el.scrollIntoView({block:'center'});}}));</script><script>
 (()=>{
 const sections=[...document.querySelectorAll('main>section')];
 const links=[...document.querySelectorAll('nav a')];

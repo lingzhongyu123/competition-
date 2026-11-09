@@ -5,7 +5,10 @@ const sourceAnnotations = {
   e47becba: { field: '学历专业', values: ['Business Administration'], translation: '工商管理', note: '原话明确陈述了专业。这里的字段由人工整理，等待真实记忆形成记录来验证。' },
   '8a2466db': { field: '软件偏好与学习目标', values: ['Adobe Premiere Pro'], translation: '喜欢使用，想学习高级设置', note: '这是一条偏好陈述，不意味着禁止其他软件，也不足以判断偏好长期稳定。' },
   '6a1eabeb': { field: '慈善 5K 个人最好成绩', values: ['27:12', '25:50'], translation: '分 : 秒', note: '时间按钮表示用户陈述的时间。原文未提供刷新纪录的确切比赛时间。新陈述与旧陈述均保留来源。' },
-  gpt4_2655b836: { field: '保养后的故障事件', values: ['3/15 保养 → 3/22 GPS 故障'], translation: '事件时间由原文人工整理', note: '会话都发生在 4 月 10 日，事件时间却在 3 月。原会话数组的顺序不代表事件发生顺序。' }
+  gpt4_2655b836: { field: '保养后的故障事件', values: ['3/15 保养 → 3/22 GPS 故障'], translation: '事件时间由原文人工整理', note: '会话都发生在 4 月 10 日，事件时间却在 3 月。原会话数组的顺序不代表事件发生顺序。' },
+  '0100672e': { field: '跨会话开销推导', values: ['$12 / 个'], translation: '共 5 个杯子 / 记账总计 $60', note: 'Session 1 提到买了 5 个杯子，Session 2 记述总支出 $60；系统需跨两个不同日期的会话聚合形成单价记忆。' },
+  '6222b6eb': { field: '助手输出/知识记忆', values: ['6S 算法'], translation: 'SIAC_GEE 工具实现', note: '在前序技术对话中助手详细对比了大气校正算法；考察系统能否回忆助手自身解释过的专业结论。' },
+  '1e043500': { field: '用户创建实体名称', values: ['Summer Vibes'], translation: 'Spotify 自建播放列表', note: '在询问流媒体建议时附带提及自己创建的歌单名称，考察非核心焦点的实体抽取能力。' }
 };
 const sourceEscape = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
 
@@ -30,7 +33,12 @@ export function getSourceExcerpt(id, content) {
       : "By the way, I'm hoping to beat my personal best time of 25:50 this time around.",
     gpt4_2655b836: content.includes('March 15th')
       ? 'By the way, I just got my car serviced for the first time on March 15th, and it was a great experience.'
-      : "By the way, I recently had an issue with my car's GPS system on 3/22, and I had to take it back to the dealership to get it fixed."
+      : "By the way, I recently had an issue with my car's GPS system on 3/22, and I had to take it back to the dealership to get it fixed.",
+    '0100672e': content.includes('5 coffee mugs')
+      ? 'I purchased 5 coffee mugs with funny quotes related to our profession, one for each of them.'
+      : '$60 on coffee mugs for my coworkers',
+    '6222b6eb': 'difference between SIAC\\_GEE by MarcYin an Sen2core',
+    '1e043500': 'I created, called Summer Vibes'
   };
   const excerpt=excerpts[id];
   return excerpt && content.includes(excerpt) ? excerpt : content;
@@ -40,12 +48,25 @@ function sourceExcerptZh(id, content) {
   if(id==='e47becba') return '我毕业于工商管理专业，这对我的新工作很有帮助。';
   if(id==='8a2466db') return '我喜欢用 Adobe Premiere Pro，想学习视频编辑的高级设置。';
   if(id==='6a1eabeb') return content.includes('27:12') ? '我最近在慈善 5 公里跑中，以 27:12 刷新了个人纪录。' : '我希望这次打破自己 25:50 的个人最好成绩。';
-  return content.includes('March 15th') ? '我的车在 3 月 15 日做了首次保养。' : '我的车在 3 月 22 日出现 GPS 故障，后来送回经销商维修。';
+  if(id==='gpt4_2655b836') return content.includes('March 15th') ? '我的车在 3 月 15 日做了首次保养。' : '我的车在 3 月 22 日出现 GPS 故障，后来送回经销商维修。';
+  if(id==='0100672e') return content.includes('5 coffee mugs') ? '我买了 5 个印有专业搞笑语录的咖啡马克杯，送给他们每人一个。' : '给同事买咖啡马克杯一共花了 60 美元。';
+  if(id==='6222b6eb') return 'MarcYin 开发的 SIAC_GEE 工具和 Sen2Cor 有什么区别？';
+  if(id==='1e043500') return '我一直在听自己在 Spotify 上建的歌单，叫 Summer Vibes。';
+  return content;
 }
 
 export function renderSourceBrowser(id, phase, query = '') {
   const view = getSourceView(id, phase);
   const { sample, isUpdate, annotation, anchors, visibleSessions } = view;
+  const tabNames = {
+    e47becba: '学历专业',
+    '8a2466db': '软件偏好',
+    '6a1eabeb': '成绩更新',
+    gpt4_2655b836: '事件先后',
+    '0100672e': '跨会话计算',
+    '6222b6eb': '助手知识',
+    '1e043500': '实体记忆'
+  };
   const matching = sourceDataset.cases.filter(item => `${item.label} ${item.title} ${item.id} ${item.summary}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   const activeVisible = matching.some(item => item.id === sample.id);
   const value = annotation.values[isUpdate ? view.phase : 0];
@@ -55,7 +76,7 @@ export function renderSourceBrowser(id, phase, query = '') {
     : sample.summary;
   return `<div class="source-workspace">
     <div class="source-heading"><div><h1>对话记录</h1><p>公开样本，人工整理</p></div></div>
-    <nav class="source-case-tabs" aria-label="选择真实样本">${matching.map(item=>`<button data-source-sample="${item.id}" aria-pressed="${item.id===sample.id}">${sourceEscape({e47becba:'学历专业','8a2466db':'软件偏好','6a1eabeb':'成绩更新',gpt4_2655b836:'事件先后'}[item.id])}</button>`).join('')}</nav>
+    <nav class="source-case-tabs" aria-label="选择真实样本">${matching.map(item=>`<button data-source-sample="${item.id}" aria-pressed="${item.id===sample.id}">${sourceEscape(tabNames[item.id] || item.label)}</button>`).join('')}</nav>
     ${matching.length ? '' : '<div class="source-empty" role="status">没有匹配的样本。可以搜索“学历”“成绩”或样本 ID。</div>'}
     ${activeVisible ? `<section class="source-record" aria-labelledby="source-record-title"><h2 class="source-simple-title" id="source-record-title">${sourceEscape(sample.title)}</h2>
     ${isUpdate ? `<div class="source-time-control" aria-label="按陈述时间查看"><span>查看时点</span><button data-source-phase="0" aria-pressed="${view.phase === 0}">5 月 25 日<small>第一条陈述</small></button><button data-source-phase="1" aria-pressed="${view.phase === 1}">5 月 27 日<small>较新陈述</small></button></div>` : ''}
