@@ -1,12 +1,32 @@
 // The tree groups copies by case. Only source edges assert document references.
-const sandboxCaseNames = { '0100672e': '咖啡杯花费', '07741c44': '旧运动鞋的位置', gpt4_1a1dc16d: '见面与游行的先后', '0ddfec37_abs': '签名橄榄球收藏', '07b6f563': '手机配件偏好', '1e043500': 'Spotify 歌单', '6222b6eb': '大气校正算法' };
+const sandboxCaseNames = {
+  '0100672e': '咖啡杯花费',
+  '07741c44': '旧运动鞋的位置',
+  gpt4_1a1dc16d: '见面与游行的先后',
+  '0ddfec37_abs': '签名橄榄球收藏',
+  '07b6f563': '手机配件偏好',
+  '1e043500': 'Spotify 歌单',
+  '6222b6eb': '大气校正算法',
+  e47becba: '学历与专业',
+  '8a2466db': '视频编辑偏好',
+  '6a1eabeb': '5K 成绩更新',
+  gpt4_2655b836: '车辆保养与故障',
+  '3a704032': '植物购置数量',
+  e831120c: '观影周数统计',
+  b5ef892d: '露营天数统计',
+  '7161e7e2': 'GM社媒轮班',
+  c4f10528: '万隆餐厅推荐'
+};
 export const sandboxCaseTitle = id => sandboxCaseNames[id] ?? id;
 export function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, hitKeys = null, page = 0, pageSize = 8 } = {}) {
   const hitSet = new Set(hitKeys ?? []), width = 1080;
   if (caseId === 'all') {
     const groups = [...new Set(rows.map(n => n.caseId))];
-    const spots = [[20,30],[20,225],[20,420],[800,30],[800,225],[800,420],[410,530]];
-    const nodes = [{ id: 'root', kind: 'root', x: 410, y: 260, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
+    const spots = [
+      [20, 30], [20, 160], [20, 290], [20, 420], [20, 550], [20, 680], [20, 810], [20, 940],
+      [800, 30], [800, 160], [800, 290], [800, 420], [800, 550], [800, 680], [800, 930], [800, 1080]
+    ];
+    const nodes = [{ id: 'root', kind: 'root', x: 410, y: 485, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
     groups.forEach((id, i) => {
       const copies = rows.filter(n => n.caseId === id), [x, y] = spots[i] ?? [410, 530 + (i - 6) * 140];
       nodes.push({ id: 'case-' + i, kind: 'case', caseId: id, x, y, w: 260, h: 105, title: sandboxCaseNames[id] ?? `案例 ${id}`, text: `${copies.length} 个记忆 · ${copies.filter(n => n.demoStatus === 'updated').length} 个已更新`, hit: copies.some(n => hitSet.has(n.key)), hint: id + ' · ' + (copies[0]?.question ?? '') });
@@ -48,24 +68,28 @@ export function renderSandboxMindMap(model) {
 
 const mindMapViewportState = new Map();
 export function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) {
-  const viewport = root.querySelector('.mindmap-viewport'); if (!viewport) return;
-  const canvas = root.querySelector('.mindmap-canvas'), size = root.querySelector('.mindmap-size');
-  let scale = 1;
-  const contextKey = model.nodes.filter(n => n.kind === 'memory' || n.kind === 'case').map(n => n.key ?? n.caseId).join('|') + '/' + viewport.clientWidth;
-  const saved = mindMapViewportState.get(contextKey);
-  const remember = () => mindMapViewportState.set(contextKey, { scale, left: viewport.scrollLeft, top: viewport.scrollTop });
-  const apply = value => {
-    scale = Math.min(1.6, Math.max(.35, value));
-    canvas.style.transform = `scale(${scale})`; size.style.width = model.width * scale + 'px'; size.style.height = model.height * scale + 'px';
-    root.querySelector('#mindmap-scale').textContent = Math.round(scale * 100) + '%';
-    remember();
+  const viewport = root.querySelector('.mindmap-viewport'), scaleOutput = root.querySelector('#mindmap-scale');
+  if (!viewport) return;
+  const state = mindMapViewportState.get(root) ?? { zoom: 1 }; mindMapViewportState.set(root, state);
+  const applyZoom = (z, scrollInto = false) => {
+    state.zoom = Math.max(0.45, Math.min(1.6, Number(z.toFixed(2))));
+    viewport.style.setProperty('--mindmap-zoom', state.zoom);
+    if (scaleOutput) scaleOutput.textContent = `${Math.round(state.zoom * 100)}%`;
+    if (scrollInto) {
+      const active = viewport.querySelector('.is-selected') || viewport.querySelector('.mindmap-root');
+      if (active) active.scrollIntoView({ block: 'center', inline: 'center' });
+    }
   };
-  const fit = () => apply(Math.min(1, (viewport.clientWidth - 24) / model.width, (viewport.clientHeight - 24) / model.height));
-  if (saved) { apply(saved.scale); viewport.scrollLeft = saved.left; viewport.scrollTop = saved.top; } else fit();
-  viewport.onscroll = remember;
-  root.querySelectorAll('[data-map-zoom]').forEach(b => b.onclick = () => b.dataset.mapZoom === 'fit' ? fit() : apply(scale * (b.dataset.mapZoom === 'in' ? 1.25 : .8)));
-  root.querySelector('[data-map-all]').onclick = () => onCase('all');
-  root.querySelectorAll('[data-map-case]').forEach(b => b.onclick = () => onCase(b.dataset.mapCase));
-  root.querySelectorAll('[data-map-memory]').forEach(b => b.onclick = () => onMemory(b.dataset.mapMemory));
-  root.querySelectorAll('[data-map-source]').forEach(b => b.onclick = () => onSource(Number(b.dataset.mapSource)));
+  root.querySelector('[data-map-zoom="in"]')?.addEventListener('click', () => applyZoom(state.zoom + 0.15));
+  root.querySelector('[data-map-zoom="out"]')?.addEventListener('click', () => applyZoom(state.zoom - 0.15));
+  root.querySelector('[data-map-zoom="fit"]')?.addEventListener('click', () => {
+    const rect = viewport.getBoundingClientRect(), pad = 40;
+    const fit = Math.min((rect.width - pad) / model.width, (rect.height - pad) / model.height, 1);
+    applyZoom(fit > 0.45 ? fit : 0.45, true);
+  });
+  root.querySelector('[data-map-all]')?.addEventListener('click', () => onCase('all'));
+  root.querySelectorAll('[data-map-case]').forEach(btn => btn.addEventListener('click', () => onCase(btn.dataset.mapCase)));
+  root.querySelectorAll('[data-map-memory]').forEach(btn => btn.addEventListener('click', () => onMemory(btn.dataset.mapMemory)));
+  root.querySelectorAll('[data-map-source]').forEach(btn => btn.addEventListener('click', () => onSource(Number(btn.dataset.mapSource))));
+  applyZoom(state.zoom);
 }

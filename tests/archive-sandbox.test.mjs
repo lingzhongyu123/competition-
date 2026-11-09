@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { createArchiveSandbox } from '../src/mock-workspace.js';
 import { runData } from '../src/run-data.js';
 
-test('archive sandbox clones all 85 nodes without changing their sources or original status', () => {
+test('archive sandbox clones all 211 nodes without changing their sources or original status', () => {
   const before = JSON.stringify(runData), sandbox = createArchiveSandbox();
-  assert.equal(sandbox.rows().length, 85);
+  assert.equal(sandbox.rows().length, 211);
   const record = sandbox.rows()[0];
   sandbox.update(record.key, '<script>MOCK replacement</script>');
   assert.equal(sandbox.rows()[0].version, 2);
