@@ -22,16 +22,17 @@ export function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, 
   const hitSet = new Set(hitKeys ?? []), width = 1080;
   if (caseId === 'all') {
     const groups = [...new Set(rows.map(n => n.caseId))];
-    const spots = [
-      [20, 30], [20, 160], [20, 290], [20, 420], [20, 550], [20, 680], [20, 810], [20, 940],
-      [800, 30], [800, 160], [800, 290], [800, 420], [800, 550], [800, 680], [800, 930], [800, 1080]
-    ];
-    const nodes = [{ id: 'root', kind: 'root', x: 410, y: 485, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
+    const leftCount = Math.ceil(groups.length / 2);
+    const rowHeight = 104;
+    const height = Math.max(380, leftCount * rowHeight + 40);
+    const nodes = [{ id: 'root', kind: 'root', x: 410, y: (height - 105) / 2, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
     groups.forEach((id, i) => {
-      const copies = rows.filter(n => n.caseId === id), [x, y] = spots[i] ?? [410, 530 + (i - 6) * 140];
-      nodes.push({ id: 'case-' + i, kind: 'case', caseId: id, x, y, w: 260, h: 105, title: sandboxCaseNames[id] ?? `案例 ${id}`, text: `${copies.length} 个记忆 · ${copies.filter(n => n.demoStatus === 'updated').length} 个已更新`, hit: copies.some(n => hitSet.has(n.key)), hint: id + ' · ' + (copies[0]?.question ?? '') });
+      const copies = rows.filter(n => n.caseId === id);
+      const x = i < leftCount ? 20 : 800;
+      const y = 24 + (i % leftCount) * rowHeight;
+      nodes.push({ id: 'case-' + i, kind: 'case', caseId: id, x, y, w: 260, h: 84, title: sandboxCaseNames[id] ?? `案例 ${id}`, text: `${copies.length} 个记忆 · ${copies.filter(n => n.demoStatus === 'updated').length} 个已更新`, hit: copies.some(n => hitSet.has(n.key)), hint: id + ' · ' + (copies[0]?.question ?? '') });
     });
-    return { width, height: Math.max(665, ...nodes.map(n => n.y + n.h + 30)), nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, pages: 1, page: 0 };
+    return { width, height, overview: true, nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, pages: 1, page: 0 };
   }
   const scoped = rows.filter(n => n.caseId === caseId), pages = Math.max(1, Math.ceil(scoped.length / pageSize));
   const currentPage = Math.max(0, Math.min(page, pages - 1)), visible = scoped.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
@@ -62,34 +63,56 @@ export function renderSandboxMindMap(model) {
     const middle = (x1 + x2) / 2;
     return `<path class="mindmap-edge mindmap-${edge.kind} ${edge.selected ? 'is-selected' : ''} ${edge.hit ? 'is-hit' : ''}" d="M ${x1} ${y1} C ${middle} ${y1}, ${middle} ${y2}, ${x2} ${y2}"/>`;
   }).join('');
-  const nodes = model.nodes.map(n => `<div class="mindmap-node mindmap-${n.kind} ${n.selected ? 'is-selected' : ''} ${n.hit ? 'is-hit' : ''} ${n.status ? 'is-' + n.status : ''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px">${n.kind === 'root' || n.kind === 'update' ? '<div' : '<button type="button"'} ${n.kind === 'memory' ? `data-map-memory="${h(n.key)}" aria-pressed="${Boolean(n.selected)}"` : n.kind === 'case' ? `data-map-case="${h(n.caseId)}"` : n.kind === 'source' ? `data-map-source="${n.index}"` : ''} title="${h(n.hint ?? n.title)}"><strong>${h(n.title)}</strong><span>${h(n.text)}${n.hit ? ' · 检索命中' : ''}</span>${n.kind === 'case' ? '<small>点击展开</small>' : ''}${n.kind === 'root' || n.kind === 'update' ? '</div>' : '</button>'}</div>`).join('');
-  return `<section class="mindmap" aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应窗口</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
+  const nodes = model.nodes.map(n => `<div class="mindmap-node mindmap-${n.kind} ${n.selected ? 'is-selected' : ''} ${n.hit ? 'is-hit' : ''} ${n.status ? 'is-' + n.status : ''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px">${n.kind === 'root' || n.kind === 'update' ? '<div' : '<button type="button"'} ${n.kind === 'memory' ? `data-map-memory="${h(n.key)}" aria-pressed="${Boolean(n.selected)}"` : n.kind === 'case' ? `data-map-case="${h(n.caseId)}"` : n.kind === 'source' ? `data-map-source="${n.index}"` : ''} title="${h(n.hint ?? n.title)}"><strong>${h(n.title)}</strong><span>${h(n.text)}${n.hit ? ' · 检索命中' : ''}</span>${n.kind === 'root' || n.kind === 'update' ? '</div>' : '</button>'}</div>`).join('');
+  return `<section class="mindmap" ${model.overview ? "data-overview" : ""} aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应窗口</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
 }
 
-const mindMapViewportState = new Map();
+const mindMapViewportState = new WeakMap();
+
 export function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) {
-  const viewport = root.querySelector('.mindmap-viewport'), scaleOutput = root.querySelector('#mindmap-scale');
+  const viewport = root.querySelector('.mindmap-viewport');
   if (!viewport) return;
-  const state = mindMapViewportState.get(root) ?? { zoom: 1 }; mindMapViewportState.set(root, state);
-  const applyZoom = (z, scrollInto = false) => {
-    state.zoom = Math.max(0.45, Math.min(1.6, Number(z.toFixed(2))));
-    viewport.style.setProperty('--mindmap-zoom', state.zoom);
-    if (scaleOutput) scaleOutput.textContent = `${Math.round(state.zoom * 100)}%`;
-    if (scrollInto) {
-      const active = viewport.querySelector('.is-selected') || viewport.querySelector('.mindmap-root');
-      if (active) active.scrollIntoView({ block: 'center', inline: 'center' });
-    }
+  const canvas = viewport.querySelector('.mindmap-canvas');
+  const size = viewport.querySelector('.mindmap-size');
+  const scaleOutput = root.querySelector('#mindmap-scale');
+  const context = model.nodes.filter(n => n.kind === 'case' || n.kind === 'memory').map(n => n.key ?? n.caseId).join('|');
+  const previous = mindMapViewportState.get(root);
+  const state = previous?.context === context ? previous : { context, zoom: null, left: 0, top: 0 };
+  mindMapViewportState.set(root, state);
+
+  let zoom = 1;
+  const applyZoom = value => {
+    zoom = Math.min(1.6, value);
+    canvas.style.transform = `scale(${zoom})`;
+    size.style.width = `${Math.ceil(model.width * zoom)}px`;
+    size.style.height = `${Math.ceil(model.height * zoom)}px`;
+    scaleOutput.textContent = `${Math.round(zoom * 100)}%`;
   };
-  root.querySelector('[data-map-zoom="in"]')?.addEventListener('click', () => applyZoom(state.zoom + 0.15));
-  root.querySelector('[data-map-zoom="out"]')?.addEventListener('click', () => applyZoom(state.zoom - 0.15));
-  root.querySelector('[data-map-zoom="fit"]')?.addEventListener('click', () => {
-    const rect = viewport.getBoundingClientRect(), pad = 40;
-    const fit = Math.min((rect.width - pad) / model.width, (rect.height - pad) / model.height, 1);
-    applyZoom(fit > 0.45 ? fit : 0.45, true);
+  const fit = () => {
+    state.zoom = null;
+    applyZoom(Math.min(1, Math.max(1, viewport.clientWidth - 24) / model.width, Math.max(1, viewport.clientHeight - 24) / model.height));
+    viewport.scrollTo(0, 0);
+  };
+  if (state.zoom === null) fit();
+  else {
+    applyZoom(state.zoom);
+    viewport.scrollTo(state.left, state.top);
+  }
+  const observer = new ResizeObserver(() => {
+    if (!viewport.isConnected) { observer.disconnect(); return; }
+    if (state.zoom === null) fit();
   });
-  root.querySelector('[data-map-all]')?.addEventListener('click', () => onCase('all'));
-  root.querySelectorAll('[data-map-case]').forEach(btn => btn.addEventListener('click', () => onCase(btn.dataset.mapCase)));
-  root.querySelectorAll('[data-map-memory]').forEach(btn => btn.addEventListener('click', () => onMemory(btn.dataset.mapMemory)));
-  root.querySelectorAll('[data-map-source]').forEach(btn => btn.addEventListener('click', () => onSource(Number(btn.dataset.mapSource))));
-  applyZoom(state.zoom);
+  observer.observe(viewport);
+  viewport.onscroll = () => { state.left = viewport.scrollLeft; state.top = viewport.scrollTop; };
+  root.querySelectorAll('[data-map-zoom]').forEach(button => {
+    button.onclick = () => {
+      if (button.dataset.mapZoom === 'fit') { fit(); return; }
+      applyZoom(Math.max(Math.min(0.15, zoom), zoom * (button.dataset.mapZoom === 'in' ? 1.25 : 0.8)));
+      state.zoom = zoom;
+    };
+  });
+  root.querySelector('[data-map-all]').onclick = () => onCase('all');
+  root.querySelectorAll('[data-map-case]').forEach(button => { button.onclick = () => onCase(button.dataset.mapCase); });
+  root.querySelectorAll('[data-map-memory]').forEach(button => { button.onclick = () => onMemory(button.dataset.mapMemory); });
+  root.querySelectorAll('[data-map-source]').forEach(button => { button.onclick = () => onSource(Number(button.dataset.mapSource)); });
 }

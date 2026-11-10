@@ -353,3 +353,15 @@ body[data-mode="sandbox"] .sandbox-detail-trigger{flex:0 0 auto;min-width:125px;
 
 /* Native offline runs share the console shell and inspector. */
 body[data-mode=runs] .run-relations{padding:24px}body[data-mode=runs] .run-relation{display:grid;grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr);gap:16px;align-items:center;margin-bottom:24px}body[data-mode=runs] .run-source,body[data-mode=runs] .run-node{border:1px solid #d3e0f1;border-radius:9px;padding:20px;background:#f8fbff;overflow-wrap:anywhere}body[data-mode=runs] .run-arrow{text-align:center;font-size:28px;color:#6c9bd0}body[data-mode=runs] .run-arrow small{display:block;font-size:12px}body[data-mode=runs] .run-qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}body[data-mode=runs] .run-qa article{padding:16px;background:#f2f6fc;border-radius:8px}body[data-mode=runs] .inspector blockquote{white-space:pre-wrap;overflow-wrap:anywhere;max-height:450px;overflow:auto}body[data-mode=runs] .nav-item{text-decoration:none}body[data-mode=runs] .metrics strong small{display:block}body[data-mode=runs] .filters select{max-width:260px}body[data-mode=runs] .table-wrap td:first-child{min-width:260px}body[data-mode=runs] .inspector,body[data-mode=runs] .run-qa p{overflow-wrap:anywhere}@media(max-width:760px){body[data-mode=runs] .run-relation,body[data-mode=runs] .run-qa{grid-template-columns:1fr}body[data-mode=runs] .run-arrow{transform:rotate(90deg)}body[data-mode=runs] .run-arrow small{display:none}}
+
+/* Use the detail column for the case overview canvas. */
+body[data-mode="sandbox"] #app[data-sandbox-page="graph"] .content-shell:has(.mindmap[data-overview]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+body[data-mode="sandbox"] #app[data-sandbox-page="graph"]:not(.sandbox-detail-open) .content-shell:has(.mindmap[data-overview]) > .inspector,
+body[data-mode="sandbox"] #app[data-sandbox-page="graph"]:has(.mindmap[data-overview]) .sandbox-detail-trigger {
+  display: none;
+}
+.mindmap-size { overflow: hidden; }
+body[data-mode="sandbox"] .mindmap[data-overview] .mindmap-viewport { height: clamp(440px, 74dvh, 880px); }
+.mindmap-node.mindmap-case > button { padding-block: 9px; }
