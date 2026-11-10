@@ -1,4 +1,4 @@
-// The tree groups copies by case. Only source edges assert document references.
+﻿// The tree groups copies by case. Only source edges assert document references.
 const sandboxCaseNames = {
   '0100672e': '咖啡杯花费',
   '07741c44': '旧运动鞋的位置',
@@ -15,7 +15,21 @@ const sandboxCaseNames = {
   e831120c: '观影周数统计',
   b5ef892d: '露营天数统计',
   '7161e7e2': 'GM社媒轮班',
-  c4f10528: '万隆餐厅推荐'
+  c4f10528: '万隆餐厅推荐',
+  '0a995998': '衣物取退清单',
+  '6d550036': '主导项目统计',
+  gpt4_59c863d7: '模型套件制作',
+  '6aeb4375': '韩国餐厅打卡',
+  '830ce83f': 'Rachel 搬迁城市',
+  '852ce960': '房贷预批额度',
+  gpt4_2487a7cb: '培训活动先后',
+  gpt4_76048e76: '二月车辆维护',
+  '06878be2': '摄影配件偏好',
+  '75832dbd': '医学影像论文',
+  '118b2229': '日常通勤时长',
+  '51a45a95': '优惠券兑换地点',
+  e9327a54: '奥兰多甜品店',
+  cc539528: '后端语言推荐'
 };
 export const sandboxCaseTitle = id => sandboxCaseNames[id] ?? id;
 export function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, hitKeys = null, page = 0, pageSize = 8 } = {}) {

@@ -5,8 +5,8 @@ import { createArchiveSandbox } from '../src/mock-workspace.js';
 
 test('mind map groups every copy by its case without inventing semantic relations', () => {
   const rows = createArchiveSandbox().rows(), map = buildSandboxMindMap(rows);
-  assert.equal(map.total, 211);
-  assert.equal(map.nodes.filter(n => n.kind === 'case').length, 16);
+  assert.equal(map.total, 421);
+  assert.equal(map.nodes.filter(n => n.kind === 'case').length, 30);
   assert.ok(map.edges.every(e => e.kind === 'group'));
   const ids = new Set(map.nodes.map(n => n.id));
   assert.ok(map.edges.every(e => ids.has(e.from) && ids.has(e.to)));
