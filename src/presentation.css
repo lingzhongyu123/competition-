@@ -365,3 +365,32 @@ body[data-mode="sandbox"] #app[data-sandbox-page="graph"]:has(.mindmap[data-over
 .mindmap-size { overflow: hidden; }
 body[data-mode="sandbox"] .mindmap[data-overview] .mindmap-viewport { height: clamp(440px, 74dvh, 880px); }
 .mindmap-node.mindmap-case > button { padding-block: 9px; }
+
+/* Keep text readable as the case collection grows. */
+.mindmap[data-overview] .mindmap-toolbar p,
+.mindmap[data-overview] .mindmap-key { display: none; }
+.mindmap[data-overview] .mindmap-toolbar { margin-bottom: 12px; }
+body[data-mode="sandbox"] .mindmap[data-overview] .mindmap-viewport { height: auto; max-height: 65dvh; }
+.mindmap { container-type: inline-size; }
+.mindmap-node strong { font-size: 22px; line-height: 1.2; }
+.mindmap-node span { font-size: 16px; }
+.mindmap-node.mindmap-memory strong { font-size: 21px; }
+@container (max-width: 740px) {
+  .mindmap-controls [data-map-zoom], .mindmap-controls output, .mindmap-canvas > svg { display: none; }
+  .mindmap-viewport .mindmap-size, .mindmap-viewport .mindmap-canvas {
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    overflow: visible;
+  }
+  .mindmap-viewport .mindmap-canvas { display: grid; gap: 10px; }
+  .mindmap-viewport .mindmap-node {
+    position: static;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 68px;
+  }
+  .mindmap-node > button, .mindmap-node > div { min-height: 68px; }
+  .mindmap-viewport .mindmap-node strong { font-size: 17px; }
+  .mindmap-viewport .mindmap-node span { font-size: 14px; }
+}

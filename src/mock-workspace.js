@@ -43,8 +43,9 @@ export function renderArchiveSandbox(root, page = 'memories') {
   const h = sandboxEscape, rows = archiveSandbox.rows(), events = archiveSandbox.events();
   const names = { memories: '记忆总览', graph: '思维导图', manage: '模拟更新', traces: '模拟检索', timeline: '操作记录', experience: '任务经验', evaluation: '操作记录' };
   const filtered = rows.filter(n => (sandboxView.caseId === 'all' || n.caseId === sandboxView.caseId) && (sandboxView.type === 'all' || n.type === sandboxView.type) && `${n.label} ${n.summary} ${n.caseId} ${n.question}`.toLowerCase().includes(sandboxView.query.toLowerCase()));
-  const pageSize = page === 'graph' ? 8 : 15;
-  const pages = Math.max(1, Math.ceil(filtered.length / pageSize)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
+  const pageSize = page === 'graph' ? (sandboxView.caseId === 'all' ? 8 : 4) : 15;
+  const itemCount = page === 'graph' && sandboxView.caseId === 'all' ? new Set(filtered.map(n => n.caseId)).size : filtered.length;
+  const pages = Math.max(1, Math.ceil(itemCount / pageSize)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
   const visible = filtered.slice(sandboxView.page * pageSize, sandboxView.page * pageSize + pageSize);
   let selected = filtered.find(n => n.key === sandboxView.selected) ?? visible[0];
   const status = n => ({ unchanged: '未改动', updated: '已模拟更新', withdrawn: '已模拟撤回' }[n.demoStatus]);
@@ -53,7 +54,7 @@ export function renderArchiveSandbox(root, page = 'memories') {
   const options = (items, value) => items.map(([key, label]) => `<option value="${h(key)}" ${key === value ? 'selected' : ''}>${h(label)}</option>`).join('');
   const filters = `<form class="filters" id="sandbox-filters"><label class="search-field"><input id="sandbox-query" aria-label="搜索演练记忆" placeholder="搜索记忆或内容" value="${h(sandboxView.query)}"></label><select id="sandbox-case" aria-label="演练案例">${options([['all', '全部案例'], ...runData.map(c => [c.qid, c.qid + ' · ' + c.type])], sandboxView.caseId)}</select><select id="sandbox-type" aria-label="演练类型">${options([['all', '全部类型'], ...Object.entries(sandboxTypeNames)], sandboxView.type)}</select><button class="secondary">筛选</button></form>`;
   const table = `<div class="table-wrap"><table><thead><tr><th>记忆 / 内容</th><th>类型</th><th>演练状态</th><th>来源</th><th>版本</th></tr></thead><tbody>${visible.map(n => `<tr class="${selected?.key === n.key ? 'selected-row' : ''}"><td>${selectNode(n)}<div class="cell-sub">${h(n.summary)}</div><small>${h(n.caseId)}</small></td><td>${h(sandboxTypeNames[n.type] ?? n.type)}</td><td><span class="tag ${n.demoStatus === 'withdrawn' ? 'amber' : n.demoStatus === 'updated' ? 'green' : ''}">${status(n)}</span></td><td>${n.sources.length} 条引用</td><td>v${n.version}</td></tr>`).join('')}</tbody></table></div>`;
-  const mapModel = page === 'graph' ? buildSandboxMindMap(filtered, { caseId: sandboxView.caseId, selectedKey: selected?.key, hitKeys: sandboxView.hitKeys, page: sandboxView.page }) : null;
+  const mapModel = page === 'graph' ? buildSandboxMindMap(filtered, { caseId: sandboxView.caseId, selectedKey: selected?.key, hitKeys: sandboxView.hitKeys, page: sandboxView.page, pageSize }) : null;
   if (mapModel?.selectedKey) selected = filtered.find(n => n.key === mapModel.selectedKey);
   const graph = mapModel ? renderSandboxMindMap(mapModel) : '';
   const updateForm = selected ? `<section class="sandbox-operation"><h2>更新这条演练副本</h2><p>修改内容后，列表和右侧版本一起变化。来源仍指向原始陈述，不作为新内容的证明。</p><form id="sandbox-update"><label for="sandbox-summary">模拟的新内容</label><textarea id="sandbox-summary" maxlength="4000" required>${h(selected.summary)}</textarea><button class="primary">应用模拟更新</button><button class="secondary" type="button" id="sandbox-withdraw" ${selected.demoStatus === 'withdrawn' ? 'disabled' : ''}>模拟撤回</button></form></section>` : '';
@@ -100,7 +101,8 @@ export function renderArchiveSandbox(root, page = 'memories') {
   $s('#sandbox-reset').onclick = () => { archiveSandbox.reset(); Object.assign(sandboxView, { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '已恢复全部演练副本。', hitKeys: null, retrieval: '' }); rerender(); };
   if (page === 'graph') {
     $s('.panel-heading h2').textContent = '案例、来源与记忆';
-    if (sandboxView.caseId === 'all') { $s('#sandbox-prev').disabled = true; $s('#sandbox-next').disabled = true; $s('.panel-footer span').textContent = `${filtered.length} 个演练副本 · 点击案例展开`; }
+    if (mapModel.overview) $s('.panel-footer span').textContent = `${mapModel.caseCount} 个案例 · 第 ${mapModel.page + 1} / ${mapModel.pages} 页`;
+    $s('.mindmap').before($s('.panel-footer'));
     bindSandboxMindMap(root, mapModel, {
       onCase: caseId => { Object.assign(sandboxView, { caseId, page: 0, selected: null, sourceIndex: null }); rerender(); root.querySelector('[data-map-memory], [data-map-case]')?.focus({ preventScroll: true }); },
       onMemory: key => { sandboxView.selected = key; sandboxView.sourceIndex = null; rerender(); if (innerWidth <= 1000) showDetail(); else [...root.querySelectorAll('[data-map-memory]')].find(b => b.dataset.mapMemory === key)?.focus({ preventScroll: true }); },

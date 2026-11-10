@@ -590,6 +590,35 @@ body[data-mode="sandbox"] #app[data-sandbox-page="graph"]:has(.mindmap[data-over
 .mindmap-size { overflow: hidden; }
 body[data-mode="sandbox"] .mindmap[data-overview] .mindmap-viewport { height: clamp(440px, 74dvh, 880px); }
 .mindmap-node.mindmap-case > button { padding-block: 9px; }
+
+/* Keep text readable as the case collection grows. */
+.mindmap[data-overview] .mindmap-toolbar p,
+.mindmap[data-overview] .mindmap-key { display: none; }
+.mindmap[data-overview] .mindmap-toolbar { margin-bottom: 12px; }
+body[data-mode="sandbox"] .mindmap[data-overview] .mindmap-viewport { height: auto; max-height: 65dvh; }
+.mindmap { container-type: inline-size; }
+.mindmap-node strong { font-size: 22px; line-height: 1.2; }
+.mindmap-node span { font-size: 16px; }
+.mindmap-node.mindmap-memory strong { font-size: 21px; }
+@container (max-width: 740px) {
+  .mindmap-controls [data-map-zoom], .mindmap-controls output, .mindmap-canvas > svg { display: none; }
+  .mindmap-viewport .mindmap-size, .mindmap-viewport .mindmap-canvas {
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    overflow: visible;
+  }
+  .mindmap-viewport .mindmap-canvas { display: grid; gap: 10px; }
+  .mindmap-viewport .mindmap-node {
+    position: static;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 68px;
+  }
+  .mindmap-node > button, .mindmap-node > div { min-height: 68px; }
+  .mindmap-viewport .mindmap-node strong { font-size: 17px; }
+  .mindmap-viewport .mindmap-node span { font-size: 14px; }
+}
 </style>
 </head>
 <body>
@@ -675,17 +704,20 @@ function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, hitKeys
   const hitSet = new Set(hitKeys ?? []), width = 1080;
   if (caseId === 'all') {
     const groups = [...new Set(rows.map(n => n.caseId))];
-    const leftCount = Math.ceil(groups.length / 2);
+    const pages = Math.max(1, Math.ceil(groups.length / pageSize));
+    const currentPage = Math.max(0, Math.min(page, pages - 1));
+    const visibleCases = groups.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+    const leftCount = Math.ceil(visibleCases.length / 2);
     const rowHeight = 104;
     const height = Math.max(380, leftCount * rowHeight + 40);
     const nodes = [{ id: 'root', kind: 'root', x: 410, y: (height - 105) / 2, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
-    groups.forEach((id, i) => {
+    visibleCases.forEach((id, i) => {
       const copies = rows.filter(n => n.caseId === id);
       const x = i < leftCount ? 20 : 800;
       const y = 24 + (i % leftCount) * rowHeight;
       nodes.push({ id: 'case-' + i, kind: 'case', caseId: id, x, y, w: 260, h: 84, title: sandboxCaseNames[id] ?? `案例 ${id}`, text: `${copies.length} 个记忆 · ${copies.filter(n => n.demoStatus === 'updated').length} 个已更新`, hit: copies.some(n => hitSet.has(n.key)), hint: id + ' · ' + (copies[0]?.question ?? '') });
     });
-    return { width, height, overview: true, nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, pages: 1, page: 0 };
+    return { width, height, overview: true, nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, caseCount: groups.length, pages, page: currentPage };
   }
   const scoped = rows.filter(n => n.caseId === caseId), pages = Math.max(1, Math.ceil(scoped.length / pageSize));
   const currentPage = Math.max(0, Math.min(page, pages - 1)), visible = scoped.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
@@ -717,7 +749,7 @@ function renderSandboxMindMap(model) {
     return `<path class="mindmap-edge mindmap-${edge.kind} ${edge.selected ? 'is-selected' : ''} ${edge.hit ? 'is-hit' : ''}" d="M ${x1} ${y1} C ${middle} ${y1}, ${middle} ${y2}, ${x2} ${y2}"/>`;
   }).join('');
   const nodes = model.nodes.map(n => `<div class="mindmap-node mindmap-${n.kind} ${n.selected ? 'is-selected' : ''} ${n.hit ? 'is-hit' : ''} ${n.status ? 'is-' + n.status : ''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px">${n.kind === 'root' || n.kind === 'update' ? '<div' : '<button type="button"'} ${n.kind === 'memory' ? `data-map-memory="${h(n.key)}" aria-pressed="${Boolean(n.selected)}"` : n.kind === 'case' ? `data-map-case="${h(n.caseId)}"` : n.kind === 'source' ? `data-map-source="${n.index}"` : ''} title="${h(n.hint ?? n.title)}"><strong>${h(n.title)}</strong><span>${h(n.text)}${n.hit ? ' · 检索命中' : ''}</span>${n.kind === 'root' || n.kind === 'update' ? '</div>' : '</button>'}</div>`).join('');
-  return `<section class="mindmap" ${model.overview ? "data-overview" : ""} aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应窗口</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
+  return `<section class="mindmap" ${model.overview ? "data-overview" : ""} aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应宽度</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
 }
 
 const mindMapViewportState = new WeakMap();
@@ -743,7 +775,7 @@ function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) {
   };
   const fit = () => {
     state.zoom = null;
-    applyZoom(Math.min(1, Math.max(1, viewport.clientWidth - 24) / model.width, Math.max(1, viewport.clientHeight - 24) / model.height));
+    applyZoom(Math.min(1, Math.max(1, viewport.clientWidth - 24) / model.width));
     viewport.scrollTo(0, 0);
   };
   if (state.zoom === null) fit();
@@ -751,10 +783,12 @@ function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) {
     applyZoom(state.zoom);
     viewport.scrollTo(state.left, state.top);
   }
+  previous?.observer?.disconnect();
   const observer = new ResizeObserver(() => {
     if (!viewport.isConnected) { observer.disconnect(); return; }
     if (state.zoom === null) fit();
   });
+  state.observer = observer;
   observer.observe(viewport);
   viewport.onscroll = () => { state.left = viewport.scrollLeft; state.top = viewport.scrollTop; };
   root.querySelectorAll('[data-map-zoom]').forEach(button => {
@@ -813,8 +847,9 @@ function renderArchiveSandbox(root, page = 'memories') {
   const h = sandboxEscape, rows = archiveSandbox.rows(), events = archiveSandbox.events();
   const names = { memories: '记忆总览', graph: '思维导图', manage: '模拟更新', traces: '模拟检索', timeline: '操作记录', experience: '任务经验', evaluation: '操作记录' };
   const filtered = rows.filter(n => (sandboxView.caseId === 'all' || n.caseId === sandboxView.caseId) && (sandboxView.type === 'all' || n.type === sandboxView.type) && `${n.label} ${n.summary} ${n.caseId} ${n.question}`.toLowerCase().includes(sandboxView.query.toLowerCase()));
-  const pageSize = page === 'graph' ? 8 : 15;
-  const pages = Math.max(1, Math.ceil(filtered.length / pageSize)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
+  const pageSize = page === 'graph' ? (sandboxView.caseId === 'all' ? 8 : 4) : 15;
+  const itemCount = page === 'graph' && sandboxView.caseId === 'all' ? new Set(filtered.map(n => n.caseId)).size : filtered.length;
+  const pages = Math.max(1, Math.ceil(itemCount / pageSize)); sandboxView.page = Math.min(sandboxView.page, pages - 1);
   const visible = filtered.slice(sandboxView.page * pageSize, sandboxView.page * pageSize + pageSize);
   let selected = filtered.find(n => n.key === sandboxView.selected) ?? visible[0];
   const status = n => ({ unchanged: '未改动', updated: '已模拟更新', withdrawn: '已模拟撤回' }[n.demoStatus]);
@@ -823,7 +858,7 @@ function renderArchiveSandbox(root, page = 'memories') {
   const options = (items, value) => items.map(([key, label]) => `<option value="${h(key)}" ${key === value ? 'selected' : ''}>${h(label)}</option>`).join('');
   const filters = `<form class="filters" id="sandbox-filters"><label class="search-field"><input id="sandbox-query" aria-label="搜索演练记忆" placeholder="搜索记忆或内容" value="${h(sandboxView.query)}"></label><select id="sandbox-case" aria-label="演练案例">${options([['all', '全部案例'], ...runData.map(c => [c.qid, c.qid + ' · ' + c.type])], sandboxView.caseId)}</select><select id="sandbox-type" aria-label="演练类型">${options([['all', '全部类型'], ...Object.entries(sandboxTypeNames)], sandboxView.type)}</select><button class="secondary">筛选</button></form>`;
   const table = `<div class="table-wrap"><table><thead><tr><th>记忆 / 内容</th><th>类型</th><th>演练状态</th><th>来源</th><th>版本</th></tr></thead><tbody>${visible.map(n => `<tr class="${selected?.key === n.key ? 'selected-row' : ''}"><td>${selectNode(n)}<div class="cell-sub">${h(n.summary)}</div><small>${h(n.caseId)}</small></td><td>${h(sandboxTypeNames[n.type] ?? n.type)}</td><td><span class="tag ${n.demoStatus === 'withdrawn' ? 'amber' : n.demoStatus === 'updated' ? 'green' : ''}">${status(n)}</span></td><td>${n.sources.length} 条引用</td><td>v${n.version}</td></tr>`).join('')}</tbody></table></div>`;
-  const mapModel = page === 'graph' ? buildSandboxMindMap(filtered, { caseId: sandboxView.caseId, selectedKey: selected?.key, hitKeys: sandboxView.hitKeys, page: sandboxView.page }) : null;
+  const mapModel = page === 'graph' ? buildSandboxMindMap(filtered, { caseId: sandboxView.caseId, selectedKey: selected?.key, hitKeys: sandboxView.hitKeys, page: sandboxView.page, pageSize }) : null;
   if (mapModel?.selectedKey) selected = filtered.find(n => n.key === mapModel.selectedKey);
   const graph = mapModel ? renderSandboxMindMap(mapModel) : '';
   const updateForm = selected ? `<section class="sandbox-operation"><h2>更新这条演练副本</h2><p>修改内容后，列表和右侧版本一起变化。来源仍指向原始陈述，不作为新内容的证明。</p><form id="sandbox-update"><label for="sandbox-summary">模拟的新内容</label><textarea id="sandbox-summary" maxlength="4000" required>${h(selected.summary)}</textarea><button class="primary">应用模拟更新</button><button class="secondary" type="button" id="sandbox-withdraw" ${selected.demoStatus === 'withdrawn' ? 'disabled' : ''}>模拟撤回</button></form></section>` : '';
@@ -870,7 +905,8 @@ function renderArchiveSandbox(root, page = 'memories') {
   $s('#sandbox-reset').onclick = () => { archiveSandbox.reset(); Object.assign(sandboxView, { query: '', caseId: 'all', type: 'all', page: 0, selected: null, message: '已恢复全部演练副本。', hitKeys: null, retrieval: '' }); rerender(); };
   if (page === 'graph') {
     $s('.panel-heading h2').textContent = '案例、来源与记忆';
-    if (sandboxView.caseId === 'all') { $s('#sandbox-prev').disabled = true; $s('#sandbox-next').disabled = true; $s('.panel-footer span').textContent = `${filtered.length} 个演练副本 · 点击案例展开`; }
+    if (mapModel.overview) $s('.panel-footer span').textContent = `${mapModel.caseCount} 个案例 · 第 ${mapModel.page + 1} / ${mapModel.pages} 页`;
+    $s('.mindmap').before($s('.panel-footer'));
     bindSandboxMindMap(root, mapModel, {
       onCase: caseId => { Object.assign(sandboxView, { caseId, page: 0, selected: null, sourceIndex: null }); rerender(); root.querySelector('[data-map-memory], [data-map-case]')?.focus({ preventScroll: true }); },
       onMemory: key => { sandboxView.selected = key; sandboxView.sourceIndex = null; rerender(); if (innerWidth <= 1000) showDetail(); else [...root.querySelectorAll('[data-map-memory]')].find(b => b.dataset.mapMemory === key)?.focus({ preventScroll: true }); },

@@ -36,17 +36,20 @@ export function buildSandboxMindMap(rows, { caseId = 'all', selectedKey = null, 
   const hitSet = new Set(hitKeys ?? []), width = 1080;
   if (caseId === 'all') {
     const groups = [...new Set(rows.map(n => n.caseId))];
-    const leftCount = Math.ceil(groups.length / 2);
+    const pages = Math.max(1, Math.ceil(groups.length / pageSize));
+    const currentPage = Math.max(0, Math.min(page, pages - 1));
+    const visibleCases = groups.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+    const leftCount = Math.ceil(visibleCases.length / 2);
     const rowHeight = 104;
     const height = Math.max(380, leftCount * rowHeight + 40);
     const nodes = [{ id: 'root', kind: 'root', x: 410, y: (height - 105) / 2, w: 260, h: 105, title: '记忆演练', text: `${rows.length} 个副本 · ${groups.length} 个案例` }];
-    groups.forEach((id, i) => {
+    visibleCases.forEach((id, i) => {
       const copies = rows.filter(n => n.caseId === id);
       const x = i < leftCount ? 20 : 800;
       const y = 24 + (i % leftCount) * rowHeight;
       nodes.push({ id: 'case-' + i, kind: 'case', caseId: id, x, y, w: 260, h: 84, title: sandboxCaseNames[id] ?? `案例 ${id}`, text: `${copies.length} 个记忆 · ${copies.filter(n => n.demoStatus === 'updated').length} 个已更新`, hit: copies.some(n => hitSet.has(n.key)), hint: id + ' · ' + (copies[0]?.question ?? '') });
     });
-    return { width, height, overview: true, nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, pages: 1, page: 0 };
+    return { width, height, overview: true, nodes, edges: nodes.slice(1).map(n => ({ from: 'root', to: n.id, kind: 'group' })), total: rows.length, caseCount: groups.length, pages, page: currentPage };
   }
   const scoped = rows.filter(n => n.caseId === caseId), pages = Math.max(1, Math.ceil(scoped.length / pageSize));
   const currentPage = Math.max(0, Math.min(page, pages - 1)), visible = scoped.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
@@ -78,7 +81,7 @@ export function renderSandboxMindMap(model) {
     return `<path class="mindmap-edge mindmap-${edge.kind} ${edge.selected ? 'is-selected' : ''} ${edge.hit ? 'is-hit' : ''}" d="M ${x1} ${y1} C ${middle} ${y1}, ${middle} ${y2}, ${x2} ${y2}"/>`;
   }).join('');
   const nodes = model.nodes.map(n => `<div class="mindmap-node mindmap-${n.kind} ${n.selected ? 'is-selected' : ''} ${n.hit ? 'is-hit' : ''} ${n.status ? 'is-' + n.status : ''}" style="left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px">${n.kind === 'root' || n.kind === 'update' ? '<div' : '<button type="button"'} ${n.kind === 'memory' ? `data-map-memory="${h(n.key)}" aria-pressed="${Boolean(n.selected)}"` : n.kind === 'case' ? `data-map-case="${h(n.caseId)}"` : n.kind === 'source' ? `data-map-source="${n.index}"` : ''} title="${h(n.hint ?? n.title)}"><strong>${h(n.title)}</strong><span>${h(n.text)}${n.hit ? ' · 检索命中' : ''}</span>${n.kind === 'root' || n.kind === 'update' ? '</div>' : '</button>'}</div>`).join('');
-  return `<section class="mindmap" ${model.overview ? "data-overview" : ""} aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应窗口</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
+  return `<section class="mindmap" ${model.overview ? "data-overview" : ""} aria-label="记忆思维导图"><div class="mindmap-toolbar"><div><strong>${model.nodes.some(n => n.kind === 'case') ? '选择案例，展开记忆' : '点选记忆，追到原文'}</strong><p>灰线：案例归属　蓝线：所选记忆的原文引用　虚线：模拟更新</p></div><div class="mindmap-controls"><button class="secondary" type="button" data-map-all>全部案例</button><button class="secondary" type="button" data-map-zoom="out" aria-label="缩小导图">−</button><button class="secondary" type="button" data-map-zoom="in" aria-label="放大导图">＋</button><button class="secondary" type="button" data-map-zoom="fit">适应宽度</button><output id="mindmap-scale" aria-live="polite"></output></div></div><p class="mindmap-key">绿色边框表示本次关键词检索命中；灰色虚线框表示已模拟撤回。滚动查看，缩放后可点选节点。</p><div class="mindmap-viewport" tabindex="0" aria-label="可滚动的思维导图画布"><div class="mindmap-size"><div class="mindmap-canvas" style="width:${model.width}px;height:${model.height}px"><svg width="${model.width}" height="${model.height}" aria-hidden="true" focusable="false">${curves}</svg>${nodes}</div></div></div></section>`;
 }
 
 const mindMapViewportState = new WeakMap();
@@ -104,7 +107,7 @@ export function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) 
   };
   const fit = () => {
     state.zoom = null;
-    applyZoom(Math.min(1, Math.max(1, viewport.clientWidth - 24) / model.width, Math.max(1, viewport.clientHeight - 24) / model.height));
+    applyZoom(Math.min(1, Math.max(1, viewport.clientWidth - 24) / model.width));
     viewport.scrollTo(0, 0);
   };
   if (state.zoom === null) fit();
@@ -112,10 +115,12 @@ export function bindSandboxMindMap(root, model, { onCase, onMemory, onSource }) 
     applyZoom(state.zoom);
     viewport.scrollTo(state.left, state.top);
   }
+  previous?.observer?.disconnect();
   const observer = new ResizeObserver(() => {
     if (!viewport.isConnected) { observer.disconnect(); return; }
     if (state.zoom === null) fit();
   });
+  state.observer = observer;
   observer.observe(viewport);
   viewport.onscroll = () => { state.left = viewport.scrollLeft; state.top = viewport.scrollTop; };
   root.querySelectorAll('[data-map-zoom]').forEach(button => {
